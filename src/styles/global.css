@@ -243,9 +243,15 @@ a[aria-current="page"] {
 .specialty {
   font-size: 21px;
 }
-.specialty {
+.role {
   color: var(--accent);
+}
+.specialty {
   margin: 3px 0 23px;
+}
+.hero-copy,
+.hero-visual {
+  transform: translateY(-16px);
 }
 .intro {
   max-width: 505px;
@@ -511,8 +517,6 @@ a[aria-current="page"] {
 }
 .contact-right {
   align-self: center;
-  border-top: 1px solid var(--line);
-  padding-top: 24px;
 }
 .email {
   font-size: clamp(18px, 2vw, 29px);
