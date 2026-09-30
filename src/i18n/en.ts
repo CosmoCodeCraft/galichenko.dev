@@ -35,7 +35,7 @@ export const en = {
   copied: "Email copied",
   copyFailed: "Select and copy the email above.",
   backTop: "Back to top",
-  footerRole: "DevOps & Systems Integration",
+  footerRole: "DevOps & Systems Integration Engineer",
   completed: "Completed",
   ongoing: "Ongoing",
   planned: "Planned",

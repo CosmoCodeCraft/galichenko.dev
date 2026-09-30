@@ -1,0 +1,69 @@
+---
+import { getCollection } from "astro:content";
+import { formatDate, t, type Locale } from "../../i18n";
+import { chronological, entryPath } from "../../utils/content";
+import Figure from "../Figure.astro";
+import CollectionHeader from "./CollectionHeader.astro";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = t(locale);
+const projects = (await getCollection("projects"))
+  .filter((project) => !project.data.draft && project.data.locale === locale)
+  .sort(chronological);
+function period(project: (typeof projects)[number]) {
+  const p = project.data;
+  if (p.startDate && p.endDate)
+    return `${formatDate(p.startDate, locale)} — ${formatDate(p.endDate, locale)}`;
+  if (p.startDate && p.present)
+    return `${formatDate(p.startDate, locale)} — ${d.present}`;
+  if (p.endDate) return formatDate(p.endDate, locale);
+  if (p.startDate) return formatDate(p.startDate, locale);
+  if (p.present) return d.present;
+  return d[p.status];
+}
+---
+
+<section class="collection-page projects-index">
+  <CollectionHeader title={d.projects} />
+  <ol class="project-archive">
+    {
+      projects.map((project) => {
+        const p = project.data;
+        return (
+          <li>
+            <a
+              class="project-archive-entry"
+              href={entryPath(project)}
+              aria-labelledby={`archive-project-${p.id}`}
+            >
+              <div class="project-chronology">
+                <span>{period(project)}</span>
+              </div>
+              <Figure
+                {...p.cover}
+                cover
+                sizes="(max-width: 42rem) calc(100vw - 44px), 34vw"
+              />
+              <div class="project-archive-copy">
+                <p class="metadata">
+                  <span>{d[p.status]}</span> · {p.cardRole ?? p.role}
+                </p>
+                <h2 id={`archive-project-${p.id}`}>
+                  {p.shortTitle ?? p.title}
+                </h2>
+                <p class="description">{p.summary}</p>
+                <ul class="tags" aria-label={d.projects}>
+                  {p.tags.map((tag) => (
+                    <li>{tag}</li>
+                  ))}
+                </ul>
+              </div>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ol>
+</section>

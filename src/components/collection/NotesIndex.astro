@@ -1,0 +1,30 @@
+---
+import { getCollection } from "astro:content";
+import { t, type Locale } from "../../i18n";
+import { chronological } from "../../utils/content";
+import CollectionHeader from "./CollectionHeader.astro";
+import NoteCard from "./NoteCard.astro";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = t(locale);
+const notes = (await getCollection("notes"))
+  .filter((note) => !note.data.draft && note.data.locale === locale)
+  .sort(chronological);
+---
+
+<section class="collection-page notes-index">
+  <CollectionHeader title={d.notes} />
+  {
+    notes.length > 0 ? (
+      <div class="notes-grid">
+        {notes.map((note) => (
+          <NoteCard note={note} />
+        ))}
+      </div>
+    ) : (
+      <p class="notes-empty">{d.emptyNotes}</p>
+    )
+  }
+</section>

@@ -1,0 +1,65 @@
+---
+import { getCollection } from "astro:content";
+import { t, type Locale } from "../../i18n";
+import { chronological, entryPath } from "../../utils/content";
+import CollectionHeader from "./CollectionHeader.astro";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = t(locale);
+const publications = (await getCollection("publications"))
+  .filter(
+    (publication) =>
+      !publication.data.draft && publication.data.locale === locale,
+  )
+  .sort(chronological);
+---
+
+<section class="collection-page research-index">
+  <CollectionHeader title={d.research} />
+  <ol class="research-archive">
+    {
+      publications.map((publication) => {
+        const p = publication.data;
+        return (
+          <li>
+            <a
+              class="research-archive-entry"
+              href={p.externalUrl ?? entryPath(publication)}
+              aria-labelledby={`archive-paper-${p.id}`}
+            >
+              <div class="research-bibliography">
+                <h2 id={`archive-paper-${p.id}`} lang={p.languageOriginal}>
+                  {p.titleOriginal}
+                </h2>
+                {p.englishSummary && (
+                  <p class="summary" lang="en">
+                    {d.englishSummary}: {p.englishSummary}
+                  </p>
+                )}
+                <p class="authors" lang={p.languageOriginal}>
+                  {p.authors.map((author, index) => (
+                    <>
+                      {index > 0 ? ", " : ""}
+                      {author === "Галиченко С.А." ? (
+                        <strong>{author}</strong>
+                      ) : (
+                        author
+                      )}
+                    </>
+                  ))}
+                </p>
+                {p.venue && <p class="research-venue">{p.venue}</p>}
+              </div>
+              <div class="research-chronology">
+                <span class="research-year">{p.year}</span>
+                <span>{d[p.status]}</span>
+              </div>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ol>
+</section>

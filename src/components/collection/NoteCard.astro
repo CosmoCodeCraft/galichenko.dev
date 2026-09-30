@@ -1,0 +1,38 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { entryPath } from "../../utils/content";
+import Figure from "../Figure.astro";
+interface Props {
+  note: CollectionEntry<"notes">;
+}
+const { note } = Astro.props;
+const n = note.data;
+const published = new Intl.DateTimeFormat(n.locale, {
+  year: "numeric",
+  month: "short",
+  ...(n.date.length > 7 ? { day: "numeric" as const } : {}),
+  timeZone: "UTC",
+}).format(new Date(n.date.length === 7 ? `${n.date}-01` : n.date));
+---
+
+<a class="note-card" href={entryPath(note)} aria-labelledby={`note-${n.id}`}>
+  <div class="note-card-media">
+    {
+      n.cover ? (
+        <Figure
+          {...n.cover}
+          cover
+          sizes="(max-width: 42rem) calc(100vw - 44px), (max-width: 70rem) 50vw, 33vw"
+        />
+      ) : (
+        <div class="note-cover-placeholder" aria-hidden="true" />
+      )
+    }
+  </div>
+  <time datetime={n.date}>{published}</time>
+  <h2 id={`note-${n.id}`}>{n.title}</h2>
+  <p>{n.summary}</p>
+  <ul class="tags" aria-label={n.title}>
+    {n.tags.map((tag) => <li>{tag}</li>)}
+  </ul>
+</a>

@@ -25,7 +25,10 @@ const {
 } = Astro.props;
 ---
 
-<figure class:list={["figure", { cover: cover }]} data-role={role}>
+<figure
+  class:list={["figure", { cover: cover, crop: cropAllowed }]}
+  data-role={role}
+>
   {
     src.format === "svg" ? (
       <img

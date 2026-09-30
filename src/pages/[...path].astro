@@ -3,15 +3,13 @@ import { render } from "astro:content";
 import type { GetStaticPaths } from "astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Home from "../components/Home.astro";
+import ProjectsIndex from "../components/collection/ProjectsIndex.astro";
+import ResearchIndex from "../components/collection/ResearchIndex.astro";
+import NotesIndex from "../components/collection/NotesIndex.astro";
 import { enabledLocales, route, t, formatDate, type Locale } from "../i18n";
 import { navigation, site } from "../config/site";
 import { homeCopy } from "../config/home";
-import {
-  entries,
-  entryPath,
-  chronological,
-  type Entry,
-} from "../utils/content";
+import { entries, entryPath, type Entry } from "../utils/content";
 export const getStaticPaths = (async () => {
   const all = await entries();
   return [
@@ -40,6 +38,8 @@ const { locale, kind, entry } = Astro.props;
 const d = t(locale);
 const all = await entries();
 const isHome = kind === "home";
+const isCollectionIndex =
+  !entry && (kind === "projects" || kind === "research" || kind === "notes");
 const title = isHome
   ? site.name
   : entry
@@ -66,27 +66,26 @@ const alternates = entry
     }));
 const rendered = entry ? await render(entry) : null;
 const Content = rendered?.Content;
-const listing = all
-  .filter(
-    (e) =>
-      e.data.locale === locale &&
-      e.collection === (kind === "research" ? "publications" : kind),
-  )
-  .sort(chronological);
 ---
 
 <BaseLayout
   locale={locale}
   title={isHome
-    ? `${site.name} — DevOps & Systems Integration`
+    ? `${site.name} — DevOps & Systems Integration Engineer`
     : `${title} — ${site.name}`}
   description={description}
-  noindex={!isHome}
+  noindex={!isHome && !isCollectionIndex}
   alternates={alternates}
 >
   {
     isHome ? (
       <Home locale={locale} />
+    ) : kind === "projects" && !entry ? (
+      <ProjectsIndex locale={locale} />
+    ) : kind === "research" && !entry ? (
+      <ResearchIndex locale={locale} />
+    ) : kind === "notes" && !entry ? (
+      <NotesIndex locale={locale} />
     ) : (
       <article class="skeleton">
         <>
@@ -186,28 +185,6 @@ const listing = all
             )}
           </>
         )}
-        {listing.length > 0 && (
-          <ul class="minimal-list">
-            {listing.map((e) => (
-              <li>
-                <a
-                  href={entryPath(e)}
-                  lang={
-                    "languageOriginal" in e.data
-                      ? e.data.languageOriginal
-                      : locale
-                  }
-                >
-                  {"titleOriginal" in e.data
-                    ? e.data.titleOriginal
-                    : e.data.title}{" "}
-                  →
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-        {kind === "notes" && listing.length === 0 && <p>{d.emptyNotes}</p>}
         <a class="text-link" href={route(locale)}>
           {d.backHome}
         </a>
