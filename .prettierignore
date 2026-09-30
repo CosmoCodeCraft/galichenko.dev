@@ -3,5 +3,7 @@ dist
 .astro
 test-results
 package-lock.json
+src/citation/styles/*.csl
+src/citation/locales/*.xml
 
 galichenko-*.html

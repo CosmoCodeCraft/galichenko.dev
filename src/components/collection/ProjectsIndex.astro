@@ -32,15 +32,16 @@ function period(project: (typeof projects)[number]) {
       projects.map((project) => {
         const p = project.data;
         return (
-          <li>
+          <li class={`project-timeline-item is-${p.status}`}>
+            <div class="project-timeline-time">
+              <span>{period(project)}</span>
+            </div>
+            <div class="project-timeline-marker" aria-hidden="true" />
             <a
               class="project-archive-entry"
               href={entryPath(project)}
               aria-labelledby={`archive-project-${p.id}`}
             >
-              <div class="project-chronology">
-                <span>{period(project)}</span>
-              </div>
               <Figure
                 {...p.cover}
                 cover

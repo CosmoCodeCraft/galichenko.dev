@@ -25,3 +25,9 @@ export function formatDate(value: string, locale: Locale) {
     ),
   );
 }
+export function formatExactDate(value: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: "long",
+    timeZone: "UTC",
+  }).format(new Date(value));
+}

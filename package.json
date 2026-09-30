@@ -12,12 +12,14 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "playwright test",
+    "test:citations": "node --test tests/citations.test.mjs",
     "deploy:build": "pnpm lint && pnpm typecheck && pnpm build",
     "content:new": "node scripts/content-new.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",
     "astro": "^5.13.0",
+    "citeproc": "2.4.63",
     "sharp": "^0.35.5"
   },
   "devDependencies": {

@@ -1,7 +1,13 @@
 ---
 import { getCollection } from "astro:content";
 import { t, type Locale } from "../../i18n";
-import { chronological, entryPath } from "../../utils/content";
+import { entryPath } from "../../utils/content";
+import {
+  authorName,
+  groupPublicationsByYear,
+  isSergey,
+  publicationChronological,
+} from "../../utils/publications";
 import CollectionHeader from "./CollectionHeader.astro";
 interface Props {
   locale: Locale;
@@ -13,50 +19,83 @@ const publications = (await getCollection("publications"))
     (publication) =>
       !publication.data.draft && publication.data.locale === locale,
   )
-  .sort(chronological);
+  .sort(publicationChronological);
+const groups = groupPublicationsByYear(publications);
 ---
 
 <section class="collection-page research-index">
-  <CollectionHeader title={d.research} />
+  <CollectionHeader title={d.research} description={d.researchArchiveIntro} />
+  <div
+    class="research-identifiers"
+    aria-labelledby="research-identifiers-title"
+  >
+    <p id="research-identifiers-title">{d.researchIdentifiers}</p>
+    <dl>
+      <div><dt>eLIBRARY AuthorID</dt><dd>1236101</dd></div>
+      <div><dt>SPIN</dt><dd>5727-6595</dd></div>
+    </dl>
+  </div>
   <ol class="research-archive">
     {
-      publications.map((publication) => {
-        const p = publication.data;
+      groups.map((group) => {
         return (
-          <li>
-            <a
-              class="research-archive-entry"
-              href={p.externalUrl ?? entryPath(publication)}
-              aria-labelledby={`archive-paper-${p.id}`}
-            >
-              <div class="research-bibliography">
-                <h2 id={`archive-paper-${p.id}`} lang={p.languageOriginal}>
-                  {p.titleOriginal}
-                </h2>
-                {p.englishSummary && (
-                  <p class="summary" lang="en">
-                    {d.englishSummary}: {p.englishSummary}
-                  </p>
-                )}
-                <p class="authors" lang={p.languageOriginal}>
-                  {p.authors.map((author, index) => (
-                    <>
-                      {index > 0 ? ", " : ""}
-                      {author === "Галиченко С.А." ? (
-                        <strong>{author}</strong>
-                      ) : (
-                        author
-                      )}
-                    </>
-                  ))}
-                </p>
-                {p.venue && <p class="research-venue">{p.venue}</p>}
-              </div>
-              <div class="research-chronology">
-                <span class="research-year">{p.year}</span>
-                <span>{d[p.status]}</span>
-              </div>
-            </a>
+          <li class="research-year-group">
+            <ol class="research-year-publications">
+              {group.publications.map((publication) => {
+                const p = publication.data;
+                return (
+                  <li>
+                    <a
+                      class="research-archive-entry"
+                      href={entryPath(publication)}
+                      aria-labelledby={`archive-paper-${p.id}`}
+                    >
+                      <div class="research-bibliography">
+                        <h2
+                          id={`archive-paper-${p.id}`}
+                          lang={p.languageOriginal}
+                        >
+                          {p.titleOriginal}
+                        </h2>
+                        {p.titleEnglish && p.languageOriginal !== "en" && (
+                          <p class="research-english-title" lang="en">
+                            {p.titleEnglish}
+                          </p>
+                        )}
+                        {p.authorsOriginal.length > 0 && (
+                          <p class="authors" lang={p.languageOriginal}>
+                            {p.authorsOriginal.map((author, index) => (
+                              <>
+                                {index > 0 ? ", " : ""}
+                                {isSergey(author) ? (
+                                  <strong>{authorName(author)}</strong>
+                                ) : (
+                                  authorName(author)
+                                )}
+                              </>
+                            ))}
+                          </p>
+                        )}
+                        <p class="research-venue">
+                          {[
+                            p.sourceTitle,
+                            String(p.year),
+                            p.pages ? `${d.pages} ${p.pages}` : undefined,
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </p>
+                        <p class="research-publication-state">
+                          {d[p.status]} · {d[p.publicationType]}
+                        </p>
+                      </div>
+                    </a>
+                  </li>
+                );
+              })}
+            </ol>
+            <div class="research-year-marker" aria-hidden="true" />
+            <div class="research-year">{group.year}</div>
           </li>
         );
       })

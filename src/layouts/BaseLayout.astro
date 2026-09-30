@@ -80,10 +80,17 @@ const person = {
       </div><nav class="footer-links" aria-label={d.nav}>
         <a href={site.github}>{d.github}</a><a href={`mailto:${site.email}`}
           >{d.email}</a
-        ><a href={route(locale, "cv")}>{d.cv}</a><a href="#top"
+        ><a href={route(locale, "cv")}>{d.cv}</a><a
+          href="#top"
+          class="footer-back-desktop"
           >{d.backTop} <span aria-hidden="true">↑</span></a
         >
-      </nav><span class="footer-copyright">© {new Date().getFullYear()}</span>
+      </nav><div class="footer-closing">
+        <span class="footer-copyright">© {new Date().getFullYear()}</span><a
+          class="footer-back-mobile"
+          href="#top">{d.backTop} <span aria-hidden="true">↑</span></a
+        >
+      </div>
     </footer><script src="../utils/interactions.ts"></script></body
   >
 </html>

@@ -28,6 +28,15 @@ const csv = (value) =>
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
+const authors = (value) =>
+  value
+    .split(";")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((item) => {
+      const [family, given] = item.split("|").map((part) => part.trim());
+      return { family, ...(given ? { given } : {}) };
+    });
 
 const root = process.cwd();
 const plural = `${type}s`;
@@ -69,21 +78,36 @@ try {
   if (type === "publication") {
     data = {
       ...common,
+      publicationType: await ask(
+        "Type (conference-paper, conference-abstract, or journal-article)",
+        {
+          validate: choice([
+            "conference-paper",
+            "conference-abstract",
+            "journal-article",
+          ]),
+        },
+      ),
       titleOriginal: await ask("Original title"),
       languageOriginal: await ask("Original language (en or ru)", {
         validate: choice(["en", "ru"]),
       }),
-      englishSummary:
-        (await ask("English summary", { optional: true })) || undefined,
-      authors: csv(await ask("Authors in source order, comma-separated")),
+      titleEnglish:
+        (await ask("Official English title", { optional: true })) || undefined,
+      authorsOriginal: authors(
+        await ask("Authors in source order (Family|Initials; Family|Initials)"),
+      ),
       year: Number(
         await ask("Year", { validate: (value) => /^\d{4}$/.test(value) }),
       ),
-      venue: (await ask("Venue", { optional: true })) || null,
+      sourceTitle:
+        (await ask("Source / venue", { optional: true })) || undefined,
       status: await ask("Status (published, accepted, submitted, or unknown)", {
         validate: choice(["published", "accepted", "submitted", "unknown"]),
       }),
       featured: false,
+      keywordsOriginal: [],
+      keywordsEnglish: [],
     };
   }
 

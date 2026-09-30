@@ -1,0 +1,112 @@
+---
+import type { CollectionEntry } from "astro:content";
+import gostStyle from "../../citation/styles/gost-r-7-0-5-2008.csl?raw";
+import ieeeStyle from "../../citation/styles/ieee.csl?raw";
+import apaStyle from "../../citation/styles/apa-7.csl?raw";
+import ruLocale from "../../citation/locales/locales-ru-RU.xml?raw";
+import enLocale from "../../citation/locales/locales-en-US.xml?raw";
+import { formatCitations } from "../../utils/citations";
+
+interface Props {
+  publication: CollectionEntry<"publications">;
+}
+
+const { publication } = Astro.props;
+const citations = formatCitations(publication.data, {
+  styles: { gost: gostStyle, ieee: ieeeStyle, apa: apaStyle },
+  locales: { ru: ruLocale, en: enLocale },
+});
+const dialogId = `citation-${publication.data.slug}`;
+---
+
+<div class="citation-tool" data-citation-tool>
+  <button type="button" data-citation-open>Cite this work</button>
+  <dialog id={dialogId} aria-labelledby={`${dialogId}-title`}>
+    <div class="citation-dialog-heading">
+      <h2 id={`${dialogId}-title`}>Cite this work</h2>
+      <button type="button" class="citation-close" data-citation-close>
+        Close
+      </button>
+    </div>
+    <label for={`${dialogId}-format`}>Citation format</label>
+    <select id={`${dialogId}-format`} data-citation-format>
+      <option value="gost">GOST R 7.0.5–2008</option>
+      <option value="ieee">IEEE</option>
+      <option value="apa">APA 7</option>
+      <option value="bibtex">BibTeX</option>
+    </select>
+    <pre data-citation-preview>{citations.gost}</pre>
+    <div class="citation-actions">
+      <button type="button" data-citation-copy>Copy citation</button>
+      <span role="status" aria-live="polite" data-citation-status></span>
+    </div>
+    <p class="citation-note">
+      Citation requirements may vary by institution or publisher.
+    </p>
+  </dialog>
+  <script
+    type="application/json"
+    data-citation-data
+    set:html={JSON.stringify(citations).replaceAll("<", "\\u003c")}
+  />
+</div>
+
+<script>
+  document
+    .querySelectorAll<HTMLElement>("[data-citation-tool]")
+    .forEach((tool) => {
+      const dialog = tool.querySelector<HTMLDialogElement>("dialog");
+      const open = tool.querySelector<HTMLButtonElement>(
+        "[data-citation-open]",
+      );
+      const close = tool.querySelector<HTMLButtonElement>(
+        "[data-citation-close]",
+      );
+      const select = tool.querySelector<HTMLSelectElement>(
+        "[data-citation-format]",
+      );
+      const preview = tool.querySelector<HTMLElement>(
+        "[data-citation-preview]",
+      );
+      const copy = tool.querySelector<HTMLButtonElement>(
+        "[data-citation-copy]",
+      );
+      const status = tool.querySelector<HTMLElement>("[data-citation-status]");
+      const data = tool.querySelector<HTMLScriptElement>(
+        "[data-citation-data]",
+      );
+      if (
+        !dialog ||
+        !open ||
+        !close ||
+        !select ||
+        !preview ||
+        !copy ||
+        !status ||
+        !data
+      )
+        return;
+      const citations = JSON.parse(data.textContent ?? "{}") as Record<
+        string,
+        string
+      >;
+      const update = () => {
+        preview.textContent = citations[select.value] ?? "";
+        status.textContent = "";
+      };
+      open.addEventListener("click", () => dialog.showModal());
+      close.addEventListener("click", () => dialog.close());
+      select.addEventListener("change", update);
+      copy.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(preview.textContent ?? "");
+          status.textContent = "Citation copied";
+        } catch {
+          status.textContent = "Select and copy the citation above.";
+        }
+      });
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+    });
+</script>

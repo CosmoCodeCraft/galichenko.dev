@@ -1,0 +1,48 @@
+---
+{
+  "id": "excursions-patriotic-education",
+  "slug": "excursions-patriotic-education",
+  "locale": "en",
+  "translationKey": "excursions-patriotic-education",
+  "draft": false,
+  "publicationType": "conference-paper",
+  "titleOriginal": "К вопросу о роли экскурсий как части гуманитарного образования и средства патриотического воспитания молодежи",
+  "languageOriginal": "ru",
+  "authorsOriginal": [{ "family": "Галиченко", "given": "С. А." }],
+  "year": 2023,
+  "status": "published",
+  "featured": false,
+  "keywordsOriginal":
+    [
+      "Экскурсии",
+      "Выставки",
+      "Музеи",
+      "Образование",
+      "Патриотизм",
+      "Воспитание",
+    ],
+  "keywordsEnglish":
+    [
+      "Excursions",
+      "Exhibitions",
+      "Museums",
+      "Education",
+      "Patriotism",
+      "Upbringing",
+    ],
+  "titleEnglish": "To the Question of the Role of Excursions as Part of Humanitarian Education and a Means of Patriotic Education of Young People",
+  "authorsEnglish": [{ "family": "Galichenko", "given": "S. A." }],
+  "sourceTitle": "Методики и практики патриотического воспитания молодежи",
+  "publicationPlace": "Москва",
+  "publisher": "Московский Политех",
+  "pages": "295–298",
+  "conferenceTitle": "Методики и практики патриотического воспитания молодежи",
+  "conferenceDate": "2023-11-03",
+  "abstractOriginal": "В статье изучается роль тематических экскурсий и их влияние на развитие личности и становления гражданско-патриотической позиции учащихся. В работе были проанализированы различные подходы к патриотическому воспитанию и подробно рассмотрена особая роль музеев и выставок в этом процессе. Отмечается, что патриотизм - один из ключевых элементов устойчивого развития общества и государства и его становление в молодом гражданине этого общества требует комплексного подхода.",
+  "abstractEnglish": "The article examines the role of thematic excursions and their impact on the development of personality and the formation of the civil-patriotic position of students. The paper analyzed various approaches to patriotic education and considered in detail the special role of museums and exhibitions in this process. It is noted that patriotism is one of the key elements of the sustainable development of society and the state and its formation in a young citizen of this society requires an integrated approach.",
+  "elibraryId": "59068282",
+  "edn": "WADGFV",
+  "rincIndexed": true,
+  "externalUrl": "https://www.elibrary.ru/item.asp?id=59068282",
+}
+---

@@ -25,6 +25,9 @@ export const ru: Record<keyof typeof en, string> = {
   aboutExperience: "Обо мне и опыте",
   selectedResearch: "Избранные исследования",
   researchIntro: "Оригинальные названия · Междисциплинарные исследования",
+  researchArchiveIntro:
+    "Опубликованные и принятые работы об инженерных системах, устойчивых технологиях, компьютерном зрении и прикладных междисциплинарных исследованиях.",
+  researchIdentifiers: "Научные идентификаторы",
   englishSummary: "Краткое описание на английском",
   allResearch: "Все исследования",
   contact: "Контакты",
@@ -43,7 +46,7 @@ export const ru: Record<keyof typeof en, string> = {
   published: "Опубликовано",
   accepted: "Принято к публикации",
   submitted: "На рассмотрении",
-  unknown: "Статус публикации не подтверждён",
+  unknown: "Неизвестен",
   placeholder: "Раздел готовится.",
   detailPlaceholder: "Подробное описание готовится. Ниже — доступные сведения.",
   emptyNotes: "Заметок пока нет.",
@@ -54,4 +57,8 @@ export const ru: Record<keyof typeof en, string> = {
   schematic: "Схематическая обложка · иллюстрация",
   period: "Период",
   present: "Настоящее время",
+  pages: "с.",
+  "conference-paper": "Статья в материалах конференции",
+  "conference-abstract": "Тезисы доклада",
+  "journal-article": "Статья в журнале",
 };

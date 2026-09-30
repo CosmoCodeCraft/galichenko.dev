@@ -25,6 +25,9 @@ export const en = {
   aboutExperience: "About & experience",
   selectedResearch: "Selected research",
   researchIntro: "Titles shown in their original language",
+  researchArchiveIntro:
+    "Published and accepted work in engineering systems, sustainable technologies, computer vision, and applied interdisciplinary research.",
+  researchIdentifiers: "Research identifiers",
   englishSummary: "English summary",
   allResearch: "View all research",
   contact: "Contact",
@@ -44,7 +47,7 @@ export const en = {
   published: "Published",
   accepted: "Accepted for publication",
   submitted: "Submitted",
-  unknown: "Publication status unverified",
+  unknown: "Unknown",
   placeholder: "This section is being prepared.",
   detailPlaceholder:
     "A full write-up is being prepared. The information currently available is below.",
@@ -56,4 +59,8 @@ export const en = {
   schematic: "Schematic cover · illustrative",
   period: "Period",
   present: "Present",
+  pages: "pp.",
+  "conference-paper": "Conference paper",
+  "conference-abstract": "Conference abstract",
+  "journal-article": "Journal article",
 } as const;

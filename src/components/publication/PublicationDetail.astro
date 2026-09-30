@@ -1,0 +1,238 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatExactDate, route, t, type Locale } from "../../i18n";
+import { authorName, isSergey } from "../../utils/publications";
+import CitationTool from "./CitationTool.astro";
+
+interface Props {
+  publication: CollectionEntry<"publications">;
+  locale: Locale;
+}
+
+const { publication, locale } = Astro.props;
+const p = publication.data;
+const d = t(locale);
+const typeLabel = d[p.publicationType];
+const relatedProjectPath = p.relatedProject
+  ? route(locale, `projects/${p.relatedProject}`)
+  : undefined;
+---
+
+<article class="publication-detail">
+  <header class="publication-detail-header">
+    <a class="detail-kicker" href={route(locale, "research")}>{d.research}</a>
+    <h1 lang={p.languageOriginal}>{p.titleOriginal}</h1>
+    {
+      p.titleEnglish && (
+        <p class="publication-english-title">{p.titleEnglish}</p>
+      )
+    }
+    {
+      p.authorsOriginal.length > 0 && (
+        <p class="publication-detail-authors" lang={p.languageOriginal}>
+          {p.authorsOriginal.map((author, index) => (
+            <>
+              {index > 0 ? ", " : ""}
+              {isSergey(author) ? (
+                <strong>{authorName(author)}</strong>
+              ) : (
+                authorName(author)
+              )}
+            </>
+          ))}
+        </p>
+      )
+    }
+    <p class="publication-detail-meta">
+      <span>{d[p.status]}</span> · {typeLabel} · {p.year}
+    </p>
+    <CitationTool publication={publication} />
+  </header>
+
+  <div class="publication-detail-body">
+    <section aria-labelledby="bibliographic-information">
+      <h2 id="bibliographic-information">Bibliographic information</h2>
+      <dl class="bibliographic-data">
+        {
+          p.sourceTitle && (
+            <>
+              <>
+                <dt>Source</dt>
+                <dd>{p.sourceTitle}</dd>
+              </>
+            </>
+          )
+        }
+        {
+          p.publicationPlace && (
+            <>
+              <>
+                <dt>Publication place</dt>
+                <dd>{p.publicationPlace}</dd>
+              </>
+            </>
+          )
+        }
+        {
+          p.publisher && (
+            <>
+              <>
+                <dt>Publisher</dt>
+                <dd>{p.publisher}</dd>
+              </>
+            </>
+          )
+        }
+        {
+          p.pages && (
+            <>
+              <>
+                <dt>Pages</dt>
+                <dd>{p.pages}</dd>
+              </>
+            </>
+          )
+        }
+        {
+          p.issue && (
+            <>
+              <>
+                <dt>Issue</dt>
+                <dd>{p.issue}</dd>
+              </>
+            </>
+          )
+        }
+        {
+          p.issn && (
+            <>
+              <>
+                <dt>ISSN</dt>
+                <dd>{p.issn}</dd>
+              </>
+            </>
+          )
+        }
+        {
+          p.conferenceTitle && (
+            <>
+              <>
+                <dt>Conference</dt>
+                <dd>{p.conferenceTitle}</dd>
+              </>
+            </>
+          )
+        }
+        {
+          p.conferenceDate && (
+            <>
+              <dt>Conference date</dt>
+              <dd>
+                <time datetime={p.conferenceDate}>
+                  {formatExactDate(p.conferenceDate, locale)}
+                </time>
+                {p.conferenceEndDate && (
+                  <>
+                    {" "}
+                    –{" "}
+                    <time datetime={p.conferenceEndDate}>
+                      {formatExactDate(p.conferenceEndDate, locale)}
+                    </time>
+                  </>
+                )}
+              </dd>
+            </>
+          )
+        }
+      </dl>
+    </section>
+
+    {
+      (p.abstractEnglish || p.abstractOriginal) && (
+        <section aria-labelledby="publication-abstract">
+          <h2 id="publication-abstract">Abstract</h2>
+          {p.abstractEnglish && <p lang="en">{p.abstractEnglish}</p>}
+          {p.abstractOriginal && (
+            <div class="original-abstract" lang={p.languageOriginal}>
+              {p.abstractEnglish && <h3>Original abstract</h3>}
+              <p>{p.abstractOriginal}</p>
+            </div>
+          )}
+        </section>
+      )
+    }
+
+    {
+      (p.keywordsEnglish.length > 0 || p.keywordsOriginal.length > 0) && (
+        <section aria-labelledby="publication-keywords">
+          <h2 id="publication-keywords">Keywords</h2>
+          {p.keywordsEnglish.length > 0 && (
+            <div>
+              <h3>English keywords</h3>
+              <p>{p.keywordsEnglish.join(" · ")}</p>
+            </div>
+          )}
+          {p.keywordsOriginal.length > 0 && (
+            <div>
+              {p.keywordsEnglish.length > 0 && <h3>Original keywords</h3>}
+              <p lang={p.languageOriginal}>{p.keywordsOriginal.join(" · ")}</p>
+            </div>
+          )}
+        </section>
+      )
+    }
+
+    {
+      (p.elibraryId || p.edn || p.rincIndexed !== undefined) && (
+        <section aria-labelledby="publication-identifiers">
+          <h2 id="publication-identifiers">Identifiers</h2>
+          <dl class="bibliographic-data">
+            {p.elibraryId && (
+              <>
+                <dt>eLIBRARY ID</dt>
+                <dd>{p.elibraryId}</dd>
+              </>
+            )}
+            {p.edn && (
+              <>
+                <dt>EDN</dt>
+                <dd>{p.edn}</dd>
+              </>
+            )}
+            {p.rincIndexed !== undefined && (
+              <>
+                <dt>Indexed in RINC</dt>
+                <dd>{p.rincIndexed ? "Yes" : "No"}</dd>
+              </>
+            )}
+          </dl>
+        </section>
+      )
+    }
+
+    {
+      (p.externalUrl || p.fullTextUrl || relatedProjectPath) && (
+        <section aria-labelledby="publication-links">
+          <h2 id="publication-links">Links</h2>
+          <ul class="publication-links">
+            {p.externalUrl && (
+              <li>
+                <a href={p.externalUrl}>eLIBRARY record</a>
+              </li>
+            )}
+            {p.fullTextUrl && (
+              <li>
+                <a href={p.fullTextUrl}>Full text</a>
+              </li>
+            )}
+            {relatedProjectPath && (
+              <li>
+                <a href={relatedProjectPath}>Related project</a>
+              </li>
+            )}
+          </ul>
+        </section>
+      )
+    }
+  </div>
+</article>

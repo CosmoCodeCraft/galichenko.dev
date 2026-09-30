@@ -6,6 +6,7 @@ import Home from "../components/Home.astro";
 import ProjectsIndex from "../components/collection/ProjectsIndex.astro";
 import ResearchIndex from "../components/collection/ResearchIndex.astro";
 import NotesIndex from "../components/collection/NotesIndex.astro";
+import PublicationDetail from "../components/publication/PublicationDetail.astro";
 import { enabledLocales, route, t, formatDate, type Locale } from "../i18n";
 import { navigation, site } from "../config/site";
 import { homeCopy } from "../config/home";
@@ -40,6 +41,7 @@ const all = await entries();
 const isHome = kind === "home";
 const isCollectionIndex =
   !entry && (kind === "projects" || kind === "research" || kind === "notes");
+const isPublication = entry?.collection === "publications";
 const title = isHome
   ? site.name
   : entry
@@ -49,9 +51,13 @@ const title = isHome
     : d[kind as keyof typeof d];
 const description = isHome
   ? homeCopy[locale]?.intro
-  : entry && "summary" in entry.data
-    ? entry.data.summary
-    : title;
+  : isPublication
+    ? (entry.data.abstractEnglish ??
+      entry.data.titleEnglish ??
+      entry.data.titleOriginal)
+    : entry && "summary" in entry.data
+      ? entry.data.summary
+      : title;
 const alternates = entry
   ? all
       .filter(
@@ -74,7 +80,7 @@ const Content = rendered?.Content;
     ? `${site.name} — DevOps & Systems Integration Engineer`
     : `${title} — ${site.name}`}
   description={description}
-  noindex={!isHome && !isCollectionIndex}
+  noindex={!isHome && !isCollectionIndex && !isPublication}
   alternates={alternates}
 >
   {
@@ -86,37 +92,18 @@ const Content = rendered?.Content;
       <ResearchIndex locale={locale} />
     ) : kind === "notes" && !entry ? (
       <NotesIndex locale={locale} />
+    ) : isPublication ? (
+      <PublicationDetail publication={entry} locale={locale} />
     ) : (
       <article class="skeleton">
         <>
-          <p class="label">
-            {entry
-              ? d[
-                  entry.collection === "publications"
-                    ? "research"
-                    : entry.collection
-                ]
-              : d.home}
-          </p>
-          <h1
-            lang={
-              entry && "languageOriginal" in entry.data
-                ? entry.data.languageOriginal
-                : locale
-            }
-          >
-            {title}
-          </h1>
+          <p class="label">{entry ? d[entry.collection] : d.home}</p>
+          <h1 lang={locale}>{title}</h1>
           <p class="notice">{entry ? d.detailPlaceholder : d.placeholder}</p>
         </>
         {entry && (
           <>
-            <p>
-              {"summary" in entry.data
-                ? entry.data.summary
-                : entry.data.englishSummary &&
-                  `${d.englishSummary}: ${entry.data.englishSummary}`}
-            </p>
+            {"summary" in entry.data && <p>{entry.data.summary}</p>}
             {"role" in entry.data && (
               <>
                 <p>
@@ -161,20 +148,6 @@ const Content = rendered?.Content;
                       ))}
                     </ul>
                   </>
-                )}
-              </>
-            )}
-            {"authors" in entry.data && (
-              <>
-                <p lang={entry.data.languageOriginal}>
-                  {entry.data.authors.join(", ")}
-                </p>
-                <p>
-                  {entry.data.year} · {d[entry.data.status]}
-                  {entry.data.venue && ` · ${entry.data.venue}`}
-                </p>
-                {entry.data.externalUrl && (
-                  <a href={entry.data.externalUrl}>{d.research}</a>
                 )}
               </>
             )}
