@@ -1,0 +1,217 @@
+---
+import { render } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Home from "../components/Home.astro";
+import { enabledLocales, route, t, formatDate, type Locale } from "../i18n";
+import { navigation, site } from "../config/site";
+import { homeCopy } from "../config/home";
+import {
+  entries,
+  entryPath,
+  chronological,
+  type Entry,
+} from "../utils/content";
+export const getStaticPaths = (async () => {
+  const all = await entries();
+  return [
+    ...enabledLocales.flatMap((locale) => [
+      {
+        params: { path: route(locale).slice(1) || undefined },
+        props: { locale, kind: "home" },
+      },
+      ...navigation.map((kind) => ({
+        params: { path: route(locale, kind).slice(1) },
+        props: { locale, kind },
+      })),
+    ]),
+    ...all.map((entry) => ({
+      params: { path: entryPath(entry).slice(1) },
+      props: { locale: entry.data.locale, kind: "detail", entry },
+    })),
+  ];
+}) satisfies GetStaticPaths;
+interface Props {
+  locale: Locale;
+  kind: string;
+  entry?: Entry;
+}
+const { locale, kind, entry } = Astro.props;
+const d = t(locale);
+const all = await entries();
+const isHome = kind === "home";
+const title = isHome
+  ? site.name
+  : entry
+    ? "titleOriginal" in entry.data
+      ? entry.data.titleOriginal
+      : entry.data.title
+    : d[kind as keyof typeof d];
+const description = isHome
+  ? homeCopy[locale]?.intro
+  : entry && "summary" in entry.data
+    ? entry.data.summary
+    : title;
+const alternates = entry
+  ? all
+      .filter(
+        (e) =>
+          e.collection === entry.collection &&
+          e.data.translationKey === entry.data.translationKey,
+      )
+      .map((e) => ({ locale: e.data.locale, url: entryPath(e) }))
+  : enabledLocales.map((l) => ({
+      locale: l,
+      url: route(l, isHome ? "" : kind),
+    }));
+const rendered = entry ? await render(entry) : null;
+const Content = rendered?.Content;
+const listing = all
+  .filter(
+    (e) =>
+      e.data.locale === locale &&
+      e.collection === (kind === "research" ? "publications" : kind),
+  )
+  .sort(chronological);
+---
+
+<BaseLayout
+  locale={locale}
+  title={isHome
+    ? `${site.name} — DevOps · Systems Engineering`
+    : `${title} — ${site.name}`}
+  description={description}
+  noindex={!isHome}
+  alternates={alternates}
+>
+  {
+    isHome ? (
+      <Home locale={locale} />
+    ) : (
+      <article class="skeleton">
+        <>
+          <p class="label">
+            {entry
+              ? d[
+                  entry.collection === "publications"
+                    ? "research"
+                    : entry.collection
+                ]
+              : d.home}
+          </p>
+          <h1
+            lang={
+              entry && "languageOriginal" in entry.data
+                ? entry.data.languageOriginal
+                : locale
+            }
+          >
+            {title}
+          </h1>
+          <p class="notice">{entry ? d.detailPlaceholder : d.placeholder}</p>
+        </>
+        {entry && (
+          <>
+            <p>
+              {"summary" in entry.data
+                ? entry.data.summary
+                : entry.data.englishSummary &&
+                  `${d.englishSummary}: ${entry.data.englishSummary}`}
+            </p>
+            {"role" in entry.data && (
+              <>
+                <p>
+                  <strong>{d[entry.data.status]}</strong>
+                </p>
+                <h2>{d.role}</h2>
+                <p>{entry.data.role}</p>
+                {entry.data.startDate && (
+                  <p>
+                    {d.period}: {formatDate(entry.data.startDate, locale)} —{" "}
+                    {entry.data.endDate
+                      ? formatDate(entry.data.endDate, locale)
+                      : entry.data.present
+                        ? d.present
+                        : ""}
+                  </p>
+                )}
+                {entry.data.technologies.some((x) => x.state !== "planned") && (
+                  <>
+                    <h2>{d.technologies}</h2>
+                    <p>
+                      {entry.data.technologies
+                        .filter((x) => x.state !== "planned")
+                        .map((x) => x.name)
+                        .join(" · ")}
+                    </p>
+                  </>
+                )}
+                {(entry.data.links?.length || entry.data.evidence?.length) && (
+                  <>
+                    <h2>{d.links}</h2>
+                    <ul>
+                      {entry.data.links?.map((l) => (
+                        <li>
+                          <a href={l.url}>{l.label} ↗</a>
+                        </li>
+                      ))}
+                      {entry.data.evidence?.map((e) => (
+                        <li>
+                          {e.url ? <a href={e.url}>{e.label}</a> : e.label}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </>
+            )}
+            {"authors" in entry.data && (
+              <>
+                <p lang={entry.data.languageOriginal}>
+                  {entry.data.authors.join(", ")}
+                </p>
+                <p>
+                  {entry.data.year} · {d[entry.data.status]}
+                  {entry.data.venue && ` · ${entry.data.venue}`}
+                </p>
+                {entry.data.externalUrl && (
+                  <a href={entry.data.externalUrl}>{d.research} ↗</a>
+                )}
+              </>
+            )}
+            {Content && (
+              <div class="prose">
+                <Content />
+              </div>
+            )}
+          </>
+        )}
+        {listing.length > 0 && (
+          <ul class="minimal-list">
+            {listing.map((e) => (
+              <li>
+                <a
+                  href={entryPath(e)}
+                  lang={
+                    "languageOriginal" in e.data
+                      ? e.data.languageOriginal
+                      : locale
+                  }
+                >
+                  {"titleOriginal" in e.data
+                    ? e.data.titleOriginal
+                    : e.data.title}{" "}
+                  →
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+        {kind === "notes" && listing.length === 0 && <p>{d.emptyNotes}</p>}
+        <a class="text-link" href={route(locale)}>
+          {d.backHome} ↗
+        </a>
+      </article>
+    )
+  }
+</BaseLayout>

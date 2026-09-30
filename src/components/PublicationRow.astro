@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { t } from "../i18n";
+import { entryPath } from "../utils/content";
+interface Props {
+  publication: CollectionEntry<"publications">;
+}
+const { publication } = Astro.props;
+const p = publication.data;
+const d = t(p.locale);
+---
+
+<a
+  class="publication-row"
+  href={p.externalUrl ?? entryPath(publication)}
+  aria-labelledby={`paper-${p.id}`}
+  ><span class="year">{p.year}</span><div>
+    <h3 id={`paper-${p.id}`} lang={p.languageOriginal}>{p.titleOriginal}</h3>{
+      p.englishSummary && (
+        <p class="summary" lang="en">
+          {d.englishSummary}: {p.englishSummary}
+        </p>
+      )
+    }<p class="authors" lang={p.languageOriginal}>
+      {
+        p.authors.map((author, i) => (
+          <>
+            {i > 0 ? ", " : ""}
+            {author === "Галиченко С.А." ? <strong>{author}</strong> : author}
+          </>
+        ))
+      }
+    </p>
+  </div><span class="arrow" aria-hidden="true">{p.externalUrl ? "↗" : "→"}</span
+  ></a
+>

@@ -1,0 +1,30 @@
+---
+import { homeCopy } from "../../config/home";
+import { site } from "../../config/site";
+import { t, type Locale } from "../../i18n";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const copy = homeCopy[locale];
+if (!copy) throw new Error(`Missing home copy: ${locale}`);
+const d = t(locale);
+---
+
+<section class="hero">
+  <div class="hero-copy">
+    <h1>
+      {site.name.split(" ")[0]}<br />{site.name.split(" ")[1]}<span
+        class="accent">.</span
+      >
+    </h1><p class="role">{copy.role}</p><p class="specialty">
+      {copy.specialty}
+    </p><p class="intro">{copy.intro}</p>
+  </div><div class="hero-visual" aria-hidden="true">
+    <div class="visual-frame"></div><div class="visual-axis"></div><span
+      class="visual-mark">SG / 01</span
+    >
+  </div><a class="scroll-hint" href="#projects"
+    >{d.selectedWork} <span aria-hidden="true">↓</span></a
+  >
+</section>

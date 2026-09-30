@@ -1,0 +1,25 @@
+---
+import { route, t, type Locale } from "../i18n";
+import NavLinks from "./NavLinks.astro";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = t(locale);
+---
+
+<a class="skip" href="#main">{d.skip}</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href={route(locale)} aria-label={`SG — ${d.home}`}
+      >SG<span aria-hidden="true"> /</span></a
+    ><nav class="desktop-nav" aria-label={d.nav}>
+      <NavLinks locale={locale} group="primary" />
+    </nav><div class="desktop-actions">
+      <NavLinks locale={locale} group="actions" />
+    </div><details class="mobile-menu">
+      <summary aria-label={d.menu}><span aria-hidden="true">☰</span></summary
+      ><nav class="drawer" aria-label={d.nav}><NavLinks locale={locale} /></nav>
+    </details>
+  </div>
+</header>

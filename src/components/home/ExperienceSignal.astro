@@ -1,0 +1,32 @@
+---
+import { experiences } from "../../content/profile";
+import { t, route, type Locale } from "../../i18n";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = t(locale);
+---
+
+<section class="section experience" id="experience">
+  <div>
+    <p class="label">{d.experience}</p><h2>{d.experienceHeading}</h2>
+  </div><div>
+    <div class="experience-items">
+      {
+        experiences
+          .filter((e) => e.locale === locale)
+          .map((e) => (
+            <p>
+              <>
+                <strong>{e.role}</strong>
+                <span>{e.organization}</span>
+              </>
+            </p>
+          ))
+      }
+    </div><a class="text-link" href={route(locale, "about")}
+      >{d.aboutExperience} ↗</a
+    >
+  </div>
+</section>

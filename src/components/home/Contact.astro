@@ -1,0 +1,26 @@
+---
+import { site } from "../../config/site";
+import { t, type Locale } from "../../i18n";
+interface Props {
+  locale: Locale;
+}
+const d = t(Astro.props.locale);
+---
+
+<section class="section contact" id="contact">
+  <div>
+    <p class="label">{d.contact}</p><h2>{d.contactHeading}</h2><p>
+      {d.contactIntro}
+    </p>
+  </div><div class="contact-right">
+    <a class="email" href={`mailto:${site.email}`}
+      >{site.email}<span aria-hidden="true"> ↗</span></a
+    ><button
+      hidden
+      data-enhanced
+      data-copy-email={site.email}
+      data-success={d.copied}
+      data-failure={d.copyFailed}>{d.copy}</button
+    ><span class="copy-status" role="status" data-copy-status></span>
+  </div>
+</section>

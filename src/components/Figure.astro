@@ -1,0 +1,59 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+  role?: string;
+  cropAllowed?: boolean;
+  focalPoint?: { x: number; y: number };
+  cover?: boolean;
+  sizes?: string;
+  loading?: "lazy" | "eager";
+}
+const {
+  src,
+  alt,
+  caption,
+  role = "content",
+  cropAllowed = false,
+  focalPoint,
+  cover = false,
+  sizes,
+  loading = "lazy",
+} = Astro.props;
+---
+
+<figure class:list={["figure", { cover: cover }]} data-role={role}>
+  {
+    src.format === "svg" ? (
+      <img
+        src={src.src}
+        width={src.width}
+        height={src.height}
+        alt={alt}
+        loading={loading}
+        decoding="async"
+        style={`object-fit:${cropAllowed ? "cover" : "contain"};object-position:${focalPoint ? `${focalPoint.x}% ${focalPoint.y}%` : "50% 50%"}`}
+      />
+    ) : (
+      <Image
+        src={src}
+        alt={alt}
+        widths={[320, 640, 960, 1280, src.width].filter(
+          (w, i, a) => w <= src.width && a.indexOf(w) === i,
+        )}
+        sizes={
+          sizes ??
+          (cover
+            ? "(max-width: 40rem) 100vw, (max-width: 70rem) 50vw, 33vw"
+            : "(max-width: 850px) 100vw, 850px")
+        }
+        loading={loading}
+        decoding="async"
+        style={`object-fit:${cropAllowed ? "cover" : "contain"};object-position:${focalPoint ? `${focalPoint.x}% ${focalPoint.y}%` : "50% 50%"}`}
+      />
+    )
+  }{caption && <figcaption>{caption}</figcaption>}
+</figure>

@@ -1,0 +1,25 @@
+---
+import { featured } from "../../utils/content";
+import { t, route, type Locale } from "../../i18n";
+import PublicationRow from "../PublicationRow.astro";
+import SectionHeader from "../SectionHeader.astro";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = t(locale);
+const publications = await featured("publications", locale);
+---
+
+<section class="section" id="research">
+  <SectionHeader title={d.selectedResearch} description={d.researchIntro} /><div
+  >
+    {
+      publications.map((publication) => (
+        <PublicationRow publication={publication} />
+      ))
+    }
+  </div><a class="text-link section-link" href={route(locale, "research")}
+    >{d.allResearch}</a
+  >
+</section>

@@ -1,0 +1,42 @@
+---
+import { navigation, site } from "../config/site";
+import { route, t, type Locale } from "../i18n";
+import ThemeControl from "./ThemeControl.astro";
+interface Props {
+  locale: Locale;
+  group?: "primary" | "actions" | "all";
+}
+const { locale, group = "all" } = Astro.props;
+const d = t(locale);
+---
+
+{
+  group !== "actions" && (
+    <div class="primary-links">
+      {navigation.map((key) => (
+        <a
+          href={route(locale, key)}
+          aria-current={
+            Astro.url.pathname.replace(/\/$/, "") === route(locale, key)
+              ? "page"
+              : undefined
+          }
+        >
+          {d[key]}
+        </a>
+      ))}
+    </div>
+  )
+}
+{
+  group !== "primary" && (
+    <div class="nav-social">
+      <a href={site.github}>
+        {d.github}
+        <span aria-hidden="true"> ↗</span>
+      </a>
+      <a href={`mailto:${site.email}`}>{d.email}</a>
+      <ThemeControl locale={locale} />
+    </div>
+  )
+}

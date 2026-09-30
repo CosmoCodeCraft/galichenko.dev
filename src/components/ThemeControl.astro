@@ -1,0 +1,39 @@
+---
+import { t, type Locale } from "../i18n";
+interface Props {
+  locale: Locale;
+}
+const d = t(Astro.props.locale);
+---
+
+<button
+  class="theme-control"
+  type="button"
+  hidden
+  data-enhanced
+  data-theme-control
+  data-label-prefix={d.theme}
+  data-system-label={d.system}
+  data-light-label={d.light}
+  data-dark-label={d.dark}
+  data-theme-preference="system"
+  aria-label={`${d.theme}: ${d.system}`}
+  title={`${d.theme}: ${d.system}`}
+>
+  <span class="theme-icons" aria-hidden="true">
+    <svg class="theme-icon theme-icon-system" viewBox="0 0 24 24">
+      <rect x="3.5" y="4.5" width="17" height="12" rx="1.5"></rect>
+      <path d="M8 20h8M12 16.5V20"></path>
+    </svg>
+    <svg class="theme-icon theme-icon-light" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3.5"></circle>
+      <path
+        d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"
+      ></path>
+    </svg>
+    <svg class="theme-icon theme-icon-dark" viewBox="0 0 24 24">
+      <path d="M19.5 15.2A8 8 0 0 1 8.8 4.5 8 8 0 1 0 19.5 15.2Z"></path>
+    </svg>
+  </span>
+  <span class="theme-label">{d.theme}: {d.system}</span>
+</button>

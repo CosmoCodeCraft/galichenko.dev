@@ -1,0 +1,83 @@
+---
+import Header from "../components/Header.astro";
+import { site } from "../config/site";
+import { t, type Locale } from "../i18n";
+import "../styles/global.css";
+interface Props {
+  locale: Locale;
+  title: string;
+  description?: string;
+  noindex?: boolean;
+  alternates?: { locale: Locale; url: string }[];
+}
+const {
+  locale,
+  title,
+  description = title,
+  noindex = false,
+  alternates = [],
+} = Astro.props;
+const d = t(locale);
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const person = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.name,
+  url: site.url,
+  email: site.email,
+  sameAs: [site.github],
+};
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head
+    ><meta charset="utf-8" /><meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    /><title>{title}</title><meta
+      name="description"
+      content={description}
+    /><link rel="canonical" href={canonical} /><meta
+      property="og:title"
+      content={title}
+    /><meta property="og:description" content={description} /><meta
+      property="og:type"
+      content="website"
+    /><meta property="og:url" content={canonical} /><meta
+      property="og:locale"
+      content={locale === "en" ? "en_US" : "ru_RU"}
+    /><meta name="color-scheme" content="light dark" />{
+      noindex && <meta name="robots" content="noindex,follow" />
+    }{
+      alternates.map((a) => (
+        <link
+          rel="alternate"
+          hreflang={a.locale}
+          href={new URL(a.url, site.url).href}
+        />
+      ))
+    }<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script is:inline>
+      try {
+        const p = localStorage.getItem("sg-theme");
+        if (p === "light" || p === "dark")
+          document.documentElement.dataset.theme = p;
+      } catch {
+        /* Storage may be unavailable. */
+      }
+    </script>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(person).replace(/</g, "\u003c")}
+    /></head
+  ><body id="top"
+    ><Header locale={locale} /><main id="main" class="wrap" tabindex="-1">
+      <slot />
+    </main><footer class="wrap">
+      <span>© {new Date().getFullYear()} {site.name}</span><a href="#top"
+        >{d.backTop} <span aria-hidden="true">↑</span></a
+      >
+    </footer><script src="../utils/interactions.ts"></script></body
+  >
+</html>

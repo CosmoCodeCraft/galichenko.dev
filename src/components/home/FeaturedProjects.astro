@@ -1,0 +1,22 @@
+---
+import { featured } from "../../utils/content";
+import { t, route, type Locale } from "../../i18n";
+import ProjectCard from "../ProjectCard.astro";
+import SectionHeader from "../SectionHeader.astro";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = t(locale);
+const projects = await featured("projects", locale);
+---
+
+<section class="section" id="projects">
+  <SectionHeader title={d.featuredProjects} description={d.projectsIntro} /><div
+    class="projects-grid"
+  >
+    {projects.map((project) => <ProjectCard project={project} />)}
+  </div><a class="text-link section-link" href={route(locale, "projects")}
+    >{d.allProjects}</a
+  >
+</section>
