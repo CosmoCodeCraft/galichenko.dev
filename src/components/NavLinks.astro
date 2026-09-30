@@ -31,10 +31,7 @@ const d = t(locale);
 {
   group !== "primary" && (
     <div class="nav-social">
-      <a href={site.github}>
-        {d.github}
-        <span aria-hidden="true"> ↗</span>
-      </a>
+      <a href={site.github}>{d.github}</a>
       <a href={`mailto:${site.email}`}>{d.email}</a>
       <ThemeControl locale={locale} />
     </div>

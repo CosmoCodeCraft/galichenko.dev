@@ -1,7 +1,7 @@
 ---
 import Header from "../components/Header.astro";
 import { site } from "../config/site";
-import { t, type Locale } from "../i18n";
+import { route, t, type Locale } from "../i18n";
 import "../styles/global.css";
 interface Props {
   locale: Locale;
@@ -75,9 +75,15 @@ const person = {
     ><Header locale={locale} /><main id="main" class="wrap" tabindex="-1">
       <slot />
     </main><footer class="wrap">
-      <span>© {new Date().getFullYear()} {site.name}</span><a href="#top"
-        >{d.backTop} <span aria-hidden="true">↑</span></a
-      >
+      <div class="footer-identity">
+        <strong>{site.name}</strong><span>{d.footerRole}</span>
+      </div><nav class="footer-links" aria-label={d.nav}>
+        <a href={site.github}>{d.github}</a><a href={`mailto:${site.email}`}
+          >{d.email}</a
+        ><a href={route(locale, "cv")}>{d.cv}</a><a href="#top"
+          >{d.backTop} <span aria-hidden="true">↑</span></a
+        >
+      </nav><span class="footer-copyright">© {new Date().getFullYear()}</span>
     </footer><script src="../utils/interactions.ts"></script></body
   >
 </html>

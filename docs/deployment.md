@@ -1,19 +1,18 @@
 # GitHub Pages deployment
 
-Status: **ready with small external configuration changes**. The site is a fully static Astro build, and all collection routes are generated at build time, so GitHub Pages can serve `dist/` without an adapter.
+Status: **deployed**. The site is a fully static Astro build, and all collection routes are generated at build time, so GitHub Pages serves `dist/` without an adapter. GitHub Actions deploys `main`; `sergeygalichenko.dev` is configured and its certificate is approved. HTTPS enforcement remains disabled.
 
 The local draft workflow at `.github/workflows/deploy.yml` follows Astro's official [GitHub Pages guide](https://docs.astro.build/en/guides/deploy/github/). On a push to `main`, `withastro/action` installs the locked pnpm dependencies, runs lint, typecheck and build, uploads the Pages artifact, and `actions/deploy-pages` publishes it. Playwright stays outside the fast publishing path.
 
-## One-time GitHub setup
+## Current GitHub setup
 
-1. Create or connect the GitHub repository and push this source tree, including `pnpm-lock.yaml`.
-2. In **Settings → Pages → Build and deployment**, choose **GitHub Actions** as the source.
-3. In **Settings → Pages → Custom domain**, enter `sergeygalichenko.dev`.
-4. Configure DNS, wait for GitHub's domain check and certificate provisioning, then enable **Enforce HTTPS**.
+- Repository source is `main`; Pages uses **GitHub Actions**.
+- Custom domain is `sergeygalichenko.dev`; GitHub DNS health is valid and its certificate is approved.
+- **Enforce HTTPS** remains a manual follow-up.
 
-GitHub documents the required permissions and artifact flow in [Using custom workflows with GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages). No repository, Pages setting, DNS record or deployment has been changed from this workspace.
+GitHub documents the required permissions and artifact flow in [Using custom workflows with GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
-Before the first push, confirm that the local repository is on `main` and that `origin` points to `CosmoCodeCraft/galichenko.dev`.
+Before a later deployment, confirm that the local repository is on `main` and that `origin` points to `CosmoCodeCraft/galichenko.dev`.
 
 ## Domain and base path
 

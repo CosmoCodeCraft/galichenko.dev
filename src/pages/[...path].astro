@@ -152,7 +152,7 @@ const listing = all
                     <ul>
                       {entry.data.links?.map((l) => (
                         <li>
-                          <a href={l.url}>{l.label} ↗</a>
+                          <a href={l.url}>{l.label}</a>
                         </li>
                       ))}
                       {entry.data.evidence?.map((e) => (
@@ -175,7 +175,7 @@ const listing = all
                   {entry.data.venue && ` · ${entry.data.venue}`}
                 </p>
                 {entry.data.externalUrl && (
-                  <a href={entry.data.externalUrl}>{d.research} ↗</a>
+                  <a href={entry.data.externalUrl}>{d.research}</a>
                 )}
               </>
             )}
@@ -209,7 +209,7 @@ const listing = all
         )}
         {kind === "notes" && listing.length === 0 && <p>{d.emptyNotes}</p>}
         <a class="text-link" href={route(locale)}>
-          {d.backHome} ↗
+          {d.backHome}
         </a>
       </article>
     )

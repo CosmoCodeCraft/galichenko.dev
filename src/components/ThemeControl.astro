@@ -13,6 +13,7 @@ const d = t(Astro.props.locale);
   data-enhanced
   data-theme-control
   data-label-prefix={d.theme}
+  data-compact-label-prefix={d.themeCompact}
   data-system-label={d.system}
   data-light-label={d.light}
   data-dark-label={d.dark}
@@ -35,5 +36,5 @@ const d = t(Astro.props.locale);
       <path d="M19.5 15.2A8 8 0 0 1 8.8 4.5 8 8 0 1 0 19.5 15.2Z"></path>
     </svg>
   </span>
-  <span class="theme-label">{d.theme}: {d.system}</span>
+  <span class="theme-label">{d.themeCompact}: {d.system}</span>
 </button>

@@ -13,9 +13,7 @@ const d = t(Astro.props.locale);
       {d.contactIntro}
     </p>
   </div><div class="contact-right">
-    <a class="email" href={`mailto:${site.email}`}
-      >{site.email}<span aria-hidden="true"> ↗</span></a
-    ><button
+    <a class="email" href={`mailto:${site.email}`}>{site.email}</a><button
       hidden
       data-enhanced
       data-copy-email={site.email}

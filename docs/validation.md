@@ -15,7 +15,7 @@
 
 Expected build notice: Notes collection is intentionally empty. No fake note has been created to silence it.
 
-Not verified: Safari/Firefox, physical phone, screen reader audit, complete WCAG conformance, production field LCP/CLS/INP. No production deployment.
+Not verified: Safari/Firefox, physical phone, screen reader audit, complete WCAG conformance, production field LCP/CLS/INP.
 
 Review next: hero proportions and type, temporary project illustrations, Experience signal usefulness, publication bibliography, real project dates, SIRD implemented stack, Russian translations. The UralCon paper is still accepted, not represented as published. Phase 2 has not started.
 
@@ -26,4 +26,4 @@ Review next: hero proportions and type, temporary project illustrations, Experie
 - Theme control is an accessible System → Light → Dark icon cycle with persisted preference and a visible mobile label.
 - Format, ESLint, strict Astro/TypeScript, production build and the existing 15 Playwright tests pass.
 - Updated 1440×900 and 390×844 screenshots were reviewed in Light and Dark.
-- Official Astro/GitHub Pages deployment path and Git-first authoring flow are documented. No remote repository, Pages setting, DNS record or deployment was changed.
+- GitHub Actions deployment to Pages succeeded. The custom domain `sergeygalichenko.dev` is configured, DNS health is valid and its HTTPS certificate is approved; HTTPS enforcement remains disabled.

@@ -4,6 +4,7 @@ const sizes = [
   [1440, 900],
   [1280, 800],
   [900, 900],
+  [844, 390],
   [390, 844],
   [320, 740],
 ];
@@ -50,7 +51,7 @@ for (const theme of ["light", "dark"] as const) {
         .evaluate(
           (el) => getComputedStyle(el).gridTemplateColumns.split(" ").length,
         );
-      expect(columns).toBe(width >= 1280 ? 3 : width === 900 ? 2 : 1);
+      expect(columns).toBe(width >= 1280 ? 3 : width >= 672 ? 2 : 1);
       if (width === 1440 || width === 390)
         await page.screenshot({
           path: `docs/screenshots/${width}x${height}-${theme}.png`,
@@ -101,6 +102,25 @@ test("Theme persistence, system changes, menu and keyboard", async ({
     .locator("#projects")
     .evaluate((el) => el.getBoundingClientRect().top);
   expect(top).toBeGreaterThanOrEqual(66);
+});
+test("Landscape mobile header and centered final project card", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto("/");
+  expect(
+    await page.evaluate(
+      () => scrollX === 0 && document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBeTruthy();
+  await expect(page.locator(".site-header")).toHaveCSS("height", "66px");
+  const boxes = await page
+    .locator(".project-card")
+    .evaluateAll((elements) =>
+      elements.map((element) => element.getBoundingClientRect().toJSON()),
+    );
+  expect(boxes[0].y).toBe(boxes[1].y);
+  expect(boxes[2].x).toBeCloseTo((844 - boxes[2].width) / 2, 0);
 });
 test("Clipboard success and failure", async ({ page, context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);

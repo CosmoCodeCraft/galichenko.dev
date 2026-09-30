@@ -20,7 +20,8 @@ function apply() {
     control.ariaLabel = description;
     control.title = description;
     const text = control.querySelector<HTMLElement>(".theme-label");
-    if (text) text.textContent = description;
+    if (text)
+      text.textContent = `${control.dataset.compactLabelPrefix}: ${label}`;
   });
 }
 apply();

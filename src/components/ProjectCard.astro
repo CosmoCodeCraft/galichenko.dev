@@ -17,14 +17,11 @@ const d = t(p.locale);
   aria-labelledby={`project-${p.id}`}
   ><Figure {...p.cover} cover /><p class="metadata">
     <span>{d[p.status]}</span> · {p.cardRole ?? p.role}
-  </p><h3 id={`project-${p.id}`}>
-    {p.shortTitle ?? p.title}<span class="card-arrow" aria-hidden="true">
-      ↗</span
-    >
-  </h3><p class="description">{p.summary}</p><ul
-    class="tags"
-    aria-label={d.projects}
+  </p><h3 id={`project-${p.id}`}>{p.shortTitle ?? p.title}</h3><p
+    class="description"
   >
+    {p.summary}
+  </p><ul class="tags" aria-label={d.projects}>
     {p.tags.map((tag) => <li>{tag}</li>)}
   </ul></a
 >
