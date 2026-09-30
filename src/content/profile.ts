@@ -32,7 +32,7 @@ export const experiences: Experience[] = [
   {
     id: "automation",
     locale: "en",
-    role: "Automation / Python",
+    role: "R&D Project Contributor · Python Automation",
     organization: "Moscow Polytechnic University",
   },
 ];
