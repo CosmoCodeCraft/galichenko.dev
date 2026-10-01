@@ -49,6 +49,10 @@
   "elibraryId": "73331514",
   "edn": "HMQYRP",
   "rincIndexed": false,
-  "externalUrl": "https://www.elibrary.ru/item.asp?id=73331514",
+  "elibraryUrl": "https://www.elibrary.ru/item.asp?id=73331514",
+  "ednUrl": "https://www.elibrary.ru/hmqyrp",
+  "localPdf": "/publications/pdfs/2024-vertical-aeroponic-farms-urban-development.pdf",
+  "pdfKind": "publication-extract",
+  "externalFullTextUrl": "https://www.elibrary.ru/download/elibrary_73331514_28410012.pdf",
 }
 ---

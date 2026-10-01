@@ -53,7 +53,11 @@
   "elibraryId": "80344900",
   "edn": "XGJCKF",
   "rincIndexed": true,
-  "externalUrl": "https://www.elibrary.ru/item.asp?id=80344900",
+  "elibraryUrl": "https://www.elibrary.ru/item.asp?id=80344900",
+  "ednUrl": "https://www.elibrary.ru/xgjckf",
+  "localPdf": "/publications/pdfs/2025-generative-ai-physical-education.pdf",
+  "pdfKind": "publication-extract",
+  "externalFullTextUrl": "https://www.elibrary.ru/download/elibrary_80344895_83630044.pdf",
   "featuredOrder": 1,
 }
 ---

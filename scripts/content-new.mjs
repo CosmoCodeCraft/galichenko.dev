@@ -109,6 +109,30 @@ try {
       keywordsOriginal: [],
       keywordsEnglish: [],
     };
+    const localPdf = await ask("Local PDF URL (/publications/pdfs/file.pdf)", {
+      optional: true,
+      validate: (value) =>
+        /^\/publications\/pdfs\/[a-z0-9-]+\.pdf$/.test(value),
+    });
+    const optionalUrl = async (label) =>
+      (await ask(label, {
+        optional: true,
+        validate: (value) => {
+          try {
+            new URL(value);
+            return true;
+          } catch {
+            return false;
+          }
+        },
+      })) || undefined;
+    Object.assign(data, {
+      ...(localPdf ? { localPdf, pdfKind: "publication-extract" } : {}),
+      externalFullTextUrl: await optionalUrl("External full-text URL"),
+      publisherUrl: await optionalUrl("Publisher URL"),
+      elibraryUrl: await optionalUrl("eLIBRARY URL"),
+      ednUrl: await optionalUrl("EDN URL"),
+    });
   }
 
   if (type === "project") {

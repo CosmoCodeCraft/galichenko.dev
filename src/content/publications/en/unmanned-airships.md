@@ -51,7 +51,10 @@
   "elibraryId": "67806618",
   "edn": "EHCANR",
   "rincIndexed": true,
-  "externalUrl": "https://www.elibrary.ru/item.asp?id=67806618",
+  "elibraryUrl": "https://www.elibrary.ru/item.asp?id=67806618",
+  "ednUrl": "https://www.elibrary.ru/ehcanr",
+  "localPdf": "/publications/pdfs/2024-unmanned-airships-environmental-assessment.pdf",
+  "pdfKind": "publication-extract",
   "featuredOrder": 3,
 }
 ---

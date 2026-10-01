@@ -43,6 +43,7 @@
   "elibraryId": "59068282",
   "edn": "WADGFV",
   "rincIndexed": true,
-  "externalUrl": "https://www.elibrary.ru/item.asp?id=59068282",
+  "elibraryUrl": "https://www.elibrary.ru/item.asp?id=59068282",
+  "ednUrl": "https://www.elibrary.ru/wadgfv",
 }
 ---

@@ -16,6 +16,27 @@ const typeLabel = d[p.publicationType];
 const relatedProjectPath = p.relatedProject
   ? route(locale, `projects/${p.relatedProject}`)
   : undefined;
+const hasResources = Boolean(
+  p.localPdf ||
+  p.externalFullTextUrl ||
+  p.elibraryUrl ||
+  p.ednUrl ||
+  p.publisherUrl ||
+  relatedProjectPath,
+);
+const hasBibliography = Boolean(
+  p.sourceTitle ||
+  p.publicationPlace ||
+  p.publisher ||
+  p.pages ||
+  p.issue ||
+  p.issn ||
+  p.conferenceTitle ||
+  p.conferenceDate,
+);
+const hasIdentifiers = Boolean(
+  p.elibraryId || p.edn || p.rincIndexed !== undefined,
+);
 ---
 
 <article class="publication-detail">
@@ -24,7 +45,9 @@ const relatedProjectPath = p.relatedProject
     <h1 lang={p.languageOriginal}>{p.titleOriginal}</h1>
     {
       p.titleEnglish && (
-        <p class="publication-english-title">{p.titleEnglish}</p>
+        <p class="publication-english-title" lang="en">
+          {p.titleEnglish}
+        </p>
       )
     }
     {
@@ -43,196 +66,199 @@ const relatedProjectPath = p.relatedProject
         </p>
       )
     }
-    <p class="publication-detail-meta">
-      <span>{d[p.status]}</span> · {typeLabel} · {p.year}
-    </p>
-    <CitationTool publication={publication} />
   </header>
 
-  <div class="publication-detail-body">
-    <section aria-labelledby="bibliographic-information">
-      <h2 id="bibliographic-information">Bibliographic information</h2>
-      <dl class="bibliographic-data">
+  <div class="publication-detail-layout">
+    <aside class="publication-sidebar" aria-label="Publication information">
+      <div class="publication-sidebar-primary">
+        <p class="publication-detail-meta">
+          <span>{d[p.status]}</span> · {typeLabel} · {p.year}
+        </p>
+
+        <CitationTool publication={publication} />
+
         {
-          p.sourceTitle && (
-            <>
-              <>
-                <dt>Source</dt>
-                <dd>{p.sourceTitle}</dd>
-              </>
-            </>
+          hasResources && (
+            <section aria-labelledby="publication-resources">
+              <h2 id="publication-resources">Resources</h2>
+              <ul class="publication-links">
+                {p.localPdf && (
+                  <li>
+                    <a href={p.localPdf} download>
+                      Download PDF
+                    </a>
+                  </li>
+                )}
+                {p.externalFullTextUrl && (
+                  <li>
+                    <a href={p.externalFullTextUrl}>Open full text</a>
+                  </li>
+                )}
+                {p.elibraryUrl && (
+                  <li>
+                    <a href={p.elibraryUrl}>eLIBRARY record</a>
+                  </li>
+                )}
+                {p.ednUrl && (
+                  <li>
+                    <a href={p.ednUrl}>EDN record</a>
+                  </li>
+                )}
+                {p.publisherUrl && (
+                  <li>
+                    <a href={p.publisherUrl}>Publisher page</a>
+                  </li>
+                )}
+                {relatedProjectPath && (
+                  <li>
+                    <a href={relatedProjectPath}>Related project</a>
+                  </li>
+                )}
+              </ul>
+            </section>
           )
         }
+      </div>
+
+      <div class="publication-sidebar-secondary">
         {
-          p.publicationPlace && (
-            <>
-              <>
-                <dt>Publication place</dt>
-                <dd>{p.publicationPlace}</dd>
-              </>
-            </>
-          )
-        }
-        {
-          p.publisher && (
-            <>
-              <>
-                <dt>Publisher</dt>
-                <dd>{p.publisher}</dd>
-              </>
-            </>
-          )
-        }
-        {
-          p.pages && (
-            <>
-              <>
-                <dt>Pages</dt>
-                <dd>{p.pages}</dd>
-              </>
-            </>
-          )
-        }
-        {
-          p.issue && (
-            <>
-              <>
-                <dt>Issue</dt>
-                <dd>{p.issue}</dd>
-              </>
-            </>
-          )
-        }
-        {
-          p.issn && (
-            <>
-              <>
-                <dt>ISSN</dt>
-                <dd>{p.issn}</dd>
-              </>
-            </>
-          )
-        }
-        {
-          p.conferenceTitle && (
-            <>
-              <>
-                <dt>Conference</dt>
-                <dd>{p.conferenceTitle}</dd>
-              </>
-            </>
-          )
-        }
-        {
-          p.conferenceDate && (
-            <>
-              <dt>Conference date</dt>
-              <dd>
-                <time datetime={p.conferenceDate}>
-                  {formatExactDate(p.conferenceDate, locale)}
-                </time>
-                {p.conferenceEndDate && (
+          hasBibliography && (
+            <section aria-labelledby="bibliographic-information">
+              <h2 id="bibliographic-information">Publication details</h2>
+              <dl class="bibliographic-data">
+                {p.sourceTitle && (
                   <>
-                    {" "}
-                    –{" "}
-                    <time datetime={p.conferenceEndDate}>
-                      {formatExactDate(p.conferenceEndDate, locale)}
-                    </time>
+                    <dt>Source</dt>
+                    <dd>{p.sourceTitle}</dd>
                   </>
                 )}
-              </dd>
-            </>
+                {p.publicationPlace && (
+                  <>
+                    <dt>Publication place</dt>
+                    <dd>{p.publicationPlace}</dd>
+                  </>
+                )}
+                {p.publisher && (
+                  <>
+                    <dt>Publisher</dt>
+                    <dd>{p.publisher}</dd>
+                  </>
+                )}
+                {p.pages && (
+                  <>
+                    <dt>Pages</dt>
+                    <dd>{p.pages}</dd>
+                  </>
+                )}
+                {p.issue && (
+                  <>
+                    <dt>Issue</dt>
+                    <dd>{p.issue}</dd>
+                  </>
+                )}
+                {p.issn && (
+                  <>
+                    <dt>ISSN</dt>
+                    <dd>{p.issn}</dd>
+                  </>
+                )}
+                {p.conferenceTitle && (
+                  <>
+                    <dt>Conference</dt>
+                    <dd>{p.conferenceTitle}</dd>
+                  </>
+                )}
+                {p.conferenceDate && (
+                  <>
+                    <dt>Conference date</dt>
+                    <dd>
+                      <time datetime={p.conferenceDate}>
+                        {formatExactDate(p.conferenceDate, locale)}
+                      </time>
+                      {p.conferenceEndDate && (
+                        <>
+                          {" "}
+                          –{" "}
+                          <time datetime={p.conferenceEndDate}>
+                            {formatExactDate(p.conferenceEndDate, locale)}
+                          </time>
+                        </>
+                      )}
+                    </dd>
+                  </>
+                )}
+              </dl>
+            </section>
           )
         }
-      </dl>
-    </section>
 
-    {
-      (p.abstractEnglish || p.abstractOriginal) && (
-        <section aria-labelledby="publication-abstract">
-          <h2 id="publication-abstract">Abstract</h2>
-          {p.abstractEnglish && <p lang="en">{p.abstractEnglish}</p>}
-          {p.abstractOriginal && (
-            <div class="original-abstract" lang={p.languageOriginal}>
-              {p.abstractEnglish && <h3>Original abstract</h3>}
-              <p>{p.abstractOriginal}</p>
-            </div>
-          )}
-        </section>
-      )
-    }
+        {
+          hasIdentifiers && (
+            <section aria-labelledby="publication-identifiers">
+              <h2 id="publication-identifiers">Identifiers</h2>
+              <dl class="bibliographic-data">
+                {p.elibraryId && (
+                  <>
+                    <dt>eLIBRARY ID</dt>
+                    <dd>{p.elibraryId}</dd>
+                  </>
+                )}
+                {p.edn && (
+                  <>
+                    <dt>EDN</dt>
+                    <dd>{p.edn}</dd>
+                  </>
+                )}
+                {p.rincIndexed !== undefined && (
+                  <>
+                    <dt>Indexed in RINC</dt>
+                    <dd>{p.rincIndexed ? "Yes" : "No"}</dd>
+                  </>
+                )}
+              </dl>
+            </section>
+          )
+        }
+      </div>
+    </aside>
 
-    {
-      (p.keywordsEnglish.length > 0 || p.keywordsOriginal.length > 0) && (
-        <section aria-labelledby="publication-keywords">
-          <h2 id="publication-keywords">Keywords</h2>
-          {p.keywordsEnglish.length > 0 && (
-            <div>
-              <h3>English keywords</h3>
-              <p>{p.keywordsEnglish.join(" · ")}</p>
-            </div>
-          )}
-          {p.keywordsOriginal.length > 0 && (
-            <div>
-              {p.keywordsEnglish.length > 0 && <h3>Original keywords</h3>}
-              <p lang={p.languageOriginal}>{p.keywordsOriginal.join(" · ")}</p>
-            </div>
-          )}
-        </section>
-      )
-    }
+    <div class="publication-reading">
+      {
+        (p.abstractEnglish || p.abstractOriginal) && (
+          <section aria-labelledby="publication-abstract">
+            <h2 id="publication-abstract">Abstract</h2>
+            {p.abstractEnglish && <p lang="en">{p.abstractEnglish}</p>}
+            {p.abstractOriginal && (
+              <div class="original-abstract" lang={p.languageOriginal}>
+                {p.abstractEnglish && <h3>Original abstract</h3>}
+                <p>{p.abstractOriginal}</p>
+              </div>
+            )}
+          </section>
+        )
+      }
 
-    {
-      (p.elibraryId || p.edn || p.rincIndexed !== undefined) && (
-        <section aria-labelledby="publication-identifiers">
-          <h2 id="publication-identifiers">Identifiers</h2>
-          <dl class="bibliographic-data">
-            {p.elibraryId && (
-              <>
-                <dt>eLIBRARY ID</dt>
-                <dd>{p.elibraryId}</dd>
-              </>
+      {
+        (p.keywordsEnglish.length > 0 || p.keywordsOriginal.length > 0) && (
+          <section aria-labelledby="publication-keywords">
+            <h2 id="publication-keywords">Keywords</h2>
+            {p.keywordsEnglish.length > 0 && (
+              <div>
+                <h3>English keywords</h3>
+                <p>{p.keywordsEnglish.join(" · ")}</p>
+              </div>
             )}
-            {p.edn && (
-              <>
-                <dt>EDN</dt>
-                <dd>{p.edn}</dd>
-              </>
+            {p.keywordsOriginal.length > 0 && (
+              <div>
+                {p.keywordsEnglish.length > 0 && <h3>Original keywords</h3>}
+                <p lang={p.languageOriginal}>
+                  {p.keywordsOriginal.join(" · ")}
+                </p>
+              </div>
             )}
-            {p.rincIndexed !== undefined && (
-              <>
-                <dt>Indexed in RINC</dt>
-                <dd>{p.rincIndexed ? "Yes" : "No"}</dd>
-              </>
-            )}
-          </dl>
-        </section>
-      )
-    }
-
-    {
-      (p.externalUrl || p.fullTextUrl || relatedProjectPath) && (
-        <section aria-labelledby="publication-links">
-          <h2 id="publication-links">Links</h2>
-          <ul class="publication-links">
-            {p.externalUrl && (
-              <li>
-                <a href={p.externalUrl}>eLIBRARY record</a>
-              </li>
-            )}
-            {p.fullTextUrl && (
-              <li>
-                <a href={p.fullTextUrl}>Full text</a>
-              </li>
-            )}
-            {relatedProjectPath && (
-              <li>
-                <a href={relatedProjectPath}>Related project</a>
-              </li>
-            )}
-          </ul>
-        </section>
-      )
-    }
+          </section>
+        )
+      }
+    </div>
   </div>
 </article>

@@ -51,6 +51,7 @@
   "elibraryId": "75046379",
   "edn": "SMLWTX",
   "rincIndexed": false,
-  "externalUrl": "https://www.elibrary.ru/item.asp?id=75046379",
+  "elibraryUrl": "https://www.elibrary.ru/item.asp?id=75046379",
+  "ednUrl": "https://www.elibrary.ru/smlwtx",
 }
 ---

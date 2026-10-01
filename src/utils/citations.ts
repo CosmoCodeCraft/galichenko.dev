@@ -24,7 +24,9 @@ export interface CitationPublication {
   conferenceTitle?: string;
   conferenceDate?: string;
   status: "published" | "accepted" | "submitted" | "unknown";
-  externalUrl?: string;
+  elibraryUrl?: string;
+  publisherUrl?: string;
+  externalFullTextUrl?: string;
   doi?: string;
 }
 
@@ -73,7 +75,10 @@ function toCslItem(publication: CitationPublication, international: boolean) {
     page: publication.pages?.replace("–", "-"),
     issue: publication.issue,
     DOI: publication.doi,
-    URL: publication.externalUrl,
+    URL:
+      publication.publisherUrl ??
+      publication.externalFullTextUrl ??
+      publication.elibraryUrl,
     status:
       publication.status === "accepted"
         ? "Accepted for publication"
@@ -145,7 +150,12 @@ function renderBibtex(publication: CitationPublication) {
     ["address", publication.publicationPlace],
     ["number", publication.issue],
     ["doi", publication.doi],
-    ["url", publication.externalUrl],
+    [
+      "url",
+      publication.publisherUrl ??
+        publication.externalFullTextUrl ??
+        publication.elibraryUrl,
+    ],
     [
       "note",
       publication.status === "accepted"

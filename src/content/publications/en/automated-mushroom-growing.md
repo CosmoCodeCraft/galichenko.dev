@@ -41,6 +41,10 @@
   "elibraryId": "73874709",
   "edn": "ODJDHG",
   "rincIndexed": false,
-  "externalUrl": "https://www.elibrary.ru/item.asp?id=73874709",
+  "elibraryUrl": "https://www.elibrary.ru/item.asp?id=73874709",
+  "ednUrl": "https://www.elibrary.ru/odjdhg",
+  "localPdf": "/publications/pdfs/2024-automated-mushroom-growing.pdf",
+  "pdfKind": "publication-extract",
+  "externalFullTextUrl": "https://www.elibrary.ru/download/elibrary_73874709_75449349.pdf",
 }
 ---

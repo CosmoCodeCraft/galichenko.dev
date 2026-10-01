@@ -33,10 +33,10 @@ function period(project: (typeof projects)[number]) {
         const p = project.data;
         return (
           <li class={`project-timeline-item is-${p.status}`}>
-            <div class="project-timeline-time">
-              <span>{period(project)}</span>
+            <div class="project-timeline-label">
+              <span class="project-timeline-time">{period(project)}</span>
+              <span class="project-timeline-marker" aria-hidden="true" />
             </div>
-            <div class="project-timeline-marker" aria-hidden="true" />
             <a
               class="project-archive-entry"
               href={entryPath(project)}

@@ -94,8 +94,10 @@ const groups = groupPublicationsByYear(publications);
                 );
               })}
             </ol>
-            <div class="research-year-marker" aria-hidden="true" />
-            <div class="research-year">{group.year}</div>
+            <div class="research-timeline-label" aria-hidden="true">
+              <span class="research-year-marker" />
+              <span class="research-year">{group.year}</span>
+            </div>
           </li>
         );
       })

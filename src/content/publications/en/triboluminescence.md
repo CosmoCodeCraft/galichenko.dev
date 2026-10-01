@@ -29,6 +29,8 @@
   "elibraryId": "47350766",
   "edn": "KHHOUH",
   "rincIndexed": false,
-  "externalUrl": "https://www.elibrary.ru/item.asp?id=47350766",
+  "elibraryUrl": "https://www.elibrary.ru/item.asp?id=47350766",
+  "ednUrl": "https://www.elibrary.ru/khhouh",
+  "externalFullTextUrl": "https://moluch.ru/young/archive/52/2694",
 }
 ---

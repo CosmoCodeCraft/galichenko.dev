@@ -36,7 +36,10 @@
   "elibraryId": "67806624",
   "edn": "FLLIOP",
   "rincIndexed": true,
-  "externalUrl": "https://www.elibrary.ru/item.asp?id=67806624",
+  "elibraryUrl": "https://www.elibrary.ru/item.asp?id=67806624",
+  "ednUrl": "https://www.elibrary.ru/flliop",
+  "localPdf": "/publications/pdfs/2024-vertical-farms-green-economy.pdf",
+  "pdfKind": "publication-extract",
   "featuredOrder": 2,
 }
 ---

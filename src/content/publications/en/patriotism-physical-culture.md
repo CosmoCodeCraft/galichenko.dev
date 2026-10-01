@@ -25,7 +25,9 @@
   "abstractOriginal": "В данной статье рассматривается роль физической культуры и спорта на формирование чувства патриотизма. Рассматривается влияние спорта высших достижений и национальных видов спорта. Отдельное внимание уделяется влиянию физической культуры на личностные качества и уровень патриотизма соответственно.",
   "abstractEnglish": "This article examines the role of physical culture and sports in the formation of a sense of patriotism. The influence of high-performance sports and national sports is considered. Special attention is paid to the influence of physical culture on personal qualities and the level of patriotism, respectively.",
   "elibraryId": "59068119",
+  "edn": "GYCIKA",
   "rincIndexed": true,
-  "externalUrl": "https://www.elibrary.ru/item.asp?id=59068119",
+  "elibraryUrl": "https://www.elibrary.ru/item.asp?id=59068119",
+  "ednUrl": "https://www.elibrary.ru/gycika",
 }
 ---

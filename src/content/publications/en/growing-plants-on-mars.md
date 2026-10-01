@@ -28,6 +28,9 @@
   "elibraryId": "54215594",
   "edn": "RMBWTZ",
   "rincIndexed": true,
-  "externalUrl": "https://www.elibrary.ru/item.asp?id=54215594",
+  "elibraryUrl": "https://www.elibrary.ru/item.asp?id=54215594",
+  "ednUrl": "https://www.elibrary.ru/rmbwtz",
+  "localPdf": "/publications/pdfs/2023-growing-plants-on-mars.pdf",
+  "pdfKind": "publication-extract",
 }
 ---
