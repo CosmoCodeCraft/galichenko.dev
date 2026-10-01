@@ -1,7 +1,6 @@
 ---
 import { aboutContent } from "../../content/about";
-import { route, t, type Locale } from "../../i18n";
-import { site } from "../../config/site";
+import { route, type Locale } from "../../i18n";
 
 interface Props {
   locale: Locale;
@@ -10,7 +9,6 @@ interface Props {
 const { locale } = Astro.props;
 const content = aboutContent[locale];
 if (!content) throw new Error(`About content is missing for locale: ${locale}`);
-const d = t(locale);
 ---
 
 <article class="about-page">
@@ -30,14 +28,27 @@ const d = t(locale);
     </figure>
   </header>
 
-  <section class="about-section" aria-labelledby="about-areas-heading">
-    <h2 id="about-areas-heading">{content.areasHeading}</h2>
-    <div class="about-areas">
+  <section class="about-section" aria-labelledby="about-focus-heading">
+    <h2 id="about-focus-heading">{content.focusHeading}</h2>
+    <div class="about-focus">
       {
-        content.areas.map((area) => (
+        content.focus.map((area) => (
           <article>
             <h3>{area.title}</h3>
-            <p>{area.description}</p>
+            {area.paragraphs.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+            {area.states?.map((state) => (
+              <div class="about-focus-state">
+                <h4>{state.label}</h4>
+                <p>{state.description}</p>
+                <ul>
+                  {state.items.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </article>
         ))
       }
@@ -84,60 +95,61 @@ const d = t(locale);
 
   <section class="about-section" aria-labelledby="about-education-heading">
     <h2 id="about-education-heading">{content.educationHeading}</h2>
-    <ol class="about-dated-list about-education-list">
+    <div class="about-education-grid">
       {
         content.education.map((education) => (
-          <li class="about-dated-row">
+          <article>
             <p class="about-date">{education.period}</p>
-            <div class="about-row-content">
-              <h3>{education.institution}</h3>
-              {education.programme.map((line) => (
-                <p>{line}</p>
-              ))}
-              {education.note && <p class="about-note">{education.note}</p>}
-            </div>
-          </li>
+            <h3>{education.institution}</h3>
+            <a class="about-programme-link" href={education.programmeUrl}>
+              {education.programme}
+            </a>
+            {education.details.map((detail) => (
+              <p>{detail}</p>
+            ))}
+            {education.note && <p class="about-note">{education.note}</p>}
+          </article>
         ))
       }
-    </ol>
+    </div>
   </section>
 
   <section class="about-section" aria-labelledby="about-research-heading">
     <h2 id="about-research-heading">{content.researchHeading}</h2>
-    <div class="about-research-introduction about-prose">
-      {content.researchIntroduction.map((paragraph) => <p>{paragraph}</p>)}
-      <a class="about-inline-link" href={route(locale, "research")}>
-        {content.researchLinkLabel}
-      </a>
-    </div>
-
-    <div class="about-community">
-      <h3>{content.communityHeading}</h3>
-      <div class="about-prose">
-        {content.community.map((paragraph) => <p>{paragraph}</p>)}
+    <div class="about-research-layout">
+      <div class="about-research-introduction about-prose">
+        {content.researchIntroduction.map((paragraph) => <p>{paragraph}</p>)}
+        <a class="about-inline-link" href={route(locale, "research")}>
+          {content.researchLinkLabel}
+        </a>
       </div>
+      <article class="about-community">
+        <h3>{content.community.role}</h3>
+        <p class="about-organisation">{content.community.organization}</p>
+        {content.community.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      </article>
     </div>
+  </section>
 
-    <div class="about-recognition">
-      <h3>{content.recognitionHeading}</h3>
-      <ol>
-        {
-          content.recognition.map((item) => (
-            <li>
-              <p class="about-date">{item.year}</p>
-              <h4>{item.title}</h4>
-              <p class="about-distinction" lang={item.distinctionLanguage}>
-                {item.distinction}
-              </p>
-              <p>{item.context}</p>
+  <section class="about-section" aria-labelledby="about-recognition-heading">
+    <h2 id="about-recognition-heading">{content.recognitionHeading}</h2>
+    <ol class="about-recognition-grid">
+      {
+        content.recognition.map((item) => (
+          <li>
+            <p class="about-date">{item.year}</p>
+            <h3>{item.title}</h3>
+            <p class="about-distinction">{item.distinction}</p>
+            <p>{item.context}</p>
+            {item.evidence && (
               <a class="about-inline-link" href={item.evidence.url}>
                 {item.evidence.label}
               </a>
-            </li>
-          ))
-        }
-      </ol>
-    </div>
+            )}
+          </li>
+        ))
+      }
+    </ol>
   </section>
 
   <section class="about-section" aria-labelledby="about-mentions-heading">
@@ -178,14 +190,4 @@ const d = t(locale);
       }
     </div>
   </section>
-
-  <nav class="about-continuation" aria-labelledby="about-continuation-heading">
-    <h2 id="about-continuation-heading">{content.continuationHeading}</h2>
-    <ul>
-      <li><a href={route(locale, "cv")}>{d.viewCv}</a></li>
-      <li><a href={site.github}>{d.github}</a></li>
-      <li><a href={route(locale, "research")}>{d.researchArchive}</a></li>
-      <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
-    </ul>
-  </nav>
 </article>

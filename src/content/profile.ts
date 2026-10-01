@@ -28,6 +28,8 @@ export const experiences: Experience[] = [
     locale: "en",
     role: "Programming Instructor",
     organization: "Pixel Programming & Robotics School",
+    startDate: "2025-12",
+    endDate: "2026-08",
   },
   {
     id: "automation",

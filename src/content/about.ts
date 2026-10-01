@@ -10,9 +10,16 @@ interface AboutInternalLink {
   path: string;
 }
 
-interface AboutArea {
-  title: string;
+interface AboutFocusState {
+  label: string;
   description: string;
+  items: string[];
+}
+
+interface AboutFocusArea {
+  title: string;
+  paragraphs: string[];
+  states?: AboutFocusState[];
 }
 
 interface AboutExperience {
@@ -26,17 +33,24 @@ interface AboutExperience {
 interface AboutEducation {
   period: string;
   institution: string;
-  programme: string[];
+  programme: string;
+  programmeUrl: string;
+  details: string[];
   note?: string;
+}
+
+interface AboutCommunity {
+  role: string;
+  organization: string;
+  paragraphs: string[];
 }
 
 interface AboutRecognition {
   year: string;
   title: string;
   distinction: string;
-  distinctionLanguage?: string;
   context: string;
-  evidence: AboutLink;
+  evidence?: AboutLink;
 }
 
 interface AboutMention {
@@ -58,8 +72,8 @@ export interface AboutContent {
   metaDescription: string;
   introduction: string[];
   portraitLabel: string;
-  areasHeading: string;
-  areas: AboutArea[];
+  focusHeading: string;
+  focus: AboutFocusArea[];
   experienceHeading: string;
   experience: AboutExperience[];
   trajectoryHeading: string;
@@ -69,55 +83,84 @@ export interface AboutContent {
   researchHeading: string;
   researchIntroduction: string[];
   researchLinkLabel: string;
-  communityHeading: string;
-  community: string[];
+  community: AboutCommunity;
   recognitionHeading: string;
   recognition: AboutRecognition[];
   mentionsHeading: string;
   mentions: AboutMention[];
   principlesHeading: string;
   principles: AboutPrinciple[];
-  continuationHeading: string;
 }
 
 export const aboutContent: Partial<Record<Locale, AboutContent>> = {
   en: {
     title: "About",
     metaDescription:
-      "About Sergey Galichenko: systems integration, infrastructure, embedded systems, applied computer vision, professional experience, education and research.",
+      "About Sergey Galichenko: DevOps, platform engineering and systems integration with a control and embedded engineering foundation.",
     introduction: [
-      "I'm Sergey Galichenko, a Software Engineering MSc student at HSE University working across systems integration, infrastructure, embedded systems and applied computer vision.",
-      "My engineering background started with automation and physical systems, where software had to interact with sensors, actuators and real processes. Over time that work expanded into Linux infrastructure, service integration, computer vision research and software architecture.",
-      "Today I am primarily interested in DevOps and systems integration: the part of software engineering where independently developed components have to communicate, deploy reproducibly and behave predictably as a system.",
+      "I'm Sergey Galichenko, a Software Engineering MSc student at HSE University focused on DevOps, platform engineering and systems integration.",
+      "My focus is the part of engineering where independently developed components have to work as one system: services need to communicate, data has to persist, deployments have to be repeatable, and failures have to be diagnosable.",
+      "I came to software engineering through control and embedded systems, so I tend to reason across layers — from devices and networking to application services and infrastructure. Today I am moving that systems perspective further into containerized services, CI/CD, orchestration and observability.",
     ],
     portraitLabel: "Portrait photograph",
-    areasHeading: "Areas of work",
-    areas: [
+    focusHeading: "Current focus",
+    focus: [
       {
-        title: "DevOps & Systems Integration",
-        description:
-          "Service integration, reproducible environments, Linux infrastructure and deployment-oriented engineering.",
+        title: "DevOps & Platform Engineering",
+        paragraphs: [
+          "I am developing the infrastructure side of my work around containerized environments, deployment automation, orchestration and observability.",
+        ],
+        states: [
+          {
+            label: "Verified / working with now",
+            description:
+              "In the current SIRD project, the verified baseline includes:",
+            items: [
+              "Docker",
+              "Docker Compose",
+              "Linux / container networking",
+              "Service integration",
+              "PostgreSQL",
+            ],
+          },
+          {
+            label: "Current direction / work in progress",
+            description: "The next platform layer is being developed around:",
+            items: [
+              "GitLab CI/CD",
+              "Kubernetes",
+              "Helm / Helmfile",
+              "Prometheus",
+              "Grafana",
+              "Tempo",
+            ],
+          },
+        ],
       },
       {
-        title: "Embedded & Physical Systems",
-        description:
-          "Microcontrollers, single-board computers, sensors, control systems and hardware-software integration.",
+        title: "Systems Integration",
+        paragraphs: [
+          "I work with the boundaries between services: HTTP APIs, container networking, service discovery, data persistence and failure diagnosis.",
+          "I am particularly interested in the point where individually working components have to become a reproducible, debuggable system.",
+        ],
       },
       {
-        title: "Computer Vision & Applied Research",
-        description:
-          "Classical image processing, experimental validation and engineering research.",
+        title: "Systems & Embedded Foundation",
+        paragraphs: [
+          "My earlier work with microcontrollers, Raspberry Pi, sensors, actuators and control systems gave me experience with software that interacts with real processes and constraints.",
+          "That background remains useful when tracing problems across multiple layers rather than treating an application, network or device in isolation.",
+        ],
       },
     ],
     experienceHeading: "Experience",
     experience: [
       {
-        period: "December 2025 — Present",
+        period: "December 2025 — August 2026",
         role: "Programming Instructor",
         organization: "Pixel Programming & Robotics School",
         paragraphs: [
-          "I teach programming and robotics in small student groups, prepare development environments and help diagnose software, dependency and network-related problems that arise during classes.",
-          "The role combines technical troubleshooting with explaining systems clearly enough for other people to work with them.",
+          "I taught programming and robotics in small student groups, prepared development environments, and diagnosed software, dependency and network-related problems during classes.",
+          "The role strengthened two practical skills that transfer directly to engineering work: troubleshooting under time constraints and explaining technical systems clearly enough for another person to work with them.",
         ],
       },
       {
@@ -125,9 +168,9 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
         role: "Engineer → Project Lead",
         organization: "City Farm · Moscow Polytechnic University",
         paragraphs: [
-          "I progressed from technical research and hands-on engineering to leading a multidisciplinary student team of approximately 12 people.",
-          "My responsibilities expanded to automated control systems, experimental work, coordination across several cultivation installations, task planning, project presentations and onboarding new team members.",
-          "The project became an important transition point from working with individual technical components to being responsible for how a larger engineering system and team fit together.",
+          "I progressed from hands-on engineering work to leading a multidisciplinary student team of approximately 12 people.",
+          "My responsibilities covered control systems, experimental work, Linux-based infrastructure, task planning, project delivery, onboarding and coordination across several cultivation installations.",
+          "Moving into the lead role taught me to think beyond individual components and take responsibility for how the technical work, people and project constraints fit together.",
         ],
         link: {
           label: "View City Farm project",
@@ -136,61 +179,68 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
       },
       {
         period: "September 2023 — November 2024",
-        role: "Administrative operations & automation",
+        role: "Operations & Process Automation",
         organization: "Moscow Polytechnic University",
         paragraphs: [
           "Alongside administrative work, I used Python to automate repetitive data-processing and document workflows.",
-          "This was one of my first practical experiences of using software not as an academic exercise, but to remove repetitive work from a real organisational process.",
+          "This was one of my first experiences of using software to remove routine work from a real organisational process rather than only solving an academic programming task.",
         ],
       },
     ],
-    trajectoryHeading: "From control systems to software engineering",
+    trajectoryHeading: "From control systems to platform engineering",
     trajectory: [
-      "I began with control systems and embedded engineering, where software was inseparable from the physical process it controlled.",
-      "City Farm added another layer: Linux infrastructure, remote administration, integration between controllers and higher-level software, experimental work and eventually project leadership.",
-      "The aeroponic irrigation monitoring project pushed that experience toward computer vision and research. I designed a three-level hardware-software system, implemented image-processing methods and validated them experimentally.",
-      "During my master's studies, projects such as SIRD have shifted my focus further toward software boundaries, containerized services, deployment and integration.",
-      "The technologies changed, but the underlying interest remained consistent: understanding how separate components interact and turn into a reliable system.",
+      "I started in control systems, where software had to coordinate sensors, actuators, timing and physical processes.",
+      "City Farm expanded that perspective into Linux administration, remote access, integration and responsibility for a larger system and team.",
+      "My bachelor research used computer vision as a diagnostic tool for an aeroponic system. The important part for my current engineering direction was not computer vision as a specialisation, but designing the interfaces between control, computing and operator layers and validating the complete workflow experimentally.",
+      "In my master's programme, SIRD moves the same systems interest into software infrastructure: service boundaries, containers, persistence, deployment, orchestration and observability.",
+      "The technologies changed, but the underlying problem remained the same: how to make separate components work together predictably as one system.",
     ],
     educationHeading: "Education",
     education: [
       {
         period: "2026 — Present",
         institution: "HSE University",
-        programme: [
-          "MSc · System and Software Engineering",
-          "Faculty of Computer Science",
-        ],
+        programme: "MSc · System and Software Engineering",
+        programmeUrl: "https://www.hse.ru/en/ma/se",
+        details: ["Faculty of Computer Science"],
       },
       {
         period: "2022 — 2026",
         institution: "Moscow Polytechnic University",
-        programme: [
-          "BSc · Control in Technical Systems",
-          "Electronic Control Systems",
-        ],
+        programme: "BSc · Control in Technical Systems",
+        programmeUrl:
+          "https://mospolytech.ru/postupayushchim/programmy-obucheniya/elektronnye-sistemy-upravleniya/",
+        details: ["Electronic Control Systems"],
         note: "Graduated with honours",
       },
     ],
-    researchHeading: "Research & recognition",
+    researchHeading: "Research & scientific community",
     researchIntroduction: [
-      "My research work has focused mainly on engineering systems, controlled-environment agriculture and computer vision.",
-      "Recent work includes papers accepted for publication at UralCon 2026 and INFO-2026, both related to aeroponic irrigation monitoring.",
-      "Earlier work spans automated cultivation systems, sustainable technologies and several interdisciplinary topics.",
+      "Research has been one way for me to validate engineering ideas with explicit methods, experiments and evidence.",
+      "My recent work includes papers accepted for publication at UralCon 2026 and INFO-2026 on aeroponic irrigation monitoring and its hardware-software architecture.",
+      "Earlier work includes automated cultivation systems, sustainable technologies and several interdisciplinary topics.",
     ],
     researchLinkLabel: "View research archive",
-    communityHeading: "Student Scientific Society",
-    community: [
-      "Alongside project and research work, I was involved in the Student Scientific Society at Moscow Polytechnic and served as one of its deputy chairs.",
-      "The role included representing the university at student-research events and contributing to activities intended to involve more students in research.",
-    ],
-    recognitionHeading: "Recognition",
+    community: {
+      role: "Deputy Chair",
+      organization:
+        "Student Scientific Society · Moscow Polytechnic University",
+      paragraphs: [
+        "I served as Deputy Chair of the Student Scientific Society, represented the university at student-research events and worked on activities intended to involve more students in research.",
+      ],
+    },
+    recognitionHeading: "Selected recognition",
     recognition: [
       {
         year: "2025",
+        title: "Alfa-Future Scholarships",
+        distinction: "Winner",
+        context: "Competitive scholarship programme by Alfa-Bank.",
+      },
+      {
+        year: "2025",
         title: "PIK Award",
-        distinction: "«Персона года в научно-исследовательской деятельности»",
-        distinctionLanguage: "ru",
+        distinction: "Person of the Year in Research",
         context: "Moscow Polytechnic annual student achievement award.",
         evidence: {
           label: "Official award announcement",
@@ -200,13 +250,21 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
       {
         year: "2024",
         title: "TechnoMentors",
-        distinction: "Winner · «Лучший пост»",
+        distinction:
+          "Winner · Interregional Competition for the Best Mentor of Children's and Youth Technology Projects",
         context:
-          "Recognition within the nationwide TechnoMentors project for work related to engineering mentorship and outreach.",
+          "Competition organised within the nationwide TechnoMentors initiative.",
         evidence: {
-          label: "Official TechnoMentors results",
-          url: "https://academy.sk.ru/news/315",
+          label: "Moscow Polytechnic profile",
+          url: "https://mospolytech.ru/news/student-sergey-galichenko-interes-k-nauke-voznik-kogda-ya-stolknulsya-s-yavleniem-tribolyuminestsents/",
         },
+      },
+      {
+        year: "2026",
+        title: "Finatlon",
+        distinction: "II-degree Laureate",
+        context:
+          "International scientific and practical conference for young researchers and specialists in sustainable development, investment and financial risks.",
       },
     ],
     mentionsHeading: "Selected mentions",
@@ -218,10 +276,23 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
           "Студент Сергей Галиченко: «Интерес к науке возник, когда я столкнулся с явлением триболюминесценции»",
         titleLanguage: "ru",
         context:
-          "A profile interview about my path into research, City Farm, engineering mentorship, student scientific activity and the projects I was working on at Moscow Polytechnic.",
+          "A profile interview about my path into research, City Farm, technical mentorship, student scientific activity and the projects I was working on at Moscow Polytechnic.",
         link: {
           label: "Read the interview",
           url: "https://mospolytech.ru/news/student-sergey-galichenko-interes-k-nauke-voznik-kogda-ya-stolknulsya-s-yavleniem-tribolyuminestsents/",
+        },
+      },
+      {
+        date: "4 April 2024",
+        source: "Russian State University for the Humanities",
+        title:
+          "В РГГУ прошел круглый стол по теме «Студенческая наука в РГГУ: традиции и новации исследовательских школ» в рамках Гуманитарных чтений РГГУ «Корни и крона»",
+        titleLanguage: "ru",
+        context:
+          "Official coverage of a student-research round table where I presented an approach to involving students in research through meetings with young scientists. The talk was «Вовлечение студентов в науку через встречи с молодыми учёными».",
+        link: {
+          label: "View the event coverage",
+          url: "https://www.rsuh.ru/news/sovet-molodykh-uchenykh-rggu/v-rggu-proshel-kruglyy-stol-po-teme-studencheskaya-nauka-v-rggu-traditsii-i-novatsii-issledovatelskikh-shkol-v-ramkakh-gumanitarnykh-chteniy-rggu-korni-i-krona/",
         },
       },
       {
@@ -238,30 +309,29 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
         },
       },
     ],
-    principlesHeading: "How I work",
+    principlesHeading: "Engineering approach",
     principles: [
       {
-        title: "Start with the problem and the system boundary",
+        title: "Define boundaries before adding infrastructure",
         paragraphs: [
-          "I prefer understanding what a component is responsible for before introducing another service, abstraction or infrastructure tool.",
-          "Architecture should follow an actual system need rather than the desire to use a particular technology.",
+          "A new service or infrastructure tool should solve a real problem: ownership, deployment, isolation, scaling or observability.",
+          "I prefer simplifying a system before automating unnecessary complexity.",
         ],
       },
       {
-        title: "Separate plans from evidence",
+        title: "Verify the end-to-end path",
         paragraphs: [
-          "I try to distinguish clearly between what is planned, what has been implemented and what has actually been verified.",
-          "That applies equally to experimental research, service integration and deployment.",
+          "A healthy container or successful unit test does not prove that the system works as a whole.",
+          "I prefer tracing real requests across service boundaries, checking networking, persistence and logs, and verifying the behaviour that a user or another system actually depends on.",
         ],
       },
       {
-        title: "Prefer observable results",
+        title: "Make systems reproducible and observable",
         paragraphs: [
-          "Logs, tests, measurements and reproducible behaviour tell more about a system than a technology list alone.",
-          "When possible, I want an engineering claim to be supported by something that can be inspected or repeated.",
+          "Configuration and deployment should be repeatable, and runtime behaviour should be visible enough to diagnose.",
+          "That is the direction of my current work with CI/CD, orchestration and observability tooling.",
         ],
       },
     ],
-    continuationHeading: "Continue exploring",
   },
 };

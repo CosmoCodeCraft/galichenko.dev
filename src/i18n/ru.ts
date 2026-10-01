@@ -51,8 +51,6 @@ export const ru: Record<keyof typeof en, string> = {
   detailPlaceholder: "Подробное описание готовится. Ниже — доступные сведения.",
   emptyNotes: "Заметок пока нет.",
   backHome: "На главную",
-  viewCv: "Открыть резюме",
-  researchArchive: "Архив исследований",
   project: "Проект",
   role: "Роль",
   status: "Статус",

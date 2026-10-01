@@ -619,10 +619,10 @@ footer a {
 }
 .about-introduction {
   display: grid;
-  grid-template-columns: minmax(0, 760px) minmax(220px, 300px);
+  grid-template-columns: minmax(0, 780px) minmax(240px, 320px);
   justify-content: space-between;
   align-items: start;
-  gap: 72px;
+  gap: 80px;
 }
 .about-introduction h1 {
   font-size: clamp(48px, 7vw, 76px);
@@ -638,7 +638,7 @@ footer a {
 }
 .about-portrait-placeholder {
   width: 100%;
-  max-width: 280px;
+  max-width: 300px;
   justify-self: end;
 }
 .about-portrait-placeholder > div {
@@ -653,38 +653,68 @@ footer a {
   letter-spacing: 0.05em;
 }
 .about-section {
-  max-width: 1080px;
+  max-width: 1180px;
   margin-top: 104px;
 }
 .about-section > h2 {
   margin-bottom: 38px;
   font-size: clamp(32px, 4vw, 48px);
 }
-.about-areas,
+.about-focus,
 .about-principles {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 36px;
+  gap: 42px;
 }
-.about-areas article,
+.about-focus > article,
 .about-principles article {
   padding-top: 22px;
   border-top: 1px solid var(--line);
 }
-.about-areas h3,
+.about-focus h3,
 .about-principles h3 {
   font-size: 20px;
 }
-.about-areas p,
+.about-focus > article > p,
 .about-principles p {
   margin-top: 13px;
   color: var(--secondary);
   font-size: 15px;
 }
+.about-focus-state {
+  margin-top: 24px;
+}
+.about-focus-state h4 {
+  margin: 0;
+  color: var(--accent);
+  font: 11px/1.5 var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.about-focus-state p {
+  margin-top: 8px;
+  color: var(--secondary);
+  font-size: 13px;
+}
+.about-focus-state ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 11px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.about-focus-state li {
+  padding: 3px 8px;
+  background: var(--tint);
+  color: var(--secondary);
+  border-radius: 3px;
+  font-size: 11px;
+}
 .about-dated-list,
-.about-recognition ol,
-.about-mentions,
-.about-continuation ul {
+.about-recognition-grid,
+.about-mentions {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -694,8 +724,8 @@ footer a {
 }
 .about-dated-row {
   display: grid;
-  grid-template-columns: 190px minmax(0, 760px);
-  gap: 48px;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 56px;
   padding: 34px 0 40px;
   border-bottom: 1px solid var(--line);
 }
@@ -706,6 +736,9 @@ footer a {
 }
 .about-row-content h3 {
   font-size: 24px;
+}
+.about-row-content {
+  max-width: 840px;
 }
 .about-row-content > p:not(.about-organisation, .about-note) {
   margin-top: 16px;
@@ -730,8 +763,7 @@ footer a {
   text-underline-offset: 5px;
 }
 .about-reading-section,
-.about-research-introduction,
-.about-community {
+.about-research-introduction {
   max-width: 760px;
 }
 .about-prose {
@@ -742,42 +774,67 @@ footer a {
 .about-reading-section .about-prose {
   font-size: 18px;
 }
-.about-education-list .about-row-content > p {
-  margin-top: 7px;
-  color: var(--secondary);
-}
-.about-community {
-  margin-top: 52px;
-  padding-top: 28px;
-  border-top: 1px solid var(--line);
-}
-.about-community h3,
-.about-recognition > h3 {
-  margin-bottom: 20px;
-  font-size: 23px;
-}
-.about-recognition {
-  margin-top: 58px;
-}
-.about-recognition ol {
+.about-education-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 42px;
 }
-.about-recognition li {
+.about-education-grid article {
   padding-top: 22px;
   border-top: 1px solid var(--line);
 }
-.about-recognition h4 {
+.about-education-grid h3 {
+  margin-top: 9px;
+  font-size: 24px;
+}
+.about-programme-link {
+  display: inline-block;
+  margin-top: 15px;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.about-education-grid article > p:not(.about-date, .about-note) {
+  margin-top: 7px;
+  color: var(--secondary);
+}
+.about-research-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 760px) minmax(260px, 340px);
+  justify-content: space-between;
+  gap: 72px;
+  align-items: start;
+}
+.about-community {
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.about-community h3 {
+  font-size: 23px;
+}
+.about-community > p:not(.about-organisation) {
+  margin-top: 18px;
+  color: var(--secondary);
+  font-size: 15px;
+}
+.about-recognition-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 42px 48px;
+}
+.about-recognition-grid li {
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.about-recognition-grid h3 {
   margin: 9px 0 0;
   font-size: 21px;
-  font-weight: 600;
 }
 .about-distinction {
   margin-top: 6px;
   color: var(--text);
 }
-.about-recognition li > p:not(.about-date, .about-distinction) {
+.about-recognition-grid li > p:not(.about-date, .about-distinction) {
   margin-top: 15px;
   color: var(--secondary);
   font-size: 15px;
@@ -787,8 +844,8 @@ footer a {
 }
 .about-mentions > li {
   display: grid;
-  grid-template-columns: 190px minmax(0, 760px);
-  gap: 48px;
+  grid-template-columns: 190px minmax(0, 880px);
+  gap: 56px;
   padding: 30px 0 36px;
   border-bottom: 1px solid var(--line);
 }
@@ -802,26 +859,6 @@ footer a {
 .about-mentions li > div > p {
   margin-top: 14px;
   color: var(--secondary);
-}
-.about-continuation {
-  max-width: 1080px;
-  margin-top: 104px;
-  padding: 28px 0;
-  border-block: 1px solid var(--line);
-}
-.about-continuation h2 {
-  font-size: 22px;
-}
-.about-continuation ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 28px;
-  margin-top: 18px;
-}
-.about-continuation a {
-  color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 5px;
 }
 .project-cover-placeholder {
   display: grid;
@@ -1750,9 +1787,13 @@ footer a {
     grid-template-columns: minmax(0, 1fr) 240px;
     gap: 40px;
   }
-  .about-areas,
+  .about-focus,
   .about-principles {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  }
+  .about-research-layout {
+    grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.8fr);
+    gap: 40px;
   }
 }
 @media (min-width: 42.01rem) and (max-width: 63.99rem) {
@@ -1859,17 +1900,18 @@ footer a {
     width: min(220px, 100%);
     justify-self: start;
   }
-  .about-section,
-  .about-continuation {
+  .about-section {
     margin-top: 72px;
   }
   .about-section > h2 {
     margin-bottom: 28px;
     font-size: 32px;
   }
-  .about-areas,
+  .about-focus,
   .about-principles,
-  .about-recognition ol {
+  .about-recognition-grid,
+  .about-education-grid,
+  .about-research-layout {
     grid-template-columns: 1fr;
     gap: 30px;
   }
@@ -1885,16 +1927,11 @@ footer a {
   .about-mentions h3 {
     font-size: 22px;
   }
-  .about-community,
-  .about-recognition {
-    margin-top: 44px;
+  .about-community {
+    margin-top: 14px;
   }
   .about-mentions > li {
     padding: 26px 0 31px;
-  }
-  .about-continuation ul {
-    display: grid;
-    gap: 8px;
   }
   .project-detail {
     padding: 50px 0 76px;
