@@ -11,6 +11,12 @@ const base = {
 const date = z.string().regex(/^\d{4}(-\d{2})?(-\d{2})?$/);
 const link = z.object({ label: z.string(), url: z.string().url() });
 const state = z.enum(["planned", "implemented", "verified"]);
+const focalPoint = z
+  .object({
+    x: z.number().min(0).max(100),
+    y: z.number().min(0).max(100),
+  })
+  .optional();
 const projects = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/projects" }),
   schema: ({ image }) =>
@@ -54,38 +60,33 @@ const projects = defineCollection({
             ])
             .default("cover"),
           cropAllowed: z.boolean().default(false),
-          focalPoint: z
-            .object({
-              x: z.number().min(0).max(100),
-              y: z.number().min(0).max(100),
-            })
-            .optional(),
+          focalPoint,
         })
         .optional(),
       coverPlaceholder: z.string().optional(),
       detailHero: z
-        .object({
-          src: image().optional(),
-          alt: z.string().default(""),
-          caption: z.string().optional(),
-          placeholder: z.string().optional(),
-          cropAllowed: z.boolean().default(false),
-          focalPoint: z
-            .object({
-              x: z.number().min(0).max(100),
-              y: z.number().min(0).max(100),
-            })
-            .optional(),
-        })
-        .refine(
-          (media) =>
-            Boolean(media.src || media.placeholder) &&
-            (!media.src || media.alt.trim().length > 0),
-          {
-            message:
-              "Detail hero requires a placeholder label, or an image with alt text",
-          },
-        )
+        .discriminatedUnion("type", [
+          z.object({
+            type: z.literal("image"),
+            src: image(),
+            alt: z.string().min(1),
+            caption: z.string().optional(),
+            cropAllowed: z.boolean().default(false),
+            focalPoint,
+          }),
+          z.object({
+            type: z.literal("video"),
+            src: z.string().startsWith("/media/"),
+            poster: image(),
+            alt: z.string().min(1),
+            caption: z.string().optional(),
+          }),
+          z.object({
+            type: z.literal("placeholder"),
+            placeholder: z.string().min(1),
+            alt: z.literal("").default(""),
+          }),
+        ])
         .optional(),
       links: z.array(link).optional(),
       evidence: z

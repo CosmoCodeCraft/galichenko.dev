@@ -636,21 +636,15 @@ footer a {
   font-size: clamp(18px, 1.7vw, 22px);
   line-height: 1.65;
 }
-.about-portrait-placeholder {
+.about-portrait {
   width: 100%;
   max-width: 300px;
   justify-self: end;
 }
-.about-portrait-placeholder > div {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 4 / 5;
-  padding: 24px;
-  background: var(--tint);
-  color: var(--secondary);
-  text-align: center;
-  font: 12px/1.5 var(--font-mono);
-  letter-spacing: 0.05em;
+.about-portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 .about-section {
   max-width: 1180px;
@@ -957,6 +951,27 @@ footer a {
 }
 .project-media .figure {
   margin: 0;
+}
+.project-video-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--tint);
+}
+.project-video-frame video,
+.project-video-poster {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.project-video-poster {
+  display: none;
+}
+.project-media-video figcaption {
+  margin-top: 8px;
+  color: var(--secondary);
+  font-size: 14px;
 }
 .project-media-placeholder > div {
   display: grid;
@@ -1896,7 +1911,7 @@ footer a {
     margin-top: 24px;
     font-size: 17px;
   }
-  .about-portrait-placeholder {
+  .about-portrait {
     width: min(220px, 100%);
     justify-self: start;
   }
@@ -2160,6 +2175,12 @@ footer a {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .project-video-frame video {
+    display: none;
+  }
+  .project-video-poster {
+    display: block;
+  }
   .note-card:hover {
     transform: none;
   }

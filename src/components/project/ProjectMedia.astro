@@ -3,10 +3,13 @@ import type { ImageMetadata } from "astro";
 import Figure from "../Figure.astro";
 
 interface Props {
-  src?: ImageMetadata;
+  type?: "image" | "video" | "placeholder";
+  src?: ImageMetadata | string;
+  poster?: ImageMetadata;
   alt?: string;
   caption?: string;
   label?: string;
+  placeholder?: string;
   role?: "hero" | "content" | "diagram" | "result" | "hardware";
   cropAllowed?: boolean;
   focalPoint?: { x: number; y: number };
@@ -16,10 +19,13 @@ interface Props {
 }
 
 const {
+  type,
   src,
+  poster,
   alt = "",
   caption,
   label,
+  placeholder,
   role = "content",
   cropAllowed = false,
   focalPoint,
@@ -27,13 +33,51 @@ const {
   wide = false,
   loading = "lazy",
 } = Astro.props;
+const isVideo = type === "video";
+const imageSource = !isVideo && typeof src !== "string" ? src : undefined;
+const videoSource = isVideo && typeof src === "string" ? src : undefined;
+const placeholderLabel = placeholder ?? label;
 ---
 
 {
-  src ? (
+  isVideo && videoSource && poster ? (
+    <figure
+      class:list={[
+        "project-media",
+        "project-media-video",
+        { "project-media--wide": wide },
+      ]}
+      data-role={role}
+    >
+      <div class="project-video-frame">
+        <video
+          src={videoSource}
+          poster={poster.src}
+          aria-label={alt}
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          data-project-video
+        />
+        <img
+          class="project-video-poster"
+          src={poster.src}
+          width={poster.width}
+          height={poster.height}
+          alt=""
+          aria-hidden="true"
+          loading={loading}
+          decoding="async"
+        />
+      </div>
+      {caption && <figcaption>{caption}</figcaption>}
+    </figure>
+  ) : imageSource ? (
     <div class:list={["project-media", { "project-media--wide": wide }]}>
       <Figure
-        src={src}
+        src={imageSource}
         alt={alt}
         caption={caption}
         role={role}
@@ -54,9 +98,33 @@ const {
       data-role={role}
     >
       <div aria-hidden="true">
-        <span>{label}</span>
+        <span>{placeholderLabel}</span>
       </div>
       {caption && <figcaption>{caption}</figcaption>}
     </figure>
   )
 }
+
+<script>
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  function syncProjectVideos() {
+    document
+      .querySelectorAll<HTMLVideoElement>("[data-project-video]")
+      .forEach((video) => {
+        if (reducedMotion.matches) {
+          video.pause();
+          video.currentTime = 0;
+          return;
+        }
+
+        video.muted = true;
+        void video.play().catch(() => {
+          // The poster remains visible when autoplay is unavailable.
+        });
+      });
+  }
+
+  syncProjectVideos();
+  reducedMotion.addEventListener("change", syncProjectVideos);
+</script>

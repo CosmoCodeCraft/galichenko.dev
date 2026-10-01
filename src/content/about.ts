@@ -102,7 +102,7 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
       "My focus is the part of engineering where independently developed components have to work as one system: services need to communicate, data has to persist, deployments have to be repeatable, and failures have to be diagnosable.",
       "I came to software engineering through control and embedded systems, so I tend to reason across layers — from devices and networking to application services and infrastructure. Today I am moving that systems perspective further into containerized services, CI/CD, orchestration and observability.",
     ],
-    portraitLabel: "Portrait photograph",
+    portraitLabel: "Sergey Galichenko",
     focusHeading: "Current focus",
     focus: [
       {

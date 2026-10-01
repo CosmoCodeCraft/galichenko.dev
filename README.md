@@ -1,6 +1,6 @@
 # galichenko.dev
 
-Static Astro + strict TypeScript portfolio. English Home, collection archives, publication details and project case studies are content-driven; About and CV remain temporary routes. GitHub Pages deployment is handled by the repository workflow.
+Static Astro + strict TypeScript portfolio. English Home, collection archives, publication details, project case studies and About are content-driven; CV remains a temporary route. GitHub Pages deployment is handled by the repository workflow.
 
 ## Local development
 
@@ -29,7 +29,8 @@ Tests run against the production build. Screenshots are written to `docs/screens
 
 ```text
 src/
-  assets/covers/          Original illustrative SVGs
+  assets/projects/        Project cover and detail-media sources
+  assets/about/           About portrait source
   components/home/       Independent Home sections
   components/            Header, cards, figures and detail-page shells
   config/                Site, navigation and Home order
@@ -41,14 +42,15 @@ src/
   styles/                Central design tokens and responsive styles
   utils/                 Content queries and small enhancements
 tests/                   Production smoke tests
+public/media/projects/   Static project video assets
 docs/deployment.md       GitHub Pages deployment guide
 ```
 
 ## Content boundaries
 
-Project covers remain illustrative and project case studies use labelled neutral media placeholders until real photographs, diagrams and results are supplied. SIRD technologies and unknown dates/venues are not invented. The UralCon paper remains accepted, not published. Russian UI is ready but its pages are disabled until translations are supplied. Substantive project and publication details are indexed; unfinished About/CV routes remain noindex.
+Project covers and the first media on each project case study use supplied real media; later case-study positions remain labelled neutral placeholders until further photographs, diagrams and results are supplied. SIRD technologies and unknown dates/venues are not invented. The UralCon paper remains accepted, not published. Russian UI is ready but its pages are disabled until translations are supplied. Substantive project, publication and About pages are indexed; the unfinished CV route remains noindex.
 
-About, CV, Russian content, real project media and hero animation remain outside the current scope.
+CV, Russian content, remaining case-study media and hero animation remain outside the current scope.
 
 In this Codex workspace, Node/pnpm are bundled rather than on the shell PATH. To use the existing installation:
 

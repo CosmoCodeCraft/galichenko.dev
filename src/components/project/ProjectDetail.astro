@@ -134,12 +134,7 @@ const toc = (p.toc ?? []).filter((item) => headingIds.has(item.id));
 
   {
     p.detailHero && (
-      <ProjectMedia
-        {...p.detailHero}
-        label={p.detailHero.placeholder}
-        role="hero"
-        loading="eager"
-      />
+      <ProjectMedia {...p.detailHero} role="hero" loading="eager" />
     )
   }
 
