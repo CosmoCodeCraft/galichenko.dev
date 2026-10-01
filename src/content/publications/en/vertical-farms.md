@@ -18,13 +18,7 @@
   "featured": true,
   "keywordsOriginal":
     ["Аэропоника", "Гидропоника", "Вертикальная ферма", "Сельское хозяйство"],
-  "keywordsEnglish":
-    [
-      "Lighter-than-air aircraft",
-      "Controlled balloon",
-      "Airship",
-      "Remote sensing of the Earth",
-    ],
+  "keywordsEnglish": [],
   "titleEnglish": "Vertical Farms as an Effective Tool for Green Economy",
   "authorsEnglish":
     [
