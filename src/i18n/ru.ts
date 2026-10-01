@@ -59,6 +59,8 @@ export const ru: Record<keyof typeof en, string> = {
   currentState: "Текущее состояние",
   usefulLinks: "Полезные ссылки",
   relatedWork: "Связанные проекты",
+  relatedProject: "Связанный проект",
+  onThisPage: "На этой странице",
   relatedPublications: "Связанные публикации",
   projectMedia: "Материалы проекта",
   technologies: "Использованные технологии",

@@ -52,6 +52,22 @@
       "aeroponic-irrigation-system-architecture",
     ],
   "relatedProjects": ["city-farm"],
+  "toc":
+    [
+      { "label": "Context", "id": "why-another-irrigation-monitoring-channel" },
+      {
+        "label": "System",
+        "id": "three-level-monitoring-and-control-architecture",
+      },
+      { "label": "My contribution", "id": "my-contribution" },
+      {
+        "label": "Engineering decisions",
+        "id": "synchronizing-vision-with-the-irrigation-cycle",
+      },
+      { "label": "Validation", "id": "experimental-validation" },
+      { "label": "Limitations", "id": "limitations" },
+      { "label": "Outputs", "id": "outputs" },
+    ],
 }
 ---
 
@@ -84,7 +100,7 @@ The supervisory level stores experimental and diagnostic data and presents the r
 
 This separation keeps deterministic equipment control independent from the more computationally demanding vision pipeline. A protective algorithm at the microcontroller level can maintain the irrigation cycle if the computing module does not respond.
 
-<ProjectMedia label="Architecture diagram" role="diagram" />
+<ProjectMedia label="Architecture diagram" role="diagram" wide />
 
 ## My contribution
 
@@ -132,7 +148,7 @@ Background difference was selected as the primary descriptor because it combined
 
 Reference-relative binary coverage provided complementary information about the spatial extent of image changes, while edge-based descriptors added structural information.
 
-<ProjectMedia label="Experimental result" role="result" />
+<ProjectMedia label="Experimental result" role="result" wide />
 
 ## Embedded feasibility
 

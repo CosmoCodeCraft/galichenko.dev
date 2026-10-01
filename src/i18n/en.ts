@@ -61,6 +61,8 @@ export const en = {
   currentState: "Current state",
   usefulLinks: "Useful links",
   relatedWork: "Related work",
+  relatedProject: "Related project",
+  onThisPage: "On this page",
   relatedPublications: "Related publications",
   projectMedia: "Project media",
   technologies: "Technologies",

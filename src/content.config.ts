@@ -32,6 +32,7 @@ const projects = defineCollection({
       present: z.boolean().default(false),
       featured: z.boolean().default(false),
       featuredOrder: z.number().optional(),
+      archiveOrder: z.number().optional(),
       role: z.string(),
       cardRole: z.string().optional(),
       tags: z.array(z.string()),
@@ -98,6 +99,14 @@ const projects = defineCollection({
         .optional(),
       relatedPublications: z.array(z.string()).optional(),
       relatedProjects: z.array(z.string()).optional(),
+      toc: z
+        .array(
+          z.object({
+            label: z.string(),
+            id: z.string().regex(/^[a-z0-9-]+$/),
+          }),
+        )
+        .optional(),
       updatedAt: date.optional(),
     }),
 });

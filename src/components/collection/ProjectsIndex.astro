@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import { formatDate, t, type Locale } from "../../i18n";
-import { chronological, entryPath } from "../../utils/content";
+import { entryPath, projectChronological } from "../../utils/content";
 import Figure from "../Figure.astro";
 import CollectionHeader from "./CollectionHeader.astro";
 interface Props {
@@ -11,7 +11,7 @@ const { locale } = Astro.props;
 const d = t(locale);
 const projects = (await getCollection("projects"))
   .filter((project) => !project.data.draft && project.data.locale === locale)
-  .sort(chronological);
+  .sort(projectChronological);
 function period(project: (typeof projects)[number]) {
   const p = project.data;
   if (p.startDate && p.endDate)

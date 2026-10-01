@@ -12,7 +12,7 @@ interface Props {
 const { project, locale } = Astro.props;
 const p = project.data;
 const d = t(locale);
-const { Content } = await render(project);
+const { Content, headings } = await render(project);
 
 function projectPeriod() {
   if (p.startDate && p.endDate)
@@ -59,6 +59,12 @@ const relatedPublications = (p.relatedPublications ?? [])
     Boolean(candidate),
   );
 const hasLinks = Boolean(p.links?.length || relatedPublications.length);
+const headingIds = new Set(
+  headings
+    .filter((heading) => heading.depth === 2)
+    .map((heading) => heading.slug),
+);
+const toc = (p.toc ?? []).filter((item) => headingIds.has(item.id));
 ---
 
 <article class="project-detail">
@@ -137,20 +143,38 @@ const hasLinks = Boolean(p.links?.length || relatedPublications.length);
     )
   }
 
-  <div class="project-case-study prose">
-    <Content />
+  <div class="project-reading-composition">
+    {
+      toc.length > 0 && (
+        <nav class="project-toc" aria-labelledby="project-toc-heading">
+          <p id="project-toc-heading">{d.onThisPage}</p>
+          <ol>
+            {toc.map((item) => (
+              <li>
+                <a href={`#${item.id}`}>{item.label}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+    <div class="project-case-study prose">
+      <Content />
+    </div>
   </div>
 
   {
     relatedProjects.length > 0 && (
       <nav class="project-related" aria-labelledby="project-related-heading">
-        <h2 id="project-related-heading">{d.relatedWork}</h2>
+        <h2 id="project-related-heading">
+          {relatedProjects.length === 1 ? d.relatedProject : d.relatedWork}
+        </h2>
         <ul>
           {relatedProjects.map((related) => (
             <li>
               <a href={entryPath(related)}>
-                <span>{related.data.cardRole ?? related.data.role}</span>
                 <strong>{related.data.title}</strong>
+                <span>{related.data.cardRole ?? related.data.role}</span>
               </a>
             </li>
           ))}

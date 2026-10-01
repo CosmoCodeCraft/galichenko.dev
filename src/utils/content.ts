@@ -40,3 +40,18 @@ export function chronological(a: Entry, b: Entry) {
           : (e.data.endDate ?? e.data.startDate ?? "");
   return key(b).localeCompare(key(a)) || a.data.slug.localeCompare(b.data.slug);
 }
+
+export function projectChronological(
+  a: CollectionEntry<"projects">,
+  b: CollectionEntry<"projects">,
+) {
+  const key = (entry: CollectionEntry<"projects">) =>
+    entry.data.present
+      ? "9999"
+      : (entry.data.endDate ?? entry.data.startDate ?? "");
+  return (
+    key(b).localeCompare(key(a)) ||
+    (a.data.archiveOrder ?? Infinity) - (b.data.archiveOrder ?? Infinity) ||
+    a.data.slug.localeCompare(b.data.slug)
+  );
+}
