@@ -146,7 +146,11 @@ const toc = (p.toc ?? []).filter((item) => headingIds.has(item.id));
   <div class="project-reading-composition">
     {
       toc.length > 0 && (
-        <nav class="project-toc" aria-labelledby="project-toc-heading">
+        <nav
+          class="project-toc"
+          aria-labelledby="project-toc-heading"
+          data-project-toc
+        >
           <p id="project-toc-heading">{d.onThisPage}</p>
           <ol>
             {toc.map((item) => (

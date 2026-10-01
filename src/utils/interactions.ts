@@ -5,8 +5,7 @@ const controls = document.querySelectorAll<HTMLButtonElement>(
 let preference: ThemePreference = "system";
 try {
   const saved = localStorage.getItem("sg-theme");
-  if (saved === "light" || saved === "dark" || saved === "system")
-    preference = saved;
+  if (saved === "light" || saved === "dark") preference = saved;
 } catch {
   /* Keep system preference. */
 }
@@ -30,8 +29,13 @@ document
   .forEach((el) => (el.hidden = false));
 controls.forEach((control) =>
   control.addEventListener("click", () => {
-    const order: ThemePreference[] = ["system", "light", "dark"];
-    preference = order[(order.indexOf(preference) + 1) % order.length];
+    if (preference === "system") {
+      preference = matchMedia("(prefers-color-scheme: dark)").matches
+        ? "light"
+        : "dark";
+    } else {
+      preference = preference === "light" ? "dark" : "light";
+    }
     try {
       localStorage.setItem("sg-theme", preference);
     } catch {
@@ -40,6 +44,54 @@ controls.forEach((control) =>
     apply();
   }),
 );
+
+const projectToc = document.querySelector<HTMLElement>("[data-project-toc]");
+if (projectToc && "IntersectionObserver" in window) {
+  const links = Array.from(
+    projectToc.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'),
+  );
+  const tracked = links
+    .map((link) => {
+      const id = decodeURIComponent(link.hash.slice(1));
+      const heading = document.getElementById(id);
+      return heading instanceof HTMLHeadingElement && heading.tagName === "H2"
+        ? { heading, link }
+        : undefined;
+    })
+    .filter((item) => item !== undefined);
+
+  if (tracked.length > 0) {
+    const setCurrent = (active: HTMLAnchorElement) => {
+      links.forEach((link) => {
+        if (link === active) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      });
+    };
+    const headerOffset =
+      Number.parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--header-height",
+        ),
+      ) + 40;
+    const observer = new IntersectionObserver(
+      () => {
+        const active =
+          tracked.findLast(
+            ({ heading }) =>
+              heading.getBoundingClientRect().top <= headerOffset,
+          ) ?? tracked[0];
+        setCurrent(active.link);
+      },
+      {
+        rootMargin: `-${headerOffset}px 0px -65% 0px`,
+        threshold: 0,
+      },
+    );
+    tracked.forEach(({ heading }) => observer.observe(heading));
+    setCurrent(tracked[0].link);
+  }
+}
+
 const menu = document.querySelector<HTMLDetailsElement>(".mobile-menu");
 function closeMenu(restore = false) {
   if (!menu?.open) return;
