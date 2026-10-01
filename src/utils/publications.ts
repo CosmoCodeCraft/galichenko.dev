@@ -4,9 +4,9 @@ export type Publication = CollectionEntry<"publications">;
 export type PublicationAuthor = Publication["data"]["authorsOriginal"][number];
 
 export function authorName(author: PublicationAuthor) {
-  return author.given
-    ? `${author.family} ${author.given.replaceAll(" ", "")}`
-    : author.family;
+  const family = author.family.trim().replace(/\s+/g, " ");
+  const given = author.given?.trim().replace(/\s+/g, " ");
+  return given ? `${family} ${given}` : family;
 }
 
 export function isSergey(author: PublicationAuthor) {
