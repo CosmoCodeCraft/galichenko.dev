@@ -1032,6 +1032,8 @@ footer a {
   transform: translateY(-50%);
 }
 .research-year {
+  grid-column: 2;
+  grid-row: 1;
   padding-left: 20px;
   color: var(--accent);
   font: 15px/1.5 var(--font-mono);
