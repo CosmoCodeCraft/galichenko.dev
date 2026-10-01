@@ -1,0 +1,198 @@
+---
+{
+  "id": "galichenko-dev",
+  "slug": "galichenko-dev",
+  "locale": "en",
+  "translationKey": "galichenko-dev",
+  "title": "galichenko.dev — Personal Portfolio & Research Archive",
+  "shortTitle": "galichenko.dev",
+  "summary": "A static personal website designed as a maintainable, structured archive for engineering projects, research publications and technical notes rather than as a one-off portfolio page.",
+  "detailSummary": "A static personal website designed as a maintainable, structured archive for engineering projects, research publications and technical notes rather than as a one-off portfolio page.",
+  "detailStatus": "Ongoing",
+  "detailRole": "Product & Software Engineering",
+  "detailStack":
+    [
+      "Astro",
+      "TypeScript",
+      "MDX / Content Collections",
+      "GitHub Actions",
+      "GitHub Pages",
+    ],
+  "outcome": "Deployed on GitHub Pages with a custom domain, typed content collections, publication detail pages, research-resource handling and automated deployment.",
+  "outcomeLabel": "currentState",
+  "status": "ongoing",
+  "startDate": "2026-09",
+  "present": true,
+  "featured": false,
+  "cardRole": "Software Engineering",
+  "role": "Product & Software Engineering",
+  "tags": ["Astro / TypeScript", "Content architecture", "Static deployment"],
+  "technologies":
+    [
+      { "name": "Astro", "state": "implemented" },
+      { "name": "TypeScript", "state": "implemented" },
+      { "name": "MDX / Content Collections", "state": "implemented" },
+      { "name": "GitHub Actions", "state": "implemented" },
+      { "name": "GitHub Pages", "state": "implemented" },
+    ],
+  "coverPlaceholder": "Website interface",
+  "detailHero": { "placeholder": "Home page screenshot", "alt": "" },
+  "links":
+    [
+      {
+        "label": "View source on GitHub",
+        "url": "https://github.com/CosmoCodeCraft/galichenko.dev",
+      },
+    ],
+  "relatedProjects": ["sird"],
+}
+---
+
+import ProjectMedia from "../../../components/project/ProjectMedia.astro";
+
+## Designing the portfolio before building it
+
+The project started from a simple requirement — create a personal website that could be shared with employers, faculty and colleagues.
+
+Instead of starting directly with implementation, I first treated the site as a small software-engineering project.
+
+The requirements were shaped around several different reading scenarios:
+
+- a hiring manager scanning projects quickly;
+- a technical lead evaluating engineering depth;
+- a faculty member looking for research publications;
+- a colleague following a direct link to a specific project or publication.
+
+This led to a deliberate separation between Home for a fast first impression, Projects / Research / Notes as browsable archives, and detail pages for deeper technical or scholarly information.
+
+The site was therefore designed around information hierarchy and maintainability rather than around a highly decorative portfolio interface.
+
+## Different views for different reading depth
+
+Projects and publications are represented at several levels rather than reused as identical cards everywhere.
+
+Featured project cards on the Home page answer: “Is this project worth opening?”
+
+The Projects archive provides chronological context and makes projects easier to compare.
+
+Project detail pages explain the engineering problem, personal contribution, technical decisions and evidence.
+
+Research follows a similar model: the archive provides a compact publication history, while individual publication pages contain abstracts, bibliographic metadata, identifiers and access to available full-text resources.
+
+This separation keeps overview pages concise while allowing detail pages to contain substantially richer information.
+
+<ProjectMedia label="Project and research detail interface" role="content" />
+
+## Static-first architecture
+
+The site uses Astro and TypeScript with a static-first architecture.
+
+Projects, publications and notes are stored as structured content rather than hard-coded directly into page components.
+
+Typed content schemas define the metadata required for each content type, allowing ordinary additions to be made through content files without changing the rendering components.
+
+Static generation was chosen because the current site does not require a runtime backend or database.
+
+This keeps deployment simple, reduces operational overhead and makes most content available without client-side JavaScript.
+
+## Treating publications as structured data
+
+Research publications required a richer content model than ordinary portfolio links.
+
+Publication records support structured metadata such as:
+
+- original and English titles;
+- authors;
+- publication type and status;
+- source and conference information;
+- abstracts and keywords;
+- eLIBRARY and EDN identifiers;
+- local publication PDFs;
+- external scholarly resources;
+- related projects.
+
+This allows the same record to power the Research archive, publication detail page, sitemap and citation functionality without duplicating metadata across components.
+
+## Static content instead of a CMS
+
+A CMS would add authentication, hosting and runtime complexity without solving a current requirement.
+
+The content changes relatively infrequently and is maintained by one person, so typed files inside the repository provide a simpler source of truth.
+
+The architecture still separates content from presentation, which keeps future migration possible without introducing a content-management system before it is needed.
+
+## Building localization into the structure early
+
+English is currently the public site language, but the content and routing architecture was designed with future Russian localization in mind.
+
+The goal was not to build the Russian version immediately, but to avoid coupling content, routes and UI so tightly to one language that localization would later require rewriting the site's structure.
+
+## Research archive and citation tooling
+
+The Research section evolved beyond a simple publication list.
+
+Individual publication pages can expose locally hosted publication PDFs, external full-text resources, eLIBRARY records and EDN identifiers where they exist.
+
+The site also includes a deterministic “Cite this work” tool for generating citations from structured publication metadata.
+
+Supported citation formats currently include GOST R 7.0.5–2008, IEEE, APA 7 and BibTeX.
+
+Citation generation is based on stored metadata rather than runtime requests to external scholarly services.
+
+## Keeping research outputs directly accessible
+
+Where article-level publication extracts are available, the site stores cleanly named PDF assets and exposes them through the corresponding publication record.
+
+This provides a stable first-party download while preserving links to external scholarly records and publisher resources.
+
+The publication model distinguishes local PDFs, external full text, publisher pages, eLIBRARY records and EDN rather than treating every resource as an interchangeable link.
+
+## Automated static deployment
+
+The site is deployed through GitHub Actions to GitHub Pages and served through the custom sergeygalichenko.dev domain.
+
+The deployment workflow validates the project and builds the static site before publishing the generated output.
+
+The current architecture therefore has no separately managed application server or database.
+
+Content, application code and deployment configuration remain version-controlled together.
+
+## AI-assisted implementation workflow
+
+Implementation has been developed with extensive AI assistance, primarily through Codex.
+
+My role in that workflow is to define the requirements, information architecture, content model and acceptance criteria, review implementation changes, identify incorrect assumptions or regressions, and decide which proposed solutions become part of the site.
+
+The development process therefore treats AI as an implementation tool rather than as the source of product requirements or technical ownership.
+
+## Evolving the model without rebuilding the site
+
+The site's content model has expanded incrementally.
+
+Research originally contained only a small selected publication list, then grew into a structured archive with identifiers, publication detail routes, citations and downloadable PDFs.
+
+Project pages similarly evolved from short cards into case-study-oriented detail pages.
+
+These additions were implemented by extending the underlying content model rather than replacing the overall site architecture.
+
+This is an important objective of the project: new content capabilities should generally be added through structured data and reusable components instead of one-off pages.
+
+## Current scope
+
+The site remains intentionally static and relatively small.
+
+It does not currently require:
+
+- a runtime backend;
+- a database;
+- user accounts;
+- a CMS;
+- complex analytics infrastructure.
+
+Notes are still an early part of the content model, and localization is designed for but not yet complete.
+
+The project should not manufacture infrastructure complexity only to make the portfolio appear more technically advanced.
+
+## Evidence
+
+The live website is the strongest evidence. Supporting evidence includes the public repository structure, typed Content Collections, publication schema, GitHub Actions deployment workflow, Research archive, publication detail pages, citation tool, locally served publication PDFs and responsive project/research archive implementation.

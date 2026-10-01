@@ -1,6 +1,6 @@
-# galichenko.dev — Phase 1
+# galichenko.dev
 
-Static Astro + strict TypeScript portfolio. English Home is complete for visual review; section and detail routes are deliberately minimal skeletons. GitHub Pages deployment is handled by the repository workflow.
+Static Astro + strict TypeScript portfolio. English Home, collection archives, publication details and project case studies are content-driven; About and CV remain temporary routes. GitHub Pages deployment is handled by the repository workflow.
 
 ## Local development
 
@@ -31,7 +31,7 @@ Tests run against the production build. Screenshots are written to `docs/screens
 src/
   assets/covers/          Original illustrative SVGs
   components/home/       Independent Home sections
-  components/            Header, cards, rows, figures
+  components/            Header, cards, figures and detail-page shells
   config/                Site, navigation and Home order
   content/               Projects, publications, notes and profile data
   content.config.ts      Validated content schemas
@@ -46,9 +46,9 @@ docs/deployment.md       GitHub Pages deployment guide
 
 ## Content boundaries
 
-Project visuals are illustrative placeholders; no photographic evidence was supplied. SIRD technologies and unknown dates/venues are not invented. The UralCon paper remains accepted, not published. Russian UI is ready but its pages are disabled until translations are supplied. Skeleton pages are noindex and excluded from sitemap.
+Project covers remain illustrative and project case studies use labelled neutral media placeholders until real photographs, diagrams and results are supplied. SIRD technologies and unknown dates/venues are not invented. The UralCon paper remains accepted, not published. Russian UI is ready but its pages are disabled until translations are supplied. Substantive project and publication details are indexed; unfinished About/CV routes remain noindex.
 
-Phase 2—full archives, detailed case studies, Notes, About, CV and hero animation—has not begun.
+About, CV, Russian content, real project media and hero animation remain outside the current scope.
 
 In this Codex workspace, Node/pnpm are bundled rather than on the shell PATH. To use the existing installation:
 

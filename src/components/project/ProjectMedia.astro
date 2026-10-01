@@ -1,0 +1,62 @@
+---
+import type { ImageMetadata } from "astro";
+import Figure from "../Figure.astro";
+
+interface Props {
+  src?: ImageMetadata;
+  alt?: string;
+  caption?: string;
+  label?: string;
+  role?: "hero" | "content" | "diagram" | "result" | "hardware";
+  cropAllowed?: boolean;
+  focalPoint?: { x: number; y: number };
+  ratio?: "16:9" | "3:2" | "wide";
+  wide?: boolean;
+  loading?: "lazy" | "eager";
+}
+
+const {
+  src,
+  alt = "",
+  caption,
+  label,
+  role = "content",
+  cropAllowed = false,
+  focalPoint,
+  ratio = "16:9",
+  wide = true,
+  loading = "lazy",
+} = Astro.props;
+---
+
+{
+  src ? (
+    <div class:list={["project-media", { "project-media--wide": wide }]}>
+      <Figure
+        src={src}
+        alt={alt}
+        caption={caption}
+        role={role}
+        cropAllowed={cropAllowed}
+        focalPoint={focalPoint}
+        sizes="(max-width: 42rem) calc(100vw - 44px), 1000px"
+        loading={loading}
+      />
+    </div>
+  ) : (
+    <figure
+      class:list={[
+        "project-media",
+        "project-media-placeholder",
+        `project-media-ratio-${ratio.replace(":", "-")}`,
+        { "project-media--wide": wide },
+      ]}
+      data-role={role}
+    >
+      <div aria-hidden="true">
+        <span>{label}</span>
+      </div>
+      {caption && <figcaption>{caption}</figcaption>}
+    </figure>
+  )
+}

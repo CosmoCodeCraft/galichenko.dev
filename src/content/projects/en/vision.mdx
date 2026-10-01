@@ -6,9 +6,17 @@
   "translationKey": "vision",
   "title": "Computer Vision for Aeroponic Irrigation Monitoring",
   "summary": "A computer-vision system that evaluates aeroponic irrigation from video and distinguishes normal and degraded irrigation modes.",
+  "detailSummary": "A hardware-software monitoring system that uses computer vision as an additional diagnostic channel for aeroponic irrigation, allowing the system to observe changes in the spatial spray pattern that pressure and flow measurements alone cannot describe.",
+  "detailStatus": "Completed research phase",
+  "detailRole": "Developer & Researcher",
+  "roleDetails": "System architecture, computer vision, embedded control, experimental design and data analysis",
+  "detailStack":
+    ["C++", "OpenCV", "Python", "Raspberry Pi 4", "ATmega328P", "Sony IMX219"],
+  "outcome": "Working research prototype and automated video-analysis pipeline, experimentally evaluated across 44 irrigation cycles.",
+  "outcomeLabel": "outcome",
   "status": "completed",
-  "startDate": null,
-  "endDate": "2026",
+  "startDate": "2025-01",
+  "endDate": "2026-06",
   "featured": true,
   "featuredOrder": 1,
   "cardRole": "Developer & Researcher",
@@ -18,9 +26,10 @@
     [
       { "name": "C++", "state": "implemented" },
       { "name": "OpenCV", "state": "implemented" },
-      { "name": "Raspberry Pi", "state": "implemented" },
+      { "name": "Raspberry Pi 4", "state": "implemented" },
       { "name": "ATmega328P", "state": "implemented" },
       { "name": "Python", "state": "implemented" },
+      { "name": "Sony IMX219", "state": "implemented" },
     ],
   "cover":
     {
@@ -29,23 +38,130 @@
       "caption": "Schematic cover · illustrative",
       "cropAllowed": false,
     },
+  "detailHero": { "placeholder": "Installation photograph", "alt": "" },
   "links":
     [
       {
-        "label": "GitHub",
+        "label": "View source on GitHub",
         "url": "https://github.com/CosmoCodeCraft/Optical-analyzer-of-nozzle",
       },
     ],
-  "evidence":
+  "relatedPublications":
     [
-      {
-        "label": "Thesis: full PDF available on request",
-        "state": "implemented",
-      },
-      {
-        "label": "A Computer Vision Approach to Automated Monitoring of Aeroponic Nozzle Operation — accepted for publication (UralCon)",
-        "state": "implemented",
-      },
+      "uralcon-aeroponic-nozzle-monitoring",
+      "aeroponic-irrigation-system-architecture",
     ],
+  "relatedProjects": ["city-farm"],
 }
 ---
+
+import ProjectMedia from "../../../components/project/ProjectMedia.astro";
+import ProjectPublicationLinks from "../../../components/project/ProjectPublicationLinks.astro";
+
+## Why another irrigation monitoring channel?
+
+The project grew out of a recurring problem encountered during the earlier City Farm work: aeroponic nozzles could clog between laboratory visits, while the installations could typically be checked only once or twice a week.
+
+A fully blocked nozzle can leave part of the root zone without adequate irrigation long enough to damage plants.
+
+Pressure and flow sensors remain useful, but they primarily describe the hydraulic circuit as a whole. They do not directly show how irrigation is distributed inside the root chamber or whether a local region has stopped receiving spray.
+
+The project therefore investigated whether a conventional camera and computationally inexpensive image processing could provide an additional diagnostic channel without replacing traditional hydraulic measurements.
+
+Development started with a rough Python proof of concept in January 2025. An early version of the idea was presented at СНК-2025 as «Разработка системы управления аэропонной фермой с применением технического зрения».
+
+Active development continued through the experimental validation and completion of the bachelor thesis in June 2026.
+
+## Three-level monitoring and control architecture
+
+The system separates equipment control, image processing and operator-facing diagnostics into three levels.
+
+The microcontroller level handles sensors, actuators and execution of the irrigation cycle.
+
+The computing level uses a Raspberry Pi 4 and camera subsystem for video acquisition, image processing and calculation of diagnostic descriptors.
+
+The supervisory level stores experimental and diagnostic data and presents the results to the operator.
+
+This separation keeps deterministic equipment control independent from the more computationally demanding vision pipeline. A protective algorithm at the microcontroller level can maintain the irrigation cycle if the computing module does not respond.
+
+<ProjectMedia label="Architecture diagram" role="diagram" />
+
+## My contribution
+
+I developed the monitoring and control concept around an aeroponic installation inherited from the City Farm project.
+
+My work covered system architecture, embedded control logic, the C++/OpenCV processing pipeline, supporting Python tooling, experimental design and statistical analysis.
+
+I also developed the workflow for automated processing of recorded experiments: the software can load a video, calculate diagnostic values, store results in tabular form, display processed imagery and update graphs during processing.
+
+Evgeniy Pikalov supervised the research. He helped refine the research objective and tasks, reviewed the software architecture, participated in experimental planning and supervision, and encouraged operator-oriented interpretation of the results. He also proposed evaluating edge-based descriptors alongside intensity-based methods.
+
+## Synchronizing vision with the irrigation cycle
+
+Image processing was designed around the technological cycle rather than as an independent camera pipeline.
+
+Reference/background acquisition and active irrigation analysis are synchronized with the OFF and ON phases of the cycle. This gives the vision algorithms a known reference state and lets the microcontroller, computing and supervisory levels operate around the same process.
+
+This synchronization became one of the key architectural ideas of the project.
+
+## Interpretable computer vision on CPU-only hardware
+
+The project deliberately evaluated lightweight classical computer-vision methods before considering more complex learning-based approaches.
+
+The pipeline included background difference, reference-relative binary coverage and structural descriptors based on Sobel, Canny and Laplacian processing.
+
+The objective was not only classification performance, but also interpretability and the ability to run on inexpensive general-purpose hardware such as a Raspberry Pi 4 without a dedicated accelerator.
+
+<ProjectMedia label="Processed-frame comparison" role="result" />
+
+## Camera integration
+
+Camera integration was one of the practical implementation challenges.
+
+Several acquisition approaches had to be tested and configured before a stable camera workflow was achieved.
+
+For the final experimental data set, video was recorded under fixed geometry using a smartphone camera at Full HD / 30 FPS; the Raspberry Pi 4 was evaluated separately as the target embedded processing platform.
+
+## Experimental validation
+
+The main data set contained 26,319 frames from 44 irrigation cycles: 22 cycles in the reference five-nozzle condition and 22 in a controlled three-nozzle condition.
+
+All six evaluated descriptors showed statistically significant separation between the two active operating conditions.
+
+Background difference was selected as the primary descriptor because it combined straightforward interpretation with low computational cost.
+
+Reference-relative binary coverage provided complementary information about the spatial extent of image changes, while edge-based descriptors added structural information.
+
+<ProjectMedia label="Experimental result" role="result" />
+
+## Embedded feasibility
+
+A separate benchmark on Raspberry Pi 4 showed that each evaluated processing branch was individually compatible with a 30 FPS processing target for recorded Full HD frames.
+
+The benchmark measured algorithm processing time rather than complete camera-to-decision latency, so it should not be presented as an end-to-end 30 FPS guarantee.
+
+## Limitations
+
+The current results represent controlled experimental validation, not production deployment.
+
+The camera geometry and illumination were fixed.
+
+The same two nozzles were closed in every reduced-condition cycle, so the experiment does not cover every possible fault location.
+
+The main experimental series was recorded in consecutive condition blocks rather than a fully randomized sequence.
+
+Partial clogging, gradual degradation and changing optical conditions require additional validation.
+
+The vision channel observes the visible spray pattern but does not directly measure nutrient-solution deposition on individual roots. It is therefore intended to complement, not replace, hydraulic instrumentation.
+
+## Outputs
+
+The source code is available in the project repository linked above. The related research outputs are resolved from the publication collection:
+
+<ProjectPublicationLinks
+  ids={[
+    "uralcon-aeroponic-nozzle-monitoring",
+    "aeroponic-irrigation-system-architecture",
+  ]}
+  locale="en"
+/>

@@ -6,8 +6,22 @@
   "translationKey": "sird",
   "title": "SIRD — Intelligent Data Recognition System",
   "summary": "An internal document-recognition service. My role focuses on service integration and reproducible deployment of the MVP.",
+  "detailSummary": "A team project to build an internal document-recognition service for structured data extraction and integration with HSE information systems.",
+  "detailStatus": "Ongoing",
+  "detailRole": "DevOps / Integration Engineer",
+  "detailStack":
+    [
+      "Docker",
+      "Docker Compose",
+      "FastAPI / Uvicorn",
+      "PostgreSQL",
+      "HTTP service integration",
+    ],
+  "outcome": "Local integration lab verified with independently containerized backend and recognition services plus PostgreSQL. The full OCR MVP is still in development.",
+  "outcomeLabel": "currentState",
   "status": "ongoing",
-  "startDate": null,
+  "startDate": "2026",
+  "present": true,
   "featured": true,
   "featuredOrder": 2,
   "cardRole": "DevOps & Integration Engineer",
@@ -15,10 +29,11 @@
   "tags": ["DevOps", "Systems integration", "OCR"],
   "technologies":
     [
-      { "name": "Docker", "state": "implemented" },
-      { "name": "Docker Compose", "state": "implemented" },
-      { "name": "FastAPI", "state": "implemented" },
-      { "name": "PostgreSQL", "state": "implemented" },
+      { "name": "Docker", "state": "verified" },
+      { "name": "Docker Compose", "state": "verified" },
+      { "name": "FastAPI / Uvicorn", "state": "verified" },
+      { "name": "PostgreSQL", "state": "verified" },
+      { "name": "HTTP service integration", "state": "verified" },
     ],
   "cover":
     {
@@ -27,6 +42,109 @@
       "caption": "Schematic cover · illustrative",
       "cropAllowed": false,
     },
-  "present": true,
+  "detailHero":
+    { "placeholder": "Current verified integration lab", "alt": "" },
+  "relatedProjects": ["galichenko-dev"],
 }
 ---
+
+## Project context
+
+SIRD is being developed as an internal service for extracting structured data from documents while keeping business validation inside the consuming information system.
+
+The current MVP scope focuses on several forms of SNILS documents.
+
+The intended flow is:
+
+photo or scan → recognition → structured fields, status and diagnostics → consumer application.
+
+The service is not intended to make final administrative decisions. When a field cannot be read reliably, the system should return an unresolved or partial result rather than inventing a value.
+
+## My role
+
+I work on SIRD as DevOps / Integration Engineer, with responsibility focused on local deployment, service integration and infrastructure-level troubleshooting.
+
+My first practical objective was to establish a reproducible integration environment in which independently containerized components could communicate and be tested together.
+
+## Current verified integration lab
+
+The verified local environment currently consists of three Docker Compose services:
+
+Backend → Recognition mock → PostgreSQL
+
+The backend and recognition components communicate over HTTP inside the Compose network.
+
+The integration was verified using real requests and logs from both services rather than only isolated health checks.
+
+PostgreSQL connectivity was verified from the application layer, including SQL execution.
+
+Database persistence was also tested by recreating the database container and confirming that data stored in the Docker named volume remained available.
+
+## Debugging service-to-service networking
+
+One of the first integration failures came from configuring the backend with `RECOGNITION_URL=http://localhost:8081`.
+
+From the host this looked reasonable, but inside the backend container `localhost` referred to the backend container itself, not the recognition service.
+
+I traced the problem through health checks, Docker network inspection and internal DNS, then moved the connection to Docker service discovery.
+
+After configuring the backend to address Recognition through its internal service hostname and container port, the complete Backend → Recognition → Backend request succeeded.
+
+Logs from both services confirmed that the request had actually crossed the service boundary.
+
+This is one of the primary concrete engineering examples for the case study.
+
+## Verifying persistence, not just connectivity
+
+Database verification went beyond confirming that the PostgreSQL container was running.
+
+The backend successfully resolved the Compose database hostname, connected to PostgreSQL and executed SQL.
+
+A test record was then stored in a named Docker volume, the database container was removed and recreated, and the record remained available afterwards.
+
+This verified that persistent data was independent from the container lifecycle.
+
+## Reducing unnecessary service boundaries
+
+I also participated in an architecture review of an early design that decomposed the processing pipeline into several separately deployable services.
+
+The review questioned whether those boundaries provided enough value in independent scaling, deployment or failure isolation to justify their operational cost.
+
+The team subsequently reconsidered the original five-service decomposition and moved toward a simpler design, while retaining asynchronous-processing concepts where they provide a clear benefit.
+
+The review also surfaced open questions around task granularity, partial success, retry behaviour, ownership, authentication and observability.
+
+## Target architecture is not current implementation
+
+Project documentation describes a broader target platform including components for asynchronous processing, authentication, object storage, observability and user-facing interfaces.
+
+Those components represent the intended MVP or later architecture, not the currently verified runtime.
+
+The current verified implementation and target MVP architecture remain separate descriptions; they are not combined into one runtime diagram.
+
+## Current state
+
+The local integration environment is operational and reproducible. Backend and Recognition mock start independently in Docker Compose, communicate over the Compose network, and connect to PostgreSQL from the application layer. SQL execution and persistence across database-container recreation have been verified.
+
+Production SNILS OCR, the persistent business job/result model, asynchronous messaging, authentication, CI/CD, observability, cloud orchestration and production HSE integration remain ongoing work or target architecture rather than verified implementation.
+
+## What the project has already changed
+
+The strongest lesson so far has been that infrastructure complexity should follow demonstrated system needs rather than precede them.
+
+The project started with a comparatively broad service decomposition and target technology stack.
+
+Working with the integration environment made the operational cost of each boundary more concrete and helped shift the design toward fewer deployable components and clearer responsibilities.
+
+For this project, the most useful work so far has not been adding more infrastructure tools, but making existing components communicate correctly, verifying persistence and challenging architecture assumptions before they become permanent.
+
+## Evidence
+
+The current reproducible environment can provide the following factual evidence when captured for the case study:
+
+- the Docker Compose architecture;
+- a successful `POST /documents` request;
+- backend and recognition logs showing HTTP 200 on both sides;
+- the `/db-check` result;
+- PostgreSQL persistence verification;
+- the current API contract.

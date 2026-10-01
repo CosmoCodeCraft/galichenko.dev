@@ -6,8 +6,16 @@
   "translationKey": "city-farm",
   "title": "City Farm",
   "summary": "An automated urban-farming installation combining embedded control, telemetry, and remote monitoring.",
+  "detailSummary": "A multidisciplinary engineering project that developed and operated several controlled-environment cultivation systems, combining embedded control, local infrastructure, experimental work and team coordination.",
+  "detailStatus": "Completed",
+  "detailRole": "Engineer → Project Lead",
+  "detailStack":
+    ["ATmega328P", "Raspberry Pi", "ESP32", "Linux", "Python", "UART", "Nginx"],
+  "outcome": "Multiple working aeroponic, hydroponic and mushroom-growing installations, with a project role that grew from engineering work to leadership of a team of approximately 12 people.",
+  "outcomeLabel": "outcome",
   "status": "completed",
   "startDate": "2024-02",
+  "endDate": "2025-06",
   "featured": true,
   "featuredOrder": 3,
   "cardRole": "Automation Engineer → Project Lead",
@@ -15,16 +23,18 @@
   "tags": ["Automation", "Linux", "Embedded systems"],
   "technologies":
     [
-      { "name": "Linux", "state": "implemented" },
+      { "name": "ATmega328P", "state": "implemented" },
       { "name": "Raspberry Pi", "state": "implemented" },
+      { "name": "ESP32", "state": "implemented" },
+      { "name": "Linux", "state": "implemented" },
+      { "name": "Python", "state": "implemented" },
+      { "name": "UART", "state": "implemented" },
       { "name": "Nginx", "state": "implemented" },
       { "name": "SSH", "state": "implemented" },
       { "name": "UFW", "state": "implemented" },
       { "name": "fail2ban", "state": "implemented" },
-      { "name": "Cloudflare Tunnel", "state": "implemented" },
       { "name": "Bash", "state": "implemented" },
-      { "name": "Python", "state": "implemented" },
-      { "name": "ESP32", "state": "implemented" },
+      { "name": "Cloudflare Tunnel", "state": "planned" },
     ],
   "cover":
     {
@@ -33,6 +43,102 @@
       "caption": "Schematic cover · illustrative",
       "cropAllowed": false,
     },
-  "endDate": "2025-06",
+  "detailHero": { "placeholder": "Overall installation photograph", "alt": "" },
+  "relatedProjects": ["vision"],
 }
 ---
+
+import ProjectMedia from "../../../components/project/ProjectMedia.astro";
+
+## A project larger than one installation
+
+City Farm was developed at Moscow Polytechnic University for ООО «НИЦЭР «ЭКЗОБИО» as part of project-based learning.
+
+The work covered several cultivation systems rather than a single prototype:
+
+- a horizontal aeroponic installation;
+- a vertical aeroponic installation;
+- a hydroponic installation;
+- a mushroom-growing installation.
+
+The horizontal aeroponic system was used for potato cultivation, while the hydroponic and vertical aeroponic systems were used for leafy greens and lettuce.
+
+The project combined mechanical construction, electronics, control systems, software, experimentation and day-to-day maintenance.
+
+<ProjectMedia label="Selected cultivation installations" role="content" />
+
+## From engineering work to project leadership
+
+My role expanded throughout the project.
+
+I started with technical research and literature analysis, then moved into hands-on engineering work with the installations and participation in project demonstrations and defences.
+
+I later worked on the automated control system and became lead of the horizontal aeroponic subproject, where I was responsible for developing, assembling and experimentally testing the installation.
+
+I eventually became lead of the wider project team.
+
+At that stage my responsibilities included coordination of the vertical aeroponic installation, keeping the hydroponic system operational, development and improvement of the control system, scientific work, project presentations, task assignment, evaluation of completed work and coordination of the team.
+
+## Control and local integration
+
+The control system used an ATmega328P-based embedded layer connected to a Raspberry Pi over UART.
+
+The Raspberry Pi acted as a local server and higher-level computing node.
+
+A web interface running on the Raspberry Pi was developed as a higher-level control interface.
+
+For local control, an ESP32 was also used as a web server: an operator could connect directly to its Wi-Fi network, open the hosted interface and control the installation without requiring an external server connection.
+
+The ESP32 implementation is preserved in the project repository.
+
+Ethernet integration with the organisation's internal network was planned for a later environment and should not be presented as an implemented production capability.
+
+<ProjectMedia label="Controller and electronics" role="hardware" />
+
+## Rebuilding the Raspberry Pi server securely
+
+The first Raspberry Pi server configuration exposed an important gap in the initial infrastructure design: security had not been treated as a first-class requirement.
+
+After identifying the problem, I rebuilt the server from a clean OS installation and hardened the environment.
+
+The rebuilt setup included firewall rules, SSH access using keys, brute-force protection, Nginx configuration and Cloudflare-side security rules and event analytics.
+
+Cloudflare Tunnel was evaluated as a way to expose the Raspberry Pi and ESP32 services without direct inbound access, but it was not successfully brought into operation.
+
+## Automating experiment analysis
+
+Operational and experimental logs were analysed with Python.
+
+I wrote scripts that processed tabular log data, calculated statistics and generated graphs automatically.
+
+This reduced the amount of repetitive manual analysis required after experiments and made it easier to compare system behaviour between runs.
+
+## Leading a multidisciplinary student team
+
+As project lead, I became responsible not only for technical components but for the overall project result.
+
+I assigned tasks, reviewed completed work, coordinated project meetings and organised additional sessions when major problems were discovered.
+
+I introduced Jira and Yandex Boards to make work and ownership more visible.
+
+I also worked on continuity inside the team: experienced members were expected to help onboard and train incoming junior students rather than allowing knowledge to remain concentrated in a few participants.
+
+The team involved approximately 12 people.
+
+## Outcome
+
+By the end of the project, the installations remained assembled and operational.
+
+The result was not only project documentation: the team left behind working aeroponic, hydroponic and mushroom-growing systems.
+
+A separate vertical aeroponic demonstrator using an ultrasonic humidifier also remained operational and continues to be used at Moscow Polytechnic open days.
+
+The City Farm infrastructure and practical experience with repeated nozzle clogging later became the starting point for the independent Computer Vision for Aeroponic Irrigation Monitoring project.
+
+<ProjectMedia label="Installation and system architecture" role="diagram" />
+
+## Research and project activity
+
+During the project period I also submitted work to competitions and continued the research direction around controlled-environment agriculture.
+
+In 2025 I received the PIK award «Персона года в научно-исследовательской деятельности».

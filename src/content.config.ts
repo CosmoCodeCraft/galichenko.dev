@@ -19,6 +19,13 @@ const projects = defineCollection({
       title: z.string(),
       shortTitle: z.string().optional(),
       summary: z.string(),
+      detailSummary: z.string().optional(),
+      detailStatus: z.string().optional(),
+      detailRole: z.string().optional(),
+      roleDetails: z.string().optional(),
+      detailStack: z.array(z.string()).optional(),
+      outcome: z.string().optional(),
+      outcomeLabel: z.enum(["outcome", "currentState"]).optional(),
       status: z.enum(["completed", "ongoing", "planned"]),
       startDate: date.nullable(),
       endDate: date.optional(),
@@ -29,29 +36,56 @@ const projects = defineCollection({
       cardRole: z.string().optional(),
       tags: z.array(z.string()),
       technologies: z.array(z.object({ name: z.string(), state })),
-      cover: z.object({
-        src: image(),
-        alt: z.string(),
-        caption: z.string().optional(),
-        role: z
-          .enum([
-            "cover",
-            "hero",
-            "content",
-            "diagram",
-            "result",
-            "hardware",
-            "gallery",
-          ])
-          .default("cover"),
-        cropAllowed: z.boolean().default(false),
-        focalPoint: z
-          .object({
-            x: z.number().min(0).max(100),
-            y: z.number().min(0).max(100),
-          })
-          .optional(),
-      }),
+      cover: z
+        .object({
+          src: image(),
+          alt: z.string(),
+          caption: z.string().optional(),
+          role: z
+            .enum([
+              "cover",
+              "hero",
+              "content",
+              "diagram",
+              "result",
+              "hardware",
+              "gallery",
+            ])
+            .default("cover"),
+          cropAllowed: z.boolean().default(false),
+          focalPoint: z
+            .object({
+              x: z.number().min(0).max(100),
+              y: z.number().min(0).max(100),
+            })
+            .optional(),
+        })
+        .optional(),
+      coverPlaceholder: z.string().optional(),
+      detailHero: z
+        .object({
+          src: image().optional(),
+          alt: z.string().default(""),
+          caption: z.string().optional(),
+          placeholder: z.string().optional(),
+          cropAllowed: z.boolean().default(false),
+          focalPoint: z
+            .object({
+              x: z.number().min(0).max(100),
+              y: z.number().min(0).max(100),
+            })
+            .optional(),
+        })
+        .refine(
+          (media) =>
+            Boolean(media.src || media.placeholder) &&
+            (!media.src || media.alt.trim().length > 0),
+          {
+            message:
+              "Detail hero requires a placeholder label, or an image with alt text",
+          },
+        )
+        .optional(),
       links: z.array(link).optional(),
       evidence: z
         .array(
@@ -63,6 +97,7 @@ const projects = defineCollection({
         )
         .optional(),
       relatedPublications: z.array(z.string()).optional(),
+      relatedProjects: z.array(z.string()).optional(),
       updatedAt: date.optional(),
     }),
 });

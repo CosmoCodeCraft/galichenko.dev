@@ -1,0 +1,161 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import { formatDate, route, t, type Locale } from "../../i18n";
+import { entryPath } from "../../utils/content";
+import ProjectMedia from "./ProjectMedia.astro";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  locale: Locale;
+}
+
+const { project, locale } = Astro.props;
+const p = project.data;
+const d = t(locale);
+const { Content } = await render(project);
+
+function projectPeriod() {
+  if (p.startDate && p.endDate)
+    return `${formatDate(p.startDate, locale)} — ${formatDate(p.endDate, locale)}`;
+  if (p.startDate && p.present)
+    return `${formatDate(p.startDate, locale)} — ${d.present}`;
+  if (p.endDate) return formatDate(p.endDate, locale);
+  if (p.startDate) return formatDate(p.startDate, locale);
+  if (p.present) return d.present;
+  return d[p.status];
+}
+
+const period = projectPeriod();
+const status = p.detailStatus ?? d[p.status];
+const stack =
+  p.detailStack ??
+  p.technologies
+    .filter((item) => item.state !== "planned")
+    .map((item) => item.name);
+const projects = await getCollection("projects");
+const relatedProjects = (p.relatedProjects ?? [])
+  .map((id) =>
+    projects.find(
+      (candidate) =>
+        candidate.data.id === id &&
+        candidate.data.locale === locale &&
+        !candidate.data.draft,
+    ),
+  )
+  .filter((candidate): candidate is CollectionEntry<"projects"> =>
+    Boolean(candidate),
+  );
+const publications = await getCollection("publications");
+const relatedPublications = (p.relatedPublications ?? [])
+  .map((id) =>
+    publications.find(
+      (candidate) =>
+        candidate.data.id === id &&
+        candidate.data.locale === locale &&
+        !candidate.data.draft,
+    ),
+  )
+  .filter((candidate): candidate is CollectionEntry<"publications"> =>
+    Boolean(candidate),
+  );
+const hasLinks = Boolean(p.links?.length || relatedPublications.length);
+---
+
+<article class="project-detail">
+  <header class="project-detail-header">
+    <a class="detail-kicker" href={route(locale, "projects")}>{d.projects}</a>
+    <p class="project-detail-eyebrow">
+      {d.project} · {status} · {period}
+    </p>
+    <h1>{p.title}</h1>
+    <p class="project-detail-summary">{p.detailSummary ?? p.summary}</p>
+
+    <dl class="project-quick-facts">
+      <div>
+        <dt>{d.role}</dt>
+        <dd>
+          <strong>{p.detailRole ?? p.cardRole ?? p.role}</strong>
+          {p.roleDetails && <span>{p.roleDetails}</span>}
+        </dd>
+      </div>
+      <div>
+        <dt>{d.period}</dt>
+        <dd>{period}</dd>
+      </div>
+      <div>
+        <dt>{d.status}</dt>
+        <dd>{status}</dd>
+      </div>
+      <div>
+        <dt>{d.stack}</dt>
+        <dd>{stack.join(" · ")}</dd>
+      </div>
+      {
+        p.outcome && (
+          <div class="project-fact-wide">
+            <dt>
+              {p.outcomeLabel === "currentState" ? d.currentState : d.outcome}
+            </dt>
+            <dd>{p.outcome}</dd>
+          </div>
+        )
+      }
+      {
+        hasLinks && (
+          <div class="project-fact-wide">
+            <dt>{d.usefulLinks}</dt>
+            <dd>
+              <ul class="project-resource-links">
+                {p.links?.map((link) => (
+                  <li>
+                    <a href={link.url}>{link.label}</a>
+                  </li>
+                ))}
+                {relatedPublications.map((publication) => (
+                  <li>
+                    <a href={entryPath(publication)}>
+                      {publication.data.titleOriginal}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        )
+      }
+    </dl>
+  </header>
+
+  {
+    p.detailHero && (
+      <ProjectMedia
+        {...p.detailHero}
+        label={p.detailHero.placeholder}
+        role="hero"
+        loading="eager"
+      />
+    )
+  }
+
+  <div class="project-case-study prose">
+    <Content />
+  </div>
+
+  {
+    relatedProjects.length > 0 && (
+      <nav class="project-related" aria-labelledby="project-related-heading">
+        <h2 id="project-related-heading">{d.relatedWork}</h2>
+        <ul>
+          {relatedProjects.map((related) => (
+            <li>
+              <a href={entryPath(related)}>
+                <span>{related.data.cardRole ?? related.data.role}</span>
+                <strong>{related.data.title}</strong>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+</article>

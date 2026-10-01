@@ -6,8 +6,9 @@ import Home from "../components/Home.astro";
 import ProjectsIndex from "../components/collection/ProjectsIndex.astro";
 import ResearchIndex from "../components/collection/ResearchIndex.astro";
 import NotesIndex from "../components/collection/NotesIndex.astro";
+import ProjectDetail from "../components/project/ProjectDetail.astro";
 import PublicationDetail from "../components/publication/PublicationDetail.astro";
-import { enabledLocales, route, t, formatDate, type Locale } from "../i18n";
+import { enabledLocales, route, t, type Locale } from "../i18n";
 import { navigation, site } from "../config/site";
 import { homeCopy } from "../config/home";
 import { entries, entryPath, type Entry } from "../utils/content";
@@ -42,6 +43,7 @@ const isHome = kind === "home";
 const isCollectionIndex =
   !entry && (kind === "projects" || kind === "research" || kind === "notes");
 const isPublication = entry?.collection === "publications";
+const isProject = entry?.collection === "projects";
 const title = isHome
   ? site.name
   : entry
@@ -80,7 +82,7 @@ const Content = rendered?.Content;
     ? `${site.name} — DevOps & Systems Integration Engineer`
     : `${title} — ${site.name}`}
   description={description}
-  noindex={!isHome && !isCollectionIndex && !isPublication}
+  noindex={!isHome && !isCollectionIndex && !isPublication && !isProject}
   alternates={alternates}
 >
   {
@@ -92,7 +94,9 @@ const Content = rendered?.Content;
       <ResearchIndex locale={locale} />
     ) : kind === "notes" && !entry ? (
       <NotesIndex locale={locale} />
-    ) : isPublication ? (
+    ) : entry?.collection === "projects" ? (
+      <ProjectDetail project={entry} locale={locale} />
+    ) : entry?.collection === "publications" ? (
       <PublicationDetail publication={entry} locale={locale} />
     ) : (
       <article class="skeleton">
@@ -104,53 +108,6 @@ const Content = rendered?.Content;
         {entry && (
           <>
             {"summary" in entry.data && <p>{entry.data.summary}</p>}
-            {"role" in entry.data && (
-              <>
-                <p>
-                  <strong>{d[entry.data.status]}</strong>
-                </p>
-                <h2>{d.role}</h2>
-                <p>{entry.data.role}</p>
-                {entry.data.startDate && (
-                  <p>
-                    {d.period}: {formatDate(entry.data.startDate, locale)} —{" "}
-                    {entry.data.endDate
-                      ? formatDate(entry.data.endDate, locale)
-                      : entry.data.present
-                        ? d.present
-                        : ""}
-                  </p>
-                )}
-                {entry.data.technologies.some((x) => x.state !== "planned") && (
-                  <>
-                    <h2>{d.technologies}</h2>
-                    <p>
-                      {entry.data.technologies
-                        .filter((x) => x.state !== "planned")
-                        .map((x) => x.name)
-                        .join(" · ")}
-                    </p>
-                  </>
-                )}
-                {(entry.data.links?.length || entry.data.evidence?.length) && (
-                  <>
-                    <h2>{d.links}</h2>
-                    <ul>
-                      {entry.data.links?.map((l) => (
-                        <li>
-                          <a href={l.url}>{l.label}</a>
-                        </li>
-                      ))}
-                      {entry.data.evidence?.map((e) => (
-                        <li>
-                          {e.url ? <a href={e.url}>{e.label}</a> : e.label}
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-              </>
-            )}
             {Content && (
               <div class="prose">
                 <Content />

@@ -15,7 +15,15 @@ const d = t(p.locale);
   class="project-card"
   href={entryPath(project)}
   aria-labelledby={`project-${p.id}`}
-  ><Figure {...p.cover} cover /><p class="metadata">
+  >{
+    p.cover ? (
+      <Figure {...p.cover} cover />
+    ) : (
+      <div class="cover project-cover-placeholder" aria-hidden="true">
+        <span>{p.coverPlaceholder ?? d.projectMedia}</span>
+      </div>
+    )
+  }<p class="metadata">
     <span>{d[p.status]}</span> · {p.cardRole ?? p.role}
   </p><h3 id={`project-${p.id}`}>{p.shortTitle ?? p.title}</h3><p
     class="description"
