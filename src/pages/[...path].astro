@@ -8,9 +8,11 @@ import ResearchIndex from "../components/collection/ResearchIndex.astro";
 import NotesIndex from "../components/collection/NotesIndex.astro";
 import ProjectDetail from "../components/project/ProjectDetail.astro";
 import PublicationDetail from "../components/publication/PublicationDetail.astro";
+import AboutPage from "../components/about/AboutPage.astro";
 import { enabledLocales, route, t, type Locale } from "../i18n";
 import { navigation, site } from "../config/site";
 import { homeCopy } from "../config/home";
+import { aboutContent } from "../content/about";
 import { entries, entryPath, type Entry } from "../utils/content";
 export const getStaticPaths = (async () => {
   const all = await entries();
@@ -42,6 +44,7 @@ const all = await entries();
 const isHome = kind === "home";
 const isCollectionIndex =
   !entry && (kind === "projects" || kind === "research" || kind === "notes");
+const isAbout = !entry && kind === "about";
 const isPublication = entry?.collection === "publications";
 const isProject = entry?.collection === "projects";
 const title = isHome
@@ -53,13 +56,15 @@ const title = isHome
     : d[kind as keyof typeof d];
 const description = isHome
   ? homeCopy[locale]?.intro
-  : isPublication
-    ? (entry.data.abstractEnglish ??
-      entry.data.titleEnglish ??
-      entry.data.titleOriginal)
-    : entry && "summary" in entry.data
-      ? entry.data.summary
-      : title;
+  : isAbout
+    ? aboutContent[locale]?.metaDescription
+    : isPublication
+      ? (entry.data.abstractEnglish ??
+        entry.data.titleEnglish ??
+        entry.data.titleOriginal)
+      : entry && "summary" in entry.data
+        ? entry.data.summary
+        : title;
 const alternates = entry
   ? all
       .filter(
@@ -82,7 +87,11 @@ const Content = rendered?.Content;
     ? `${site.name} — DevOps & Systems Integration Engineer`
     : `${title} — ${site.name}`}
   description={description}
-  noindex={!isHome && !isCollectionIndex && !isPublication && !isProject}
+  noindex={!isHome &&
+    !isCollectionIndex &&
+    !isPublication &&
+    !isProject &&
+    !isAbout}
   alternates={alternates}
 >
   {
@@ -94,6 +103,8 @@ const Content = rendered?.Content;
       <ResearchIndex locale={locale} />
     ) : kind === "notes" && !entry ? (
       <NotesIndex locale={locale} />
+    ) : isAbout ? (
+      <AboutPage locale={locale} />
     ) : entry?.collection === "projects" ? (
       <ProjectDetail project={entry} locale={locale} />
     ) : entry?.collection === "publications" ? (

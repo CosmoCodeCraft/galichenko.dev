@@ -53,6 +53,8 @@ export const en = {
     "A full write-up is being prepared. The information currently available is below.",
   emptyNotes: "No notes published yet.",
   backHome: "Back to Home",
+  viewCv: "View CV",
+  researchArchive: "Research archive",
   project: "Project",
   role: "Role",
   status: "Status",

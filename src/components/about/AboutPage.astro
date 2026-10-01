@@ -1,0 +1,191 @@
+---
+import { aboutContent } from "../../content/about";
+import { route, t, type Locale } from "../../i18n";
+import { site } from "../../config/site";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = aboutContent[locale];
+if (!content) throw new Error(`About content is missing for locale: ${locale}`);
+const d = t(locale);
+---
+
+<article class="about-page">
+  <header class="about-introduction">
+    <div class="about-introduction-copy">
+      <h1>{content.title}</h1>
+      <div class="about-lede">
+        {content.introduction.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </div>
+    <figure
+      class="about-portrait-placeholder"
+      role="img"
+      aria-label={content.portraitLabel}
+    >
+      <div aria-hidden="true"><span>{content.portraitLabel}</span></div>
+    </figure>
+  </header>
+
+  <section class="about-section" aria-labelledby="about-areas-heading">
+    <h2 id="about-areas-heading">{content.areasHeading}</h2>
+    <div class="about-areas">
+      {
+        content.areas.map((area) => (
+          <article>
+            <h3>{area.title}</h3>
+            <p>{area.description}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="about-section" aria-labelledby="about-experience-heading">
+    <h2 id="about-experience-heading">{content.experienceHeading}</h2>
+    <ol class="about-dated-list">
+      {
+        content.experience.map((experience) => (
+          <li class="about-dated-row">
+            <p class="about-date">{experience.period}</p>
+            <div class="about-row-content">
+              <h3>{experience.role}</h3>
+              <p class="about-organisation">{experience.organization}</p>
+              {experience.paragraphs.map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+              {experience.link && (
+                <a
+                  class="about-inline-link"
+                  href={route(locale, experience.link.path)}
+                >
+                  {experience.link.label}
+                </a>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section
+    class="about-section about-reading-section"
+    aria-labelledby="about-trajectory-heading"
+  >
+    <h2 id="about-trajectory-heading">{content.trajectoryHeading}</h2>
+    <div class="about-prose">
+      {content.trajectory.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+  </section>
+
+  <section class="about-section" aria-labelledby="about-education-heading">
+    <h2 id="about-education-heading">{content.educationHeading}</h2>
+    <ol class="about-dated-list about-education-list">
+      {
+        content.education.map((education) => (
+          <li class="about-dated-row">
+            <p class="about-date">{education.period}</p>
+            <div class="about-row-content">
+              <h3>{education.institution}</h3>
+              {education.programme.map((line) => (
+                <p>{line}</p>
+              ))}
+              {education.note && <p class="about-note">{education.note}</p>}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="about-section" aria-labelledby="about-research-heading">
+    <h2 id="about-research-heading">{content.researchHeading}</h2>
+    <div class="about-research-introduction about-prose">
+      {content.researchIntroduction.map((paragraph) => <p>{paragraph}</p>)}
+      <a class="about-inline-link" href={route(locale, "research")}>
+        {content.researchLinkLabel}
+      </a>
+    </div>
+
+    <div class="about-community">
+      <h3>{content.communityHeading}</h3>
+      <div class="about-prose">
+        {content.community.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </div>
+
+    <div class="about-recognition">
+      <h3>{content.recognitionHeading}</h3>
+      <ol>
+        {
+          content.recognition.map((item) => (
+            <li>
+              <p class="about-date">{item.year}</p>
+              <h4>{item.title}</h4>
+              <p class="about-distinction" lang={item.distinctionLanguage}>
+                {item.distinction}
+              </p>
+              <p>{item.context}</p>
+              <a class="about-inline-link" href={item.evidence.url}>
+                {item.evidence.label}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="about-section" aria-labelledby="about-mentions-heading">
+    <h2 id="about-mentions-heading">{content.mentionsHeading}</h2>
+    <ol class="about-mentions">
+      {
+        content.mentions.map((mention) => (
+          <li>
+            <p class="about-mention-meta">
+              <time>{mention.date}</time>
+              <span>{mention.source}</span>
+            </p>
+            <div>
+              <h3 lang={mention.titleLanguage}>{mention.title}</h3>
+              <p>{mention.context}</p>
+              <a class="about-inline-link" href={mention.link.url}>
+                {mention.link.label}
+              </a>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="about-section" aria-labelledby="about-principles-heading">
+    <h2 id="about-principles-heading">{content.principlesHeading}</h2>
+    <div class="about-principles">
+      {
+        content.principles.map((principle) => (
+          <article>
+            <h3>{principle.title}</h3>
+            {principle.paragraphs.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <nav class="about-continuation" aria-labelledby="about-continuation-heading">
+    <h2 id="about-continuation-heading">{content.continuationHeading}</h2>
+    <ul>
+      <li><a href={route(locale, "cv")}>{d.viewCv}</a></li>
+      <li><a href={site.github}>{d.github}</a></li>
+      <li><a href={route(locale, "research")}>{d.researchArchive}</a></li>
+      <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+    </ul>
+  </nav>
+</article>
