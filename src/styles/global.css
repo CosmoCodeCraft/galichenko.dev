@@ -829,6 +829,10 @@ footer a {
 }
 .project-archive {
   --timeline-spine: 144px;
+  --timeline-marker-column-start: 126px;
+  --timeline-marker-x: calc(
+    var(--timeline-spine) - var(--timeline-marker-column-start)
+  );
   position: relative;
 }
 .project-archive::before {
@@ -869,13 +873,13 @@ footer a {
   position: absolute;
   z-index: 1;
   top: 50%;
-  left: 13px;
+  left: var(--timeline-marker-x);
   width: 9px;
   height: 9px;
   border: 2px solid var(--secondary);
   border-radius: 50%;
   background: var(--background);
-  transform: translateY(-50%);
+  transform: translate(-50%, -50%);
 }
 .project-timeline-item.is-ongoing .project-timeline-marker::before {
   border-color: var(--accent);
@@ -886,8 +890,8 @@ footer a {
   content: "";
   position: absolute;
   top: 50%;
-  left: 23px;
-  width: 20px;
+  left: var(--timeline-marker-x);
+  width: calc(100% - var(--timeline-marker-x) + 7px);
   height: 1px;
   background: var(--line);
   transform: translateY(-50%);
@@ -940,10 +944,9 @@ footer a {
   color: var(--text);
   font-weight: 600;
 }
-.research-identifiers dl,
 .research-identifiers dl {
   display: grid;
-  grid-template-columns: max-content max-content;
+  grid-template-columns: repeat(4, max-content);
   gap: 8px 22px;
   margin: 0;
 }
@@ -956,7 +959,13 @@ footer a {
   font-family: var(--font-mono);
 }
 .research-archive {
-  --research-spine: calc(100% - 116px);
+  --research-marker-column: 42px;
+  --research-year-column: 96px;
+  --research-marker-x: calc(var(--research-marker-column) / 2);
+  --research-spine: calc(
+    100% - var(--research-marker-column) - var(--research-year-column) +
+      var(--research-marker-x)
+  );
   position: relative;
 }
 .research-archive::before {
@@ -971,14 +980,18 @@ footer a {
 .research-year-group {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 42px 96px;
+  grid-template-columns:
+    minmax(0, 1fr) var(--research-marker-column)
+    var(--research-year-column);
   align-items: start;
   padding: 36px 0;
 }
 .research-timeline-label {
   grid-column: 2 / 4;
   display: grid;
-  grid-template-columns: 42px 96px;
+  grid-template-columns: var(--research-marker-column) var(
+      --research-year-column
+    );
   align-items: center;
 }
 .research-year-publications {
@@ -990,7 +1003,7 @@ footer a {
 }
 .research-year-marker {
   position: relative;
-  width: 42px;
+  width: var(--research-marker-column);
   height: 24px;
 }
 .research-year-marker::before {
@@ -998,19 +1011,19 @@ footer a {
   position: absolute;
   z-index: 1;
   top: 50%;
-  left: 15px;
+  left: var(--research-marker-x);
   width: 9px;
   height: 9px;
   border: 2px solid var(--accent);
   border-radius: 50%;
   background: var(--background);
-  transform: translateY(-50%);
+  transform: translate(-50%, -50%);
 }
 .research-year-marker::after {
   content: "";
   position: absolute;
   top: 50%;
-  right: 21px;
+  right: calc(var(--research-marker-column) - var(--research-marker-x));
   width: 28px;
   height: 1px;
   background: var(--line);
@@ -1325,6 +1338,7 @@ footer a {
   }
   .project-archive {
     --timeline-spine: 12px;
+    --timeline-marker-column-start: 0px;
   }
   .project-archive::before {
     top: 42px;
@@ -1350,11 +1364,11 @@ footer a {
     width: 26px;
   }
   .project-timeline-marker::before {
-    left: 7px;
+    left: var(--timeline-marker-x);
   }
   .project-timeline-marker::after {
-    left: 17px;
-    width: 9px;
+    left: var(--timeline-marker-x);
+    width: calc(100% - var(--timeline-marker-x));
   }
   .project-archive-entry {
     grid-column: 2;
@@ -1373,20 +1387,25 @@ footer a {
     grid-template-columns: max-content max-content;
   }
   .research-archive {
-    --research-spine: 12px;
+    --research-marker-column: 26px;
+    --research-year-column: max-content;
+    --research-marker-x: 12px;
+    --research-spine: var(--research-marker-x);
   }
   .research-archive::before {
     top: 43px;
     bottom: 43px;
   }
   .research-year-group {
-    grid-template-columns: 26px minmax(0, 1fr);
+    grid-template-columns: var(--research-marker-column) minmax(0, 1fr);
     padding: 30px 0;
   }
   .research-timeline-label {
     grid-column: 1 / 3;
     grid-row: 1;
-    grid-template-columns: 26px max-content;
+    grid-template-columns: var(--research-marker-column) var(
+        --research-year-column
+      );
     gap: 12px;
   }
   .research-year-publications {
@@ -1398,15 +1417,15 @@ footer a {
   .research-year-marker {
     grid-column: 1;
     grid-row: 1;
-    width: 26px;
+    width: var(--research-marker-column);
   }
   .research-year-marker::before {
-    left: 7px;
+    left: var(--research-marker-x);
   }
   .research-year-marker::after {
-    left: 17px;
+    left: var(--research-marker-x);
     right: auto;
-    width: 9px;
+    width: calc(var(--research-marker-column) - var(--research-marker-x));
   }
   .research-year {
     grid-column: 2;

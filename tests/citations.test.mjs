@@ -88,12 +88,22 @@ test("keeps UralCon accepted and does not invent missing fields", async () => {
     assets,
   );
   assertComplete(citations, "inproceedings");
-  assert.equal(
-    citations.gost,
-    "1. A Computer Vision Approach to Automated Monitoring of Aeroponic Nozzle Operation // UralCon 2026. 2026.",
-  );
+  assert.match(citations.gost, /Galichenko S\. A\., Pikalov E\. V\./);
   assert.match(citations.ieee, /Accepted for publication/);
   assert.match(citations.apa, /Accepted for publication/);
   assert.match(citations.bibtex, /note = \{Accepted for publication\}/);
-  assert.doesNotMatch(citations.bibtex, /author|pages|doi/i);
+  assert.doesNotMatch(citations.bibtex, /pages|publisher|doi/i);
+});
+
+test("formats INFO-2026 as accepted without invented proceedings data", async () => {
+  const citations = formatCitations(
+    await publication("aeroponic-irrigation-system-architecture"),
+    assets,
+  );
+  assertComplete(citations, "inproceedings");
+  assert.match(citations.gost, /Галиченко С\. А\., Пикалов Е\. В\./);
+  assert.match(citations.ieee, /Accepted for publication/);
+  assert.match(citations.apa, /Accepted for publication/);
+  assert.match(citations.bibtex, /note = \{Accepted for publication\}/);
+  assert.doesNotMatch(citations.bibtex, /pages|publisher|doi/i);
 });

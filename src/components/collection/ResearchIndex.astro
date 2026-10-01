@@ -78,7 +78,7 @@ const groups = groupPublicationsByYear(publications);
                         )}
                         <p class="research-venue">
                           {[
-                            p.sourceTitle,
+                            p.sourceTitle ?? p.conferenceTitle,
                             String(p.year),
                             p.pages ? `${d.pages} ${p.pages}` : undefined,
                           ]
