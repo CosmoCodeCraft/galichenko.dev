@@ -704,7 +704,7 @@ footer a {
 }
 .project-detail > .project-media {
   max-width: 1080px;
-  margin-top: 64px;
+  margin: 64px auto 0;
 }
 .project-media {
   margin-block: 46px;
@@ -1042,11 +1042,18 @@ footer a {
   padding: 0;
 }
 .project-archive {
-  --timeline-spine: 144px;
+  --timeline-date-column: 126px;
+  --timeline-marker-column: 36px;
+  --timeline-spine: calc(
+    var(--timeline-date-column) + var(--timeline-marker-column) / 2
+  );
+  --timeline-content-start: calc(
+    var(--timeline-date-column) + var(--timeline-marker-column)
+  );
   --timeline-marker-size: 9px;
+  --timeline-marker-border: 2px;
   --timeline-marker-row-height: 24px;
   --timeline-item-padding: 34px;
-  --timeline-connector-length: 25px;
   position: relative;
 }
 .project-archive::before {
@@ -1061,14 +1068,18 @@ footer a {
 .project-timeline-item {
   position: relative;
   display: grid;
-  grid-template-columns: 126px 36px minmax(0, 1fr);
+  grid-template-columns:
+    var(--timeline-date-column) var(--timeline-marker-column)
+    minmax(0, 1fr);
   align-items: start;
   padding: var(--timeline-item-padding) 0;
 }
 .project-timeline-label {
   grid-column: 1 / 3;
   display: grid;
-  grid-template-columns: 126px 36px;
+  grid-template-columns: var(--timeline-date-column) var(
+      --timeline-marker-column
+    );
   align-items: center;
   min-height: var(--timeline-marker-row-height);
 }
@@ -1087,7 +1098,7 @@ footer a {
   left: var(--timeline-spine);
   width: var(--timeline-marker-size);
   height: var(--timeline-marker-size);
-  border: 2px solid var(--secondary);
+  border: var(--timeline-marker-border) solid var(--secondary);
   border-radius: 50%;
   background: var(--background);
   transform: translate(-50%, -50%);
@@ -1101,9 +1112,12 @@ footer a {
   content: "";
   position: absolute;
   top: 50%;
-  left: calc(50% + var(--timeline-marker-size) / 2);
+  left: calc(
+    50% + var(--timeline-marker-size) / 2 + var(--timeline-marker-border)
+  );
   width: calc(
-    var(--timeline-connector-length) - var(--timeline-marker-size) / 2
+    var(--timeline-content-start) - var(--timeline-spine) -
+      var(--timeline-marker-size) / 2 - var(--timeline-marker-border)
   );
   height: 1px;
   background: var(--line);
@@ -1620,6 +1634,12 @@ footer a {
     grid-column: 2;
     padding: 0;
     text-align: left;
+  }
+  .project-timeline-marker::after {
+    left: calc(50% + var(--timeline-marker-size) / 2);
+    width: calc(
+      var(--timeline-connector-length) - var(--timeline-marker-size) / 2
+    );
   }
   .project-archive-entry {
     grid-column: 2;
