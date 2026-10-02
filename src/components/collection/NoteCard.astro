@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { noteDateRange } from "../../i18n";
 import { entryPath } from "../../utils/content";
 import Figure from "../Figure.astro";
 interface Props {
@@ -7,12 +8,7 @@ interface Props {
 }
 const { note } = Astro.props;
 const n = note.data;
-const published = new Intl.DateTimeFormat(n.locale, {
-  year: "numeric",
-  month: "short",
-  ...(n.date.length > 7 ? { day: "numeric" as const } : {}),
-  timeZone: "UTC",
-}).format(new Date(n.date.length === 7 ? `${n.date}-01` : n.date));
+const period = noteDateRange(n.date, n.endDate, n.locale);
 ---
 
 <a class="note-card" href={entryPath(note)} aria-labelledby={`note-${n.id}`}>
@@ -21,6 +17,7 @@ const published = new Intl.DateTimeFormat(n.locale, {
       n.cover ? (
         <Figure
           {...n.cover}
+          caption={undefined}
           cover
           sizes="(max-width: 42rem) calc(100vw - 44px), (max-width: 70rem) 50vw, 33vw"
         />
@@ -29,7 +26,17 @@ const published = new Intl.DateTimeFormat(n.locale, {
       )
     }
   </div>
-  <time datetime={n.date}>{published}</time>
+  <span class="note-date">
+    <time datetime={n.date}>{period.start}</time>
+    {
+      period.end && n.endDate && (
+        <>
+          {" — "}
+          <time datetime={n.endDate}>{period.end}</time>
+        </>
+      )
+    }
+  </span>
   <h2 id={`note-${n.id}`}>{n.title}</h2>
   <p>{n.summary}</p>
   <ul class="tags" aria-label={n.title}>

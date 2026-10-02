@@ -1,0 +1,65 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import { noteDateRange, route, t, type Locale } from "../../i18n";
+import Figure from "../Figure.astro";
+
+interface Props {
+  note: CollectionEntry<"notes">;
+  locale: Locale;
+}
+
+const { note, locale } = Astro.props;
+const n = note.data;
+const d = t(locale);
+const period = noteDateRange(n.date, n.endDate, locale);
+const { Content } = await render(note);
+---
+
+<article class="note-detail">
+  <header class="note-detail-header">
+    <a class="detail-kicker" href={route(locale, "notes")}>{d.notes}</a>
+    <p class="note-detail-eyebrow">
+      <span>{d.notes}</span>
+      <span aria-hidden="true"> · </span>
+      <span class="note-date">
+        <time datetime={n.date}>{period.start}</time>
+        {
+          period.end && n.endDate && (
+            <>
+              {" — "}
+              <time datetime={n.endDate}>{period.end}</time>
+            </>
+          )
+        }
+      </span>
+    </p>
+    <h1>{n.title}</h1>
+    <p class="note-detail-summary">{n.summary}</p>
+    <ul class="tags note-detail-tags" aria-label="Topics">
+      {n.tags.map((tag) => <li>{tag}</li>)}
+    </ul>
+  </header>
+
+  {
+    n.cover && (
+      <div class="note-detail-cover">
+        <Figure
+          {...n.cover}
+          cover
+          sizes="(max-width: 42rem) calc(100vw - 44px), 1040px"
+          loading="eager"
+        />
+      </div>
+    )
+  }
+
+  <div class="note-detail-body prose">
+    <Content />
+  </div>
+
+  <nav class="note-detail-back" aria-label={d.backToNotes}>
+    <a class="text-link" href={route(locale, "notes")}>
+      <span aria-hidden="true">← </span>{d.backToNotes}
+    </a>
+  </nav>
+</article>

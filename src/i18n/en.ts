@@ -2,6 +2,8 @@ export const en = {
   projects: "Projects",
   research: "Research",
   notes: "Notes",
+  notesIntro:
+    "Short field notes on projects, research, education, and milestones.",
   about: "About",
   cv: "CV",
   github: "GitHub",
@@ -53,6 +55,7 @@ export const en = {
     "A full write-up is being prepared. The information currently available is below.",
   emptyNotes: "No notes published yet.",
   backHome: "Back to Home",
+  backToNotes: "Back to Notes",
   project: "Project",
   role: "Role",
   status: "Status",

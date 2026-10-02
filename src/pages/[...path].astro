@@ -1,5 +1,4 @@
 ---
-import { render } from "astro:content";
 import type { GetStaticPaths } from "astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Home from "../components/Home.astro";
@@ -8,6 +7,7 @@ import ResearchIndex from "../components/collection/ResearchIndex.astro";
 import NotesIndex from "../components/collection/NotesIndex.astro";
 import ProjectDetail from "../components/project/ProjectDetail.astro";
 import PublicationDetail from "../components/publication/PublicationDetail.astro";
+import NoteDetail from "../components/note/NoteDetail.astro";
 import AboutPage from "../components/about/AboutPage.astro";
 import { enabledLocales, route, t, type Locale } from "../i18n";
 import { navigation, site } from "../config/site";
@@ -47,6 +47,7 @@ const isCollectionIndex =
 const isAbout = !entry && kind === "about";
 const isPublication = entry?.collection === "publications";
 const isProject = entry?.collection === "projects";
+const isNote = entry?.collection === "notes";
 const title = isHome
   ? site.name
   : entry
@@ -77,8 +78,6 @@ const alternates = entry
       locale: l,
       url: route(l, isHome ? "" : kind),
     }));
-const rendered = entry ? await render(entry) : null;
-const Content = rendered?.Content;
 ---
 
 <BaseLayout
@@ -91,6 +90,7 @@ const Content = rendered?.Content;
     !isCollectionIndex &&
     !isPublication &&
     !isProject &&
+    !isNote &&
     !isAbout}
   alternates={alternates}
 >
@@ -109,23 +109,13 @@ const Content = rendered?.Content;
       <ProjectDetail project={entry} locale={locale} />
     ) : entry?.collection === "publications" ? (
       <PublicationDetail publication={entry} locale={locale} />
+    ) : entry?.collection === "notes" ? (
+      <NoteDetail note={entry} locale={locale} />
     ) : (
       <article class="skeleton">
-        <>
-          <p class="label">{entry ? d[entry.collection] : d.home}</p>
-          <h1 lang={locale}>{title}</h1>
-          <p class="notice">{entry ? d.detailPlaceholder : d.placeholder}</p>
-        </>
-        {entry && (
-          <>
-            {"summary" in entry.data && <p>{entry.data.summary}</p>}
-            {Content && (
-              <div class="prose">
-                <Content />
-              </div>
-            )}
-          </>
-        )}
+        <p class="label">{d.home}</p>
+        <h1 lang={locale}>{title}</h1>
+        <p class="notice">{d.placeholder}</p>
         <a class="text-link" href={route(locale)}>
           {d.backHome}
         </a>

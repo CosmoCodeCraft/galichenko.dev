@@ -15,7 +15,7 @@ const notes = (await getCollection("notes"))
 ---
 
 <section class="collection-page notes-index">
-  <CollectionHeader title={d.notes} />
+  <CollectionHeader title={d.notes} description={d.notesIntro} />
   {
     notes.length > 0 ? (
       <div class="notes-grid">

@@ -3,6 +3,8 @@ export const ru: Record<keyof typeof en, string> = {
   projects: "Проекты",
   research: "Исследования",
   notes: "Заметки",
+  notesIntro:
+    "Короткие заметки о проектах, исследованиях, образовании и важных этапах.",
   about: "Обо мне",
   cv: "Резюме",
   github: "GitHub",
@@ -51,6 +53,7 @@ export const ru: Record<keyof typeof en, string> = {
   detailPlaceholder: "Подробное описание готовится. Ниже — доступные сведения.",
   emptyNotes: "Заметок пока нет.",
   backHome: "На главную",
+  backToNotes: "Назад к заметкам",
   project: "Проект",
   role: "Роль",
   status: "Статус",

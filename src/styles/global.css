@@ -1629,7 +1629,7 @@ footer a {
 }
 .notes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 28px;
 }
 .note-card {
@@ -1664,9 +1664,10 @@ footer a {
 .note-cover-placeholder {
   background: var(--tint);
 }
-.note-card time {
+.note-card .note-date {
   color: var(--accent);
   font: 12px/1.5 var(--font-mono);
+  white-space: nowrap;
 }
 .note-card h2 {
   margin: 10px 0 12px;
@@ -1683,6 +1684,62 @@ footer a {
   border-block: 1px solid var(--line);
   padding: 36px 0;
   color: var(--secondary);
+}
+.note-detail {
+  padding: 76px 0 110px;
+}
+.note-detail-header {
+  max-width: 840px;
+  margin-inline: auto;
+}
+.note-detail-eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  color: var(--accent);
+  font: 12px/1.5 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.note-detail h1 {
+  font-size: clamp(42px, 6vw, 72px);
+  letter-spacing: -0.05em;
+  overflow-wrap: anywhere;
+}
+.note-detail-summary {
+  max-width: 760px;
+  margin-top: 24px;
+  color: var(--secondary);
+  font-size: clamp(19px, 2vw, 24px);
+  line-height: 1.5;
+}
+.note-detail-tags {
+  margin-top: 28px;
+}
+.note-detail-cover {
+  width: min(1040px, 100%);
+  margin: 52px auto 0;
+}
+.note-detail-cover .figure {
+  margin: 0;
+}
+.note-detail-body {
+  width: 100%;
+  max-width: 760px;
+  margin: 62px auto 0;
+}
+.note-detail-body > p {
+  margin-bottom: 22px;
+  color: var(--secondary);
+}
+.note-detail-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.note-detail-back {
+  max-width: 760px;
+  margin: 18px auto 0;
 }
 @media (max-width: 74.99rem) {
   .project-reading-composition {
@@ -1722,6 +1779,9 @@ footer a {
   .project-archive-entry {
     grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.2fr);
     gap: 24px;
+  }
+  .notes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -2140,6 +2200,21 @@ footer a {
   }
   .notes-grid {
     grid-template-columns: 1fr;
+  }
+  .note-detail {
+    padding: 50px 0 76px;
+  }
+  .note-detail h1 {
+    font-size: 40px;
+  }
+  .note-detail-summary {
+    font-size: 18px;
+  }
+  .note-detail-cover {
+    margin-top: 40px;
+  }
+  .note-detail-body {
+    margin-top: 48px;
   }
   footer {
     grid-template-columns: 1fr;

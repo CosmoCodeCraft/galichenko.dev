@@ -6,7 +6,9 @@ export async function GET() {
   const detailPaths = (await entries())
     .filter(
       (entry) =>
-        entry.collection === "publications" || entry.collection === "projects",
+        entry.collection === "publications" ||
+        entry.collection === "projects" ||
+        entry.collection === "notes",
     )
     .map(entryPath);
   const urls = [

@@ -176,6 +176,7 @@ const notes = defineCollection({
       title: z.string(),
       summary: z.string(),
       date,
+      endDate: date.optional(),
       updatedAt: date.optional(),
       tags: z.array(z.string()),
       cover: z
