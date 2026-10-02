@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sergeygalichenko.dev/sitemap-index.xml

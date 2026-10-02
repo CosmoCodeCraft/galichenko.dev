@@ -22,7 +22,9 @@ const canonical = new URL(Astro.url.pathname, site.url).href;
 const person = {
   "@context": "https://schema.org",
   "@type": "Person",
+  "@id": new URL("/#person", site.url).href,
   name: site.name,
+  ...site.person,
   url: site.url,
   email: site.email,
   sameAs: [site.github],
