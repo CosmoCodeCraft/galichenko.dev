@@ -20,6 +20,7 @@ interface AboutFocusArea {
   title: string;
   paragraphs: string[];
   states?: AboutFocusState[];
+  scope?: string[];
 }
 
 interface AboutExperience {
@@ -143,12 +144,25 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
           "I work with the boundaries between services: HTTP APIs, container networking, service discovery, data persistence and failure diagnosis.",
           "I am particularly interested in the point where individually working components have to become a reproducible, debuggable system.",
         ],
+        scope: [
+          "HTTP APIs",
+          "Container networking",
+          "Service discovery",
+          "Data persistence",
+          "Failure diagnosis",
+        ],
       },
       {
         title: "Systems & Embedded Foundation",
         paragraphs: [
           "My earlier work with microcontrollers, Raspberry Pi, sensors, actuators and control systems gave me experience with software that interacts with real processes and constraints.",
           "That background remains useful when tracing problems across multiple layers rather than treating an application, network or device in isolation.",
+        ],
+        scope: [
+          "Microcontrollers",
+          "Raspberry Pi",
+          "Sensors & actuators",
+          "Control systems",
         ],
       },
     ],
@@ -164,7 +178,7 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
         ],
       },
       {
-        period: "February 2024 — June 2025",
+        period: "February 2023 — June 2025",
         role: "Engineer → Project Lead",
         organization: "City Farm · Moscow Polytechnic University",
         paragraphs: [
