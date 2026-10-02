@@ -170,10 +170,10 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
     experience: [
       {
         period: "December 2025 — August 2026",
-        role: "Programming Instructor",
-        organization: "Pixel Programming & Robotics School",
+        role: "Programming Teacher",
+        organization: "PIXEL Programming & Robotics School",
         paragraphs: [
-          "I taught programming and robotics in small student groups, prepared development environments, and diagnosed software, dependency and network-related problems during classes.",
+          "I taught programming and robotics to children and teenagers in small groups, prepared development environments, and diagnosed software, dependency and network-related problems during classes.",
           "The role strengthened two practical skills that transfer directly to engineering work: troubleshooting under time constraints and explaining technical systems clearly enough for another person to work with them.",
         ],
       },
@@ -182,7 +182,7 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
         role: "Engineer → Project Lead",
         organization: "City Farm · Moscow Polytechnic University",
         paragraphs: [
-          "I progressed from hands-on engineering work to leading a multidisciplinary student team of approximately 12 people.",
+          "I progressed from hands-on engineering work to leading a multidisciplinary student team that grew to 12 people.",
           "My responsibilities covered control systems, experimental work, Linux-based infrastructure, task planning, project delivery, onboarding and coordination across several cultivation installations.",
           "Moving into the lead role taught me to think beyond individual components and take responsibility for how the technical work, people and project constraints fit together.",
         ],
@@ -193,10 +193,11 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
       },
       {
         period: "September 2023 — November 2024",
-        role: "Operations & Process Automation",
+        role: "Engineering & Technical Staff · Core R&D Project Team",
         organization: "Moscow Polytechnic University",
         paragraphs: [
-          "Alongside administrative work, I used Python to automate repetitive data-processing and document workflows.",
+          "I worked within the engineering and technical staff as a member of the core team delivering a university R&D project.",
+          "As part of that experience, I used Python to automate recurring data-processing and document workflows.",
           "This was one of my first experiences of using software to remove routine work from a real organisational process rather than only solving an academic programming task.",
         ],
       },

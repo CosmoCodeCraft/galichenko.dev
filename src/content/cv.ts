@@ -60,11 +60,11 @@ export interface CvContent {
 
 export const cvContent: Partial<Record<Locale, CvContent>> = {
   en: {
-    metaTitle: "Sergey Galichenko — DevOps Engineer · Systems Integration",
+    metaTitle: "Sergey Galichenko — DevOps & Systems Integration Engineer",
     metaDescription:
       "Resume of Sergey Galichenko, a Software Engineering MSc student focused on DevOps and systems integration, with experience in Linux, Docker, service networking, PostgreSQL and infrastructure automation.",
     title: "Resume",
-    professionalTitle: "DevOps Engineer · Systems Integration",
+    professionalTitle: "DevOps & Systems Integration Engineer",
     pdfPath: undefined,
     pdfLabel: "Download PDF",
     pdfUnavailableLabel: "PDF coming soon",
@@ -128,11 +128,11 @@ export const cvContent: Partial<Record<Locale, CvContent>> = {
       {
         title: "City Farm",
         context: "Engineer → Project Lead · Moscow Polytechnic University",
-        period: { start: "2024-02", end: "2025-06" },
+        period: { start: "2023-02", end: "2025-06" },
         bullets: [
           "Rebuilt and hardened a Raspberry Pi Linux server after identifying security issues; configured SSH key authentication, UFW, fail2ban and Nginx.",
           "Integrated ATmega328P / ESP32 control components with Raspberry Pi systems and implemented local web-based equipment control.",
-          "Led a multidisciplinary team of approximately 12 people across control-system development, experiments, integration and project delivery.",
+          "Led a multidisciplinary student team that grew to 12 people across control-system development, experiments, integration and project delivery.",
           "Automated experimental log processing, statistical analysis and graph generation with Python.",
         ],
         technologies: [
@@ -173,18 +173,19 @@ export const cvContent: Partial<Record<Locale, CvContent>> = {
     experienceHeading: "Experience",
     experience: [
       {
-        organization: "Pixel Programming & Robotics School",
-        role: "Programming Instructor",
+        organization: "PIXEL Programming & Robotics School",
+        role: "Programming Teacher",
         period: { start: "2025-12", end: "2026-08" },
         bullets: [
-          "Taught programming and robotics, prepared development environments and troubleshot software, dependency and network issues during classes.",
+          "Taught programming and robotics to children and teenagers in small groups, prepared development environments and troubleshot software, dependency and network issues during classes.",
         ],
       },
       {
         organization: "Moscow Polytechnic University",
-        role: "R&D Project Team Member · Administrative Operations",
+        role: "Engineering & Technical Staff · Core R&D Project Team",
         period: { start: "2023-09", end: "2024-11" },
         bullets: [
+          "Worked as a member of the core team delivering a university R&D project within the engineering and technical staff.",
           "Automated repetitive data-processing and document workflows with Python, reducing manual work in recurring university processes.",
         ],
       },

@@ -26,15 +26,15 @@ export const experiences: Experience[] = [
   {
     id: "pixel",
     locale: "en",
-    role: "Programming Instructor",
-    organization: "Pixel Programming & Robotics School",
+    role: "Programming Teacher",
+    organization: "PIXEL Programming & Robotics School",
     startDate: "2025-12",
     endDate: "2026-08",
   },
   {
     id: "automation",
     locale: "en",
-    role: "R&D Project Contributor · Python Automation",
+    role: "Engineering & Technical Staff · Core R&D Project Team",
     organization: "Moscow Polytechnic University",
   },
 ];

@@ -6,8 +6,8 @@
   "translationKey": "galichenko-dev",
   "title": "Personal Portfolio & Research Archive",
   "shortTitle": "Personal Portfolio & Research Archive",
-  "summary": "A static personal website designed as a maintainable, structured archive for engineering projects, research publications and technical notes rather than as a one-off portfolio page.",
-  "detailSummary": "A static personal website designed as a maintainable, structured archive for engineering projects, research publications and technical notes rather than as a one-off portfolio page.",
+  "summary": "A static personal website designed as a maintainable, structured archive for engineering projects, research publications and technical notes.",
+  "detailSummary": "A static personal website designed as a maintainable, structured archive for engineering projects, research publications and technical notes.",
   "detailStatus": "Ongoing",
   "detailRole": "Product & Software Engineering",
   "detailStack":
@@ -58,174 +58,68 @@
   "relatedProjects": ["sird"],
   "toc":
     [
-      {
-        "label": "Context",
-        "id": "designing-the-portfolio-before-building-it",
-      },
+      { "label": "Context", "id": "context-and-requirements" },
       {
         "label": "Information architecture",
-        "id": "different-views-for-different-reading-depth",
-      },
-      { "label": "Technical architecture", "id": "static-first-architecture" },
-      {
-        "label": "Content model",
-        "id": "treating-publications-as-structured-data",
+        "id": "information-architecture-and-content-model",
       },
       {
-        "label": "Research tooling",
-        "id": "research-archive-and-citation-tooling",
+        "label": "Technical architecture",
+        "id": "static-technical-architecture",
       },
-      { "label": "Deployment", "id": "automated-static-deployment" },
-      { "label": "Current scope", "id": "current-scope" },
+      { "label": "Research tooling", "id": "research-and-publication-tooling" },
+      {
+        "label": "Validation and deployment",
+        "id": "validation-deployment-and-implementation-workflow",
+      },
+      { "label": "Current scope", "id": "current-scope-and-evidence" },
     ],
 }
 ---
 
 import ProjectMedia from "../../../components/project/ProjectMedia.astro";
 
-## Designing the portfolio before building it
+## Context and requirements
 
 The project started from a simple requirement — create a personal website that could be shared with employers, faculty and colleagues.
 
-Instead of starting directly with implementation, I first treated the site as a small software-engineering project.
-
-The requirements were shaped around several different reading scenarios:
+Before implementation, I defined the readers and the depth of information each would need:
 
 - a hiring manager scanning projects quickly;
 - a technical lead evaluating engineering depth;
 - a faculty member looking for research publications;
 - a colleague following a direct link to a specific project or publication.
 
-This led to a deliberate separation between Home for a fast first impression, Projects / Research / Notes as browsable archives, and detail pages for deeper technical or scholarly information.
+That requirement analysis shaped both the page hierarchy and the content model instead of leaving them as consequences of implementation.
 
-The site was therefore designed around information hierarchy and maintainability rather than around a highly decorative portfolio interface.
+## Information architecture and content model
 
-## Different views for different reading depth
+Home provides a quick first impression; Projects, Research and Notes provide browsable archives; and detail pages carry the engineering or scholarly depth. Project pages record the problem, contribution, decisions and evidence, while publication pages expose abstracts, bibliographic metadata, identifiers and available resources.
 
-Projects and publications are represented at several levels rather than reused as identical cards everywhere.
-
-Featured project cards on the Home page answer: “Is this project worth opening?”
-
-The Projects archive provides chronological context and makes projects easier to compare.
-
-Project detail pages explain the engineering problem, personal contribution, technical decisions and evidence.
-
-Research follows a similar model: the archive provides a compact publication history, while individual publication pages contain abstracts, bibliographic metadata, identifiers and access to available full-text resources.
-
-This separation keeps overview pages concise while allowing detail pages to contain substantially richer information.
+Projects, publications and notes are stored as structured content. Typed Content Collection schemas define the metadata for each type, so new records can normally be added without changing page components. The routing and content structure also anticipate future localization, although English remains the only enabled public language.
 
 <ProjectMedia label="Project and research detail interface" role="content" />
 
-## Static-first architecture
+## Static technical architecture
 
-The site uses Astro and TypeScript with a static-first architecture.
+The site uses Astro and TypeScript to generate static pages. That architecture fits a public archive whose content changes through the repository and does not need a runtime backend, database or client-side application shell.
 
-Projects, publications and notes are stored as structured content rather than hard-coded directly into page components.
+Content and presentation remain separate, but the source of truth stays in typed files rather than a CMS. This avoids authentication, hosting and operational infrastructure that the current project does not require.
 
-Typed content schemas define the metadata required for each content type, allowing ordinary additions to be made through content files without changing the rendering components.
+## Research and publication tooling
 
-Static generation was chosen because the current site does not require a runtime backend or database.
+Publication records carry richer scholarly metadata than project or note entries: titles, authors, status, source and conference details, abstracts, keywords, eLIBRARY and EDN identifiers, related projects, and links to local or external full text where available. The same record powers the archive, detail route, sitemap and citation interface.
 
-This keeps deployment simple, reduces operational overhead and makes most content available without client-side JavaScript.
+The “Cite this work” tool deterministically generates GOST R 7.0.5–2008, IEEE, APA 7 and BibTeX citations from that stored metadata. It does not depend on runtime requests to external scholarly services. Local PDFs, publisher pages, external full text and scholarly records remain distinct resource types rather than interchangeable links.
 
-## Treating publications as structured data
+## Validation, deployment and implementation workflow
 
-Research publications required a richer content model than ordinary portfolio links.
+GitHub Actions validates and builds the site before deploying the static output to GitHub Pages. The deployed site uses the custom `sergeygalichenko.dev` domain, while content, application code and deployment configuration remain version-controlled together.
 
-Publication records support structured metadata such as:
+Codex is used extensively as an implementation tool. I define the requirements, architecture, content model and acceptance criteria, then review changes and decide what enters the site; AI assistance does not replace human technical ownership.
 
-- original and English titles;
-- authors;
-- publication type and status;
-- source and conference information;
-- abstracts and keywords;
-- eLIBRARY and EDN identifiers;
-- local publication PDFs;
-- external scholarly resources;
-- related projects.
+## Current scope and evidence
 
-This allows the same record to power the Research archive, publication detail page, sitemap and citation functionality without duplicating metadata across components.
+The site intentionally avoids a runtime backend, database, user accounts, CMS and complex analytics infrastructure because none currently solves a project requirement. Localization is architecturally anticipated but not enabled.
 
-## Static content instead of a CMS
-
-A CMS would add authentication, hosting and runtime complexity without solving a current requirement.
-
-The content changes relatively infrequently and is maintained by one person, so typed files inside the repository provide a simpler source of truth.
-
-The architecture still separates content from presentation, which keeps future migration possible without introducing a content-management system before it is needed.
-
-## Building localization into the structure early
-
-English is currently the public site language, but the content and routing architecture was designed with future Russian localization in mind.
-
-The goal was not to build the Russian version immediately, but to avoid coupling content, routes and UI so tightly to one language that localization would later require rewriting the site's structure.
-
-## Research archive and citation tooling
-
-The Research section evolved beyond a simple publication list.
-
-Individual publication pages can expose locally hosted publication PDFs, external full-text resources, eLIBRARY records and EDN identifiers where they exist.
-
-The site also includes a deterministic “Cite this work” tool for generating citations from structured publication metadata.
-
-Supported citation formats currently include GOST R 7.0.5–2008, IEEE, APA 7 and BibTeX.
-
-Citation generation is based on stored metadata rather than runtime requests to external scholarly services.
-
-## Keeping research outputs directly accessible
-
-Where article-level publication extracts are available, the site stores cleanly named PDF assets and exposes them through the corresponding publication record.
-
-This provides a stable first-party download while preserving links to external scholarly records and publisher resources.
-
-The publication model distinguishes local PDFs, external full text, publisher pages, eLIBRARY records and EDN rather than treating every resource as an interchangeable link.
-
-## Automated static deployment
-
-The site is deployed through GitHub Actions to GitHub Pages and served through the custom sergeygalichenko.dev domain.
-
-The deployment workflow validates the project and builds the static site before publishing the generated output.
-
-The current architecture therefore has no separately managed application server or database.
-
-Content, application code and deployment configuration remain version-controlled together.
-
-## AI-assisted implementation workflow
-
-Implementation has been developed with extensive AI assistance, primarily through Codex.
-
-My role in that workflow is to define the requirements, information architecture, content model and acceptance criteria, review implementation changes, identify incorrect assumptions or regressions, and decide which proposed solutions become part of the site.
-
-The development process therefore treats AI as an implementation tool rather than as the source of product requirements or technical ownership.
-
-## Evolving the model without rebuilding the site
-
-The site's content model has expanded incrementally.
-
-Research originally contained only a small selected publication list, then grew into a structured archive with identifiers, publication detail routes, citations and downloadable PDFs.
-
-Project pages similarly evolved from short cards into case-study-oriented detail pages.
-
-These additions were implemented by extending the underlying content model rather than replacing the overall site architecture.
-
-This is an important objective of the project: new content capabilities should generally be added through structured data and reusable components instead of one-off pages.
-
-## Current scope
-
-The site remains intentionally static and relatively small.
-
-It does not currently require:
-
-- a runtime backend;
-- a database;
-- user accounts;
-- a CMS;
-- complex analytics infrastructure.
-
-Notes are still an early part of the content model, and localization is designed for but not yet complete.
-
-The project should not manufacture infrastructure complexity only to make the portfolio appear more technically advanced.
-
-## Evidence
-
-The live website is the strongest evidence. Supporting evidence includes the public repository structure, typed Content Collections, publication schema, GitHub Actions deployment workflow, Research archive, publication detail pages, citation tool, locally served publication PDFs and responsive project/research archive implementation.
+The live site and public repository provide the evidence: typed Content Collections, publication schemas and routes, deterministic citation tooling, publication resources, project case studies, and the automated GitHub Pages workflow.
