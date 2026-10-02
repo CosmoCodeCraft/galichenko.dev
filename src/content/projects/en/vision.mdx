@@ -78,6 +78,11 @@
 
 import ProjectMedia from "../../../components/project/ProjectMedia.astro";
 import ProjectPublicationLinks from "../../../components/project/ProjectPublicationLinks.astro";
+import verticalAeroponics from "../../../assets/projects/city-farm/media/vertical-aeroponics.webp";
+import cycleQualityIndex from "../../../assets/projects/vision/media/cycle-quality-index.png";
+import operatingModesQualityIndex from "../../../assets/projects/vision/media/operating-modes-quality-index.png";
+import processingPipeline from "../../../assets/projects/vision/media/processing-pipeline.svg";
+import systemArchitecture from "../../../assets/projects/vision/media/system-architecture.png";
 
 ## Why another irrigation monitoring channel?
 
@@ -93,6 +98,13 @@ Development started with a rough Python proof of concept in January 2025. An ear
 
 Active development continued through the experimental validation and completion of the bachelor thesis in June 2026.
 
+<ProjectMedia
+  src={verticalAeroponics}
+  alt="Vertical aeroponic tower with lighting, camera hardware and a reservoir"
+  caption="Vertical aeroponic installation inherited from the earlier City Farm project."
+  role="content"
+/>
+
 ## Three-level monitoring and control architecture
 
 The system separates equipment control, image processing and operator-facing diagnostics into three levels.
@@ -105,7 +117,13 @@ The supervisory level stores experimental and diagnostic data and presents the r
 
 This separation keeps deterministic equipment control independent from the more computationally demanding vision pipeline. A protective algorithm at the microcontroller level can maintain the irrigation cycle if the computing module does not respond.
 
-<ProjectMedia label="Architecture diagram" role="diagram" wide />
+<ProjectMedia
+  src={systemArchitecture}
+  alt="Three-level architecture linking a supervisory computer, single-board computer, camera, microcontroller, sensors and actuators"
+  caption="System structure across the supervisory, Raspberry Pi computing and microcontroller equipment-control levels."
+  role="diagram"
+  wide
+/>
 
 ## My contribution
 
@@ -133,7 +151,13 @@ The pipeline included background difference, reference-relative binary coverage 
 
 The objective was not only classification performance, but also interpretability and the ability to run on inexpensive general-purpose hardware such as a Raspberry Pi 4 without a dedicated accelerator.
 
-<ProjectMedia label="Processed-frame comparison" role="result" />
+<ProjectMedia
+  src={processingPipeline}
+  alt="Flowchart for active and idle frame processing using background difference, edge detection, sharpness and metric calculation"
+  caption="Processing pipeline for deriving interpretable image descriptors from active and idle irrigation states."
+  role="diagram"
+  wide
+/>
 
 ## Camera integration
 
@@ -153,7 +177,21 @@ Background difference was selected as the primary descriptor because it combined
 
 Reference-relative binary coverage provided complementary information about the spatial extent of image changes, while edge-based descriptors added structural information.
 
-<ProjectMedia label="Experimental result" role="result" wide />
+<ProjectMedia
+  src={operatingModesQualityIndex}
+  alt="Six box plots comparing normalized quality indices for off, three-nozzle and five-nozzle operating conditions"
+  caption="Cycle-level quality indices distinguish the off, three-nozzle and five-nozzle operating conditions across all six descriptors."
+  role="result"
+  wide
+/>
+
+<ProjectMedia
+  src={cycleQualityIndex}
+  alt="Six line plots showing quality indices across five-nozzle and three-nozzle irrigation cycles"
+  caption="The cycle sequence shows the descriptor shift after the experiment changed from five active nozzles to three."
+  role="result"
+  wide
+/>
 
 ## Embedded feasibility
 

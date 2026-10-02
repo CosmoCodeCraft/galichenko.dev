@@ -71,6 +71,11 @@
 ---
 
 import ProjectMedia from "../../../components/project/ProjectMedia.astro";
+import ProjectMediaGroup from "../../../components/project/ProjectMediaGroup.astro";
+import controllerElectronics from "../../../assets/projects/city-farm/media/controller-electronics.webp";
+import horizontalAeroponics from "../../../assets/projects/city-farm/media/horizontal-aeroponics.webp";
+import potatoFlowers from "../../../assets/projects/city-farm/media/potato-flowers.webp";
+import verticalAeroponics from "../../../assets/projects/city-farm/media/vertical-aeroponics.webp";
 
 ## A project larger than one installation
 
@@ -87,7 +92,27 @@ The horizontal aeroponic system was used for potato cultivation, while the hydro
 
 The project combined mechanical construction, electronics, control systems, software, experimentation and day-to-day maintenance.
 
-<ProjectMedia label="Selected cultivation installations" role="content" />
+<ProjectMediaGroup
+  items={[
+    {
+      src: horizontalAeroponics,
+      alt: "Horizontal aeroponic installation with potato plants under grow lighting",
+      caption: "Horizontal aeroponic installation used for potato cultivation.",
+    },
+    {
+      src: verticalAeroponics,
+      alt: "Vertical aeroponic tower inside a lit metal-frame installation",
+      caption: "Vertical aeroponic installation.",
+    },
+  ]}
+/>
+
+<ProjectMedia
+  src={potatoFlowers}
+  alt="White potato flowers growing inside the horizontal aeroponic installation"
+  caption="Potato plants flowering in the horizontal aeroponic installation."
+  role="content"
+/>
 
 ## From engineering work to project leadership
 
@@ -115,7 +140,12 @@ The ESP32 implementation is preserved in the project repository.
 
 Ethernet integration with the organisation's internal network was planned for a later environment and should not be presented as an implemented production capability.
 
-<ProjectMedia label="Controller and electronics" role="hardware" />
+<ProjectMedia
+  src={controllerElectronics}
+  alt="Open control enclosure containing circuit boards, wiring and connectors"
+  caption="Control electronics used with the cultivation installations."
+  role="hardware"
+/>
 
 ## Rebuilding the Raspberry Pi server securely
 
@@ -156,12 +186,6 @@ The result was not only project documentation: the team left behind working aero
 A separate vertical aeroponic demonstrator using an ultrasonic humidifier also remained operational and continues to be used at Moscow Polytechnic open days.
 
 The City Farm infrastructure and practical experience with repeated nozzle clogging later became the starting point for the independent Computer Vision for Aeroponic Irrigation Monitoring project.
-
-<ProjectMedia
-  label="Installation and system architecture"
-  role="diagram"
-  wide
-/>
 
 ## Research and project activity
 

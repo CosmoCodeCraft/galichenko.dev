@@ -957,6 +957,20 @@ footer a {
 .project-media {
   margin-block: 46px;
 }
+.project-media-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+  margin-block: 46px;
+}
+.project-media-group .figure {
+  margin: 0;
+}
+.project-media .figure[data-role="diagram"] {
+  padding: 16px;
+  background: #fff;
+}
 .project-media .figure {
   margin: 0;
 }
@@ -1708,6 +1722,12 @@ footer a {
   .project-archive-entry {
     grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.2fr);
     gap: 24px;
+  }
+}
+
+@media (max-width: 42rem) {
+  .project-media-group {
+    grid-template-columns: 1fr;
   }
 }
 @media (max-width: 63.99rem) {

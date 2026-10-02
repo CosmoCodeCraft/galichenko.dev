@@ -1,0 +1,32 @@
+---
+import type { ImageMetadata } from "astro";
+import Figure from "../Figure.astro";
+
+interface MediaItem {
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+  role?: "content" | "diagram" | "result" | "hardware";
+}
+
+interface Props {
+  items: MediaItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="project-media-group">
+  {
+    items.map((item) => (
+      <Figure
+        src={item.src}
+        alt={item.alt}
+        caption={item.caption}
+        role={item.role ?? "content"}
+        sizes="(max-width: 42rem) calc(100vw - 44px), 370px"
+        loading="lazy"
+      />
+    ))
+  }
+</div>
