@@ -174,6 +174,16 @@ h2 {
 .nav-social {
   gap: 22px;
 }
+.nav-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.nav-action-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
 .theme-control {
   width: 44px;
   min-width: 44px;
@@ -967,6 +977,20 @@ footer a {
 .project-media-group .figure {
   margin: 0;
 }
+.project-media-group--landscape-portrait {
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.75fr);
+}
+.project-media-group--landscape-portrait .figure:nth-child(2) img {
+  width: auto;
+  max-width: 100%;
+  max-height: 480px;
+  margin-inline: auto;
+  object-fit: contain;
+}
+.project-media--compact {
+  width: min(420px, 100%);
+  margin-inline: auto;
+}
 .project-media .figure[data-role="diagram"] {
   padding: 16px;
   background: #fff;
@@ -1678,7 +1702,8 @@ footer a {
   font-size: 15px;
 }
 .note-card .tags {
-  margin-top: 20px;
+  margin-top: auto;
+  padding-top: 20px;
 }
 .notes-empty {
   border-block: 1px solid var(--line);
@@ -1964,6 +1989,12 @@ footer a {
 @media (max-width: 42rem) {
   .project-media-group {
     grid-template-columns: 1fr;
+  }
+  .project-media-group--landscape-portrait .figure:nth-child(2) img {
+    max-height: none;
+  }
+  .project-media--compact {
+    width: 100%;
   }
 }
 @media (max-width: 63.99rem) {

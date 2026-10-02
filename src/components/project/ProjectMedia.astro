@@ -15,6 +15,7 @@ interface Props {
   focalPoint?: { x: number; y: number };
   ratio?: "16:9" | "3:2" | "wide";
   wide?: boolean;
+  size?: "default" | "compact";
   loading?: "lazy" | "eager";
 }
 
@@ -31,6 +32,7 @@ const {
   focalPoint,
   ratio = "16:9",
   wide = false,
+  size = "default",
   loading = "lazy",
 } = Astro.props;
 const isVideo = type === "video";
@@ -45,7 +47,10 @@ const placeholderLabel = placeholder ?? label;
       class:list={[
         "project-media",
         "project-media-video",
-        { "project-media--wide": wide },
+        {
+          "project-media--wide": wide,
+          "project-media--compact": size === "compact",
+        },
       ]}
       data-role={role}
     >
@@ -75,7 +80,15 @@ const placeholderLabel = placeholder ?? label;
       {caption && <figcaption>{caption}</figcaption>}
     </figure>
   ) : imageSource ? (
-    <div class:list={["project-media", { "project-media--wide": wide }]}>
+    <div
+      class:list={[
+        "project-media",
+        {
+          "project-media--wide": wide,
+          "project-media--compact": size === "compact",
+        },
+      ]}
+    >
       <Figure
         src={imageSource}
         alt={alt}
@@ -83,7 +96,11 @@ const placeholderLabel = placeholder ?? label;
         role={role}
         cropAllowed={cropAllowed}
         focalPoint={focalPoint}
-        sizes="(max-width: 42rem) calc(100vw - 44px), 1000px"
+        sizes={
+          size === "compact"
+            ? "(max-width: 42rem) calc(100vw - 44px), 420px"
+            : "(max-width: 42rem) calc(100vw - 44px), 1000px"
+        }
         loading={loading}
       />
     </div>
@@ -93,7 +110,10 @@ const placeholderLabel = placeholder ?? label;
         "project-media",
         "project-media-placeholder",
         `project-media-ratio-${ratio.replace(":", "-")}`,
-        { "project-media--wide": wide },
+        {
+          "project-media--wide": wide,
+          "project-media--compact": size === "compact",
+        },
       ]}
       data-role={role}
     >

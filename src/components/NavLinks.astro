@@ -1,6 +1,7 @@
 ---
 import { navigation, site } from "../config/site";
 import { route, t, type Locale } from "../i18n";
+import NavIcon from "./NavIcon.astro";
 import ThemeControl from "./ThemeControl.astro";
 interface Props {
   locale: Locale;
@@ -31,8 +32,14 @@ const d = t(locale);
 {
   group !== "primary" && (
     <div class="nav-social">
-      <a href={site.github}>{d.github}</a>
-      <a href={`mailto:${site.email}`}>{d.email}</a>
+      <a class="nav-action-link" href={site.github}>
+        <NavIcon name="github" />
+        <span>{d.github}</span>
+      </a>
+      <a class="nav-action-link" href={`mailto:${site.email}`}>
+        <NavIcon name="email" />
+        <span>{d.email}</span>
+      </a>
       <ThemeControl locale={locale} />
     </div>
   )

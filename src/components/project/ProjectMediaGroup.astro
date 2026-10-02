@@ -11,20 +11,33 @@ interface MediaItem {
 
 interface Props {
   items: MediaItem[];
+  variant?: "equal" | "landscape-portrait";
 }
 
-const { items } = Astro.props;
+const { items, variant = "equal" } = Astro.props;
 ---
 
-<div class="project-media-group">
+<div
+  class:list={[
+    "project-media-group",
+    {
+      "project-media-group--landscape-portrait":
+        variant === "landscape-portrait",
+    },
+  ]}
+>
   {
-    items.map((item) => (
+    items.map((item, index) => (
       <Figure
         src={item.src}
         alt={item.alt}
         caption={item.caption}
         role={item.role ?? "content"}
-        sizes="(max-width: 42rem) calc(100vw - 44px), 370px"
+        sizes={
+          variant === "landscape-portrait"
+            ? `(max-width: 42rem) calc(100vw - 44px), ${index === 0 ? "500px" : "280px"}`
+            : "(max-width: 42rem) calc(100vw - 44px), 370px"
+        }
         loading="lazy"
       />
     ))
