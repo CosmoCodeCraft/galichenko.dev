@@ -9,10 +9,12 @@ import ProjectDetail from "../components/project/ProjectDetail.astro";
 import PublicationDetail from "../components/publication/PublicationDetail.astro";
 import NoteDetail from "../components/note/NoteDetail.astro";
 import AboutPage from "../components/about/AboutPage.astro";
+import CvPage from "../components/cv/CvPage.astro";
 import { enabledLocales, route, t, type Locale } from "../i18n";
 import { navigation, site } from "../config/site";
 import { homeCopy } from "../config/home";
 import { aboutContent } from "../content/about";
+import { cvContent } from "../content/cv";
 import { entries, entryPath, type Entry } from "../utils/content";
 export const getStaticPaths = (async () => {
   const all = await entries();
@@ -45,6 +47,7 @@ const isHome = kind === "home";
 const isCollectionIndex =
   !entry && (kind === "projects" || kind === "research" || kind === "notes");
 const isAbout = !entry && kind === "about";
+const isCv = !entry && kind === "cv";
 const isPublication = entry?.collection === "publications";
 const isProject = entry?.collection === "projects";
 const isNote = entry?.collection === "notes";
@@ -59,13 +62,15 @@ const description = isHome
   ? homeCopy[locale]?.intro
   : isAbout
     ? aboutContent[locale]?.metaDescription
-    : isPublication
-      ? (entry.data.abstractEnglish ??
-        entry.data.titleEnglish ??
-        entry.data.titleOriginal)
-      : entry && "summary" in entry.data
-        ? entry.data.summary
-        : title;
+    : isCv
+      ? cvContent[locale]?.metaDescription
+      : isPublication
+        ? (entry.data.abstractEnglish ??
+          entry.data.titleEnglish ??
+          entry.data.titleOriginal)
+        : entry && "summary" in entry.data
+          ? entry.data.summary
+          : title;
 const alternates = entry
   ? all
       .filter(
@@ -78,20 +83,24 @@ const alternates = entry
       locale: l,
       url: route(l, isHome ? "" : kind),
     }));
+const pageTitle = isCv
+  ? cvContent[locale]?.metaTitle
+  : isHome
+    ? `${site.name} — DevOps & Systems Integration Engineer`
+    : `${title} — ${site.name}`;
 ---
 
 <BaseLayout
   locale={locale}
-  title={isHome
-    ? `${site.name} — DevOps & Systems Integration Engineer`
-    : `${title} — ${site.name}`}
+  title={pageTitle ?? `${title} — ${site.name}`}
   description={description}
   noindex={!isHome &&
     !isCollectionIndex &&
     !isPublication &&
     !isProject &&
     !isNote &&
-    !isAbout}
+    !isAbout &&
+    !isCv}
   alternates={alternates}
 >
   {
@@ -105,6 +114,8 @@ const alternates = entry
       <NotesIndex locale={locale} />
     ) : isAbout ? (
       <AboutPage locale={locale} />
+    ) : isCv ? (
+      <CvPage locale={locale} />
     ) : entry?.collection === "projects" ? (
       <ProjectDetail project={entry} locale={locale} />
     ) : entry?.collection === "publications" ? (

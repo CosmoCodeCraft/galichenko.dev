@@ -1,0 +1,201 @@
+---
+import { site } from "../../config/site";
+import { cvContent, type CvPeriod } from "../../content/cv";
+import { formatDate, route, type Locale } from "../../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = cvContent[locale];
+if (!content) throw new Error(`CV content is missing for locale: ${locale}`);
+
+function periodParts(period: CvPeriod) {
+  return {
+    start: formatDate(period.start, locale),
+    end: period.end ? formatDate(period.end, locale) : undefined,
+    present: period.present ? "Present" : undefined,
+  };
+}
+
+function linkHref(link: { path?: string; url?: string }) {
+  return link.path ? route(locale, link.path) : link.url;
+}
+---
+
+<article class="cv-page">
+  <header class="cv-header">
+    <div class="cv-heading">
+      <p class="cv-kicker">Curriculum Vitae</p>
+      <h1>{content.title}</h1>
+      <p class="cv-professional-title">{content.professionalTitle}</p>
+    </div>
+
+    <div class="cv-download">
+      {
+        content.pdfPath ? (
+          <a class="cv-download-control" href={content.pdfPath} download>
+            {content.pdfLabel}
+          </a>
+        ) : (
+          <button
+            class="cv-download-control"
+            type="button"
+            disabled
+            aria-disabled="true"
+          >
+            {content.pdfLabel}
+          </button>
+        )
+      }
+      {
+        !content.pdfPath && (
+          <span class="cv-download-status">{content.pdfUnavailableLabel}</span>
+        )
+      }
+    </div>
+
+    <address class="cv-contact" aria-label="Contact information">
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+      <a href={site.url}>sergeygalichenko.dev</a>
+      <a href={site.github}>github.com/CosmoCodeCraft</a>
+    </address>
+  </header>
+
+  <section class="cv-section cv-summary" aria-labelledby="cv-summary-heading">
+    <h2 id="cv-summary-heading">{content.summaryHeading}</h2>
+    <p>{content.summary}</p>
+  </section>
+
+  <section class="cv-section" aria-labelledby="cv-skills-heading">
+    <h2 id="cv-skills-heading">{content.skillsHeading}</h2>
+    <dl class="cv-skills">
+      {
+        content.skills.map((skill) => (
+          <div>
+            <dt>{skill.label}</dt>
+            <dd>{skill.items.join(" · ")}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="cv-section" aria-labelledby="cv-projects-heading">
+    <h2 id="cv-projects-heading">{content.projectsHeading}</h2>
+    <div class="cv-entry-list">
+      {
+        content.projects.map((project) => {
+          const period = periodParts(project.period);
+          return (
+            <article class="cv-entry cv-project">
+              <header class="cv-entry-header">
+                <div>
+                  <h3>{project.title}</h3>
+                  <p class="cv-entry-context">{project.context}</p>
+                </div>
+                <p class="cv-period">
+                  <time datetime={project.period.start}>{period.start}</time>
+                  {" — "}
+                  {project.period.present ? (
+                    period.present
+                  ) : (
+                    <time datetime={project.period.end}>{period.end}</time>
+                  )}
+                </p>
+              </header>
+              <ul class="cv-bullets">
+                {project.bullets.map((bullet) => (
+                  <li>{bullet}</li>
+                ))}
+              </ul>
+              <p class="cv-technologies">{project.technologies.join(" · ")}</p>
+              <nav class="cv-entry-links" aria-label={`${project.title} links`}>
+                {project.links.map((link) => (
+                  <a href={linkHref(link)}>{link.label}</a>
+                ))}
+              </nav>
+            </article>
+          );
+        })
+      }
+    </div>
+  </section>
+
+  <section class="cv-section" aria-labelledby="cv-experience-heading">
+    <h2 id="cv-experience-heading">{content.experienceHeading}</h2>
+    <div class="cv-entry-list">
+      {
+        content.experience.map((experience) => {
+          const period = periodParts(experience.period);
+          return (
+            <article class="cv-entry">
+              <header class="cv-entry-header">
+                <div>
+                  <h3>{experience.role}</h3>
+                  <p class="cv-entry-context">{experience.organization}</p>
+                </div>
+                <p class="cv-period">
+                  <time datetime={experience.period.start}>{period.start}</time>
+                  {" — "}
+                  <time datetime={experience.period.end}>{period.end}</time>
+                </p>
+              </header>
+              <ul class="cv-bullets">
+                {experience.bullets.map((bullet) => (
+                  <li>{bullet}</li>
+                ))}
+              </ul>
+            </article>
+          );
+        })
+      }
+    </div>
+  </section>
+
+  <section class="cv-section" aria-labelledby="cv-education-heading">
+    <h2 id="cv-education-heading">{content.educationHeading}</h2>
+    <div class="cv-entry-list">
+      {
+        content.education.map((education) => {
+          const period = periodParts(education.period);
+          return (
+            <article class="cv-entry cv-education">
+              <header class="cv-entry-header">
+                <div>
+                  <h3>{education.institution}</h3>
+                  <a class="cv-degree" href={education.programmeUrl}>
+                    {education.degree}
+                  </a>
+                </div>
+                <p class="cv-period">
+                  <time datetime={education.period.start}>{period.start}</time>
+                  {" — "}
+                  {education.period.present ? (
+                    period.present
+                  ) : (
+                    <time datetime={education.period.end}>{period.end}</time>
+                  )}
+                </p>
+              </header>
+              {education.distinction && (
+                <p class="cv-distinction">{education.distinction}</p>
+              )}
+            </article>
+          );
+        })
+      }
+    </div>
+  </section>
+
+  <section
+    class="cv-section cv-recognition"
+    aria-labelledby="cv-recognition-heading"
+  >
+    <h2 id="cv-recognition-heading">{content.recognitionHeading}</h2>
+    <ul>
+      {content.recognition.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+</article>

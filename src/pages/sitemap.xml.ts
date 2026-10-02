@@ -2,7 +2,7 @@ import { site } from "../config/site";
 import { enabledLocales, route } from "../i18n";
 import { entries, entryPath } from "../utils/content";
 export async function GET() {
-  const publicPaths = ["", "projects", "research", "notes", "about"];
+  const publicPaths = ["", "projects", "research", "notes", "about", "cv"];
   const detailPaths = (await entries())
     .filter(
       (entry) =>
