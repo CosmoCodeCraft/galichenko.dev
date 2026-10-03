@@ -1,0 +1,36 @@
+name: Generate audit bundle
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout selected ref
+        uses: actions/checkout@v6
+      - name: Install pinned pnpm
+        uses: pnpm/action-setup@v4
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Chromium system dependencies
+        run: pnpm exec playwright install-deps chromium
+      - name: Generate bundle
+        run: pnpm audit:bundle
+      - name: Upload bundle
+        uses: actions/upload-artifact@v7
+        with:
+          name: galichenko-dev-audit-${{ github.sha }}
+          path: audit-output/galichenko-dev-audit-*.zip
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0

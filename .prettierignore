@@ -7,3 +7,4 @@ src/citation/styles/*.csl
 src/citation/locales/*.xml
 
 galichenko-*.html
+audit-output

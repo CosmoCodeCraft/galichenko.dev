@@ -62,3 +62,64 @@ pnpm dev
 See [validation](docs/validation.md) for the tested scope and remaining review items.
 
 Deployment is documented in [GitHub Pages deployment](docs/deployment.md). Routine content is added through the typed Markdown/MDX collections under `src/content/`; `pnpm content:new` creates draft records without publishing them.
+
+## Reusable audit bundles
+
+With the repository's Node and pinned pnpm installed, run `pnpm install` once, then:
+
+```sh
+pnpm audit:bundle
+```
+
+This builds the current working tree, discovers all `dist/**/*.html`, extracts text,
+metadata and links, starts Astro preview, captures screenshots with the locked
+Playwright Chromium, and writes `audit-output/galichenko-dev-audit-<SHORT_SHA>.zip`.
+Chromium installs automatically if absent. On Linux, install browser system
+libraries once with `pnpm exec playwright install-deps chromium` (may need sudo).
+No Codex, AI model, API key, or external service is required. Dependencies/browser
+installation can need network access; capture uses only local build resources.
+
+In GitHub Actions, select **Generate audit bundle → Run workflow**, choose the
+branch/ref, and download the resulting artifact ZIP. The workflow uses the same
+command and the pnpm version in `package.json`; it only runs manually.
+
+New routes, Notes, publications, changed copy, metadata and project details enter
+HTML/text/metadata automatically. Only emitted `noindex`/`none` robots pages are
+excluded, with reasons recorded in the manifest. No current pages are excluded.
+Raw HTML is unchanged; text is a structural extraction preserving headings,
+lists, tables, links and repeated content. It does not infer CSS visibility, so
+navigation, footer and closed-dialog text remain. HTML is evidence, not a bundled
+offline application: linked PDFs, media and application assets are not copied.
+
+Edit **`audit.config.mjs`** for screenshot membership or viewport policy. The
+initial full-page desktop set covers six top-level pages, four key projects,
+the latest publication, and latest/earliest Notes. Publication selection uses
+the declared year emitted in its metadata line; Notes use the first header
+`time[datetime]`. Ties use ascending route order. When only one Note exists,
+latest/earliest are deduplicated. Missing dates or required routes fail loudly.
+The config also lists the smaller dark, mobile and initial-viewport subsets.
+Major changes to routing, theme storage, or detail-page date markup may require
+updating config/selectors or the generator; routine content changes do not.
+
+Each capture uses a fresh page, explicit theme storage and color scheme, scale
+factor 1, en-US browser locale, UTC and the site's native reduced-motion mode.
+No screenshot CSS is injected. Initial-viewport captures never scroll; full-page
+captures load lazy images and return to the top. External requests (including
+analytics) are blocked. Missing local resources or broken images fail the run.
+Selections, file order and ZIP entry timestamps are deterministic. Generation
+time, build-time content (such as copyright year), platform/fonts and browser
+versions can affect bytes; manifests record the environment. This does not
+promise byte-identical screenshots across operating systems.
+
+The manifest records exact HEAD, branch (null for detached HEAD), and whether the
+working tree was dirty. A dirty snapshot represents current files, not just HEAD;
+use a clean checkout for commit-only evidence. Repository URLs are sanitized and
+no diffs, source files, credentials, logs or browser state are packaged. Artifacts
+are allowlisted, hashed, and checked after reopening the ZIP. Equivalent emitted
+Person objects are deduplicated with source routes; distinct objects are retained.
+Internal links omit query/fragment variants but retain links to public file assets.
+Temporary files and preview/browser processes are cleaned up; ZIPs stay ignored
+in `audit-output/` and a successful rerun at the same SHA replaces its ZIP.
+
+Run `pnpm test:audit` for focused extraction, selection and safety tests. The normal
+`pnpm format:check`, `pnpm lint`, `pnpm typecheck`, and `pnpm build` still apply.
