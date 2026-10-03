@@ -25,6 +25,7 @@ const {
 } = Astro.props;
 const d = t(locale);
 const mainClass = home ? "home-main" : "wrap";
+const criticalFontSubset = locale === "ru" ? "Cyrillic" : "Latin1";
 const canonical = absoluteSiteUrl(Astro.url.pathname);
 const person = {
   "@context": "https://schema.org",
@@ -86,7 +87,13 @@ const person = {
           set:html={JSON.stringify(structuredData).replace(/</g, "\u003c")}
         />
       )
-    }</head
+    }<link
+      rel="preload"
+      href={`/fonts/ibm-plex/IBMPlexSans-Regular-${criticalFontSubset}.woff2`}
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    /></head
   ><body id="top"
     ><Header locale={locale} /><main id="main" class={mainClass} tabindex="-1">
       <slot />

@@ -1,3 +1,110 @@
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ibm-plex/IBMPlexSans-Regular-Cyrillic.woff2") format("woff2");
+  unicode-range:
+    U+0400-045f, U+0462-0463, U+046a-046b, U+0472-0475, U+0490-04c2,
+    U+04cf-04d9, U+04dc-04e9, U+04ee-04f9, U+0524-0525;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ibm-plex/IBMPlexSans-Regular-Latin1.woff2") format("woff2");
+  unicode-range:
+    U+0000, U+000d, U+0020-007e, U+00a0-00ff, U+0131, U+0152-0153, U+02c6,
+    U+02da, U+02dc, U+2013-2014, U+2018-201a, U+201c-201e, U+2020-2022, U+2026,
+    U+2030, U+2039-203a, U+2044, U+20ac, U+2122, U+2212, U+fb01-fb02;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/ibm-plex/IBMPlexSans-Medium-Cyrillic.woff2") format("woff2");
+  unicode-range:
+    U+0400-045f, U+0462-0463, U+046a-046b, U+0472-0475, U+0490-04c2,
+    U+04cf-04d9, U+04dc-04e9, U+04ee-04f9, U+0524-0525;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/ibm-plex/IBMPlexSans-Medium-Latin1.woff2") format("woff2");
+  unicode-range:
+    U+0000, U+000d, U+0020-007e, U+00a0-00ff, U+0131, U+0152-0153, U+02c6,
+    U+02da, U+02dc, U+2013-2014, U+2018-201a, U+201c-201e, U+2020-2022, U+2026,
+    U+2030, U+2039-203a, U+2044, U+20ac, U+2122, U+2212, U+fb01-fb02;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/ibm-plex/IBMPlexSans-SemiBold-Cyrillic.woff2")
+    format("woff2");
+  unicode-range:
+    U+0400-045f, U+0462-0463, U+046a-046b, U+0472-0475, U+0490-04c2,
+    U+04cf-04d9, U+04dc-04e9, U+04ee-04f9, U+0524-0525;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/ibm-plex/IBMPlexSans-SemiBold-Latin1.woff2") format("woff2");
+  unicode-range:
+    U+0000, U+000d, U+0020-007e, U+00a0-00ff, U+0131, U+0152-0153, U+02c6,
+    U+02da, U+02dc, U+2013-2014, U+2018-201a, U+201c-201e, U+2020-2022, U+2026,
+    U+2030, U+2039-203a, U+2044, U+20ac, U+2122, U+2212, U+fb01-fb02;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ibm-plex/IBMPlexMono-Regular-Cyrillic.woff2") format("woff2");
+  unicode-range:
+    U+0400-045f, U+0462-0463, U+046a-046b, U+0472-0475, U+0490-04c2,
+    U+04cf-04d9, U+04dc-04e9, U+04ee-04f9, U+0524-0525;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ibm-plex/IBMPlexMono-Regular-Latin1.woff2") format("woff2");
+  unicode-range:
+    U+0020-007e, U+00a0-00ff, U+0131, U+0152-0153, U+02c6, U+02da, U+02dc,
+    U+2013-2014, U+2018-201a, U+201c-201e, U+2020-2022, U+2026, U+2030,
+    U+2039-203a, U+2044, U+20ac, U+2122, U+2212, U+fb01-fb02;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/ibm-plex/IBMPlexMono-SemiBold-Cyrillic.woff2")
+    format("woff2");
+  unicode-range:
+    U+0400-045f, U+0462-0463, U+046a-046b, U+0472-0475, U+0490-04c2,
+    U+04cf-04d9, U+04dc-04e9, U+04ee-04f9, U+0524-0525;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/ibm-plex/IBMPlexMono-SemiBold-Latin1.woff2") format("woff2");
+  unicode-range:
+    U+0020-007e, U+00a0-00ff, U+0131, U+0152-0153, U+02c6, U+02da, U+02dc,
+    U+2013-2014, U+2018-201a, U+201c-201e, U+2020-2022, U+2026, U+2030,
+    U+2039-203a, U+2044, U+20ac, U+2122, U+2212, U+fb01-fb02;
+}
 :root {
   --background: #f4f5f3;
   --surface: #fff;
@@ -7,8 +114,11 @@
   --accent: #275da8;
   --line: #d1d6dc;
   --tint: #e8edf4;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --font-sans:
+    "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial,
+    sans-serif;
+  --font-mono:
+    "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
   --content-width: 1280px;
   --header-height: 72px;
   --motion-fast: 100ms;
@@ -113,6 +223,10 @@ h3 {
   font-weight: 500;
   line-height: 1.2;
 }
+strong,
+b {
+  font-weight: 600;
+}
 h2 {
   font-size: 36px;
   letter-spacing: -0.04em;
@@ -161,7 +275,7 @@ h2 {
 .brand {
   font-size: 24px;
   letter-spacing: -1px;
-  font-weight: 700;
+  font-weight: 600;
   min-height: 44px;
   display: flex;
   align-items: center;

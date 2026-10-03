@@ -173,3 +173,45 @@ test("collection descriptions and alternate URLs match canonical form", async ()
     assert.equal(alternate, canonical);
   }
 });
+
+test("production output self-hosts the required IBM Plex subsets", async () => {
+  const $ = await page("/");
+  assert.equal(
+    $('link[rel="preload"][as="font"]').attr("href"),
+    "/fonts/ibm-plex/IBMPlexSans-Regular-Latin1.woff2",
+  );
+
+  const stylesheetPaths = $('link[rel="stylesheet"]')
+    .map((_, element) => $(element).attr("href"))
+    .get()
+    .filter((href) => href?.startsWith("/"));
+  const css = (
+    await Promise.all(
+      stylesheetPaths.map((href) =>
+        readFile(join(process.cwd(), "dist", href.slice(1)), "utf8"),
+      ),
+    )
+  ).join("\n");
+  const fontPaths = [
+    ...new Set(
+      [...css.matchAll(/url\(["']?(\/fonts\/ibm-plex\/[^)"']+\.woff2)/g)].map(
+        (match) => match[1],
+      ),
+    ),
+  ];
+
+  assert.equal(fontPaths.length, 10);
+  assert.match(css, /font-family:["']?IBM Plex Sans/);
+  assert.match(css, /font-family:["']?IBM Plex Mono/);
+  assert.doesNotMatch(css, /fonts\.googleapis|fonts\.gstatic|use\.typekit/);
+
+  const fontAssets = await Promise.all(
+    fontPaths.map((path) =>
+      readFile(join(process.cwd(), "dist", path.slice(1))),
+    ),
+  );
+  assert.equal(
+    fontAssets.reduce((total, asset) => total + asset.byteLength, 0),
+    194892,
+  );
+});
