@@ -1698,14 +1698,30 @@ footer a {
   border: 1px solid var(--line);
   background: var(--surface);
   transition:
-    transform 150ms ease,
-    border-color 150ms ease,
-    box-shadow 150ms ease;
+    color var(--motion-fast) var(--motion-ease-out),
+    transform var(--motion-normal) var(--motion-ease-out),
+    background-color var(--motion-normal) var(--motion-ease-out),
+    border-color var(--motion-normal) var(--motion-ease-out),
+    box-shadow var(--motion-normal) var(--motion-ease-out);
 }
 .note-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   border-color: var(--secondary);
-  box-shadow: 0 8px 20px rgb(23 38 59 / 8%);
+  box-shadow: 0 5px 14px rgb(23 38 59 / 7%);
+}
+.note-card:focus-visible {
+  transform: none;
+  border-color: var(--accent);
+}
+:root[data-theme="dark"] .note-card:hover {
+  background-color: var(--tint);
+  box-shadow: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .note-card:hover {
+    background-color: var(--tint);
+    box-shadow: none;
+  }
 }
 .note-card-media,
 .note-cover-placeholder {
@@ -1724,7 +1740,7 @@ footer a {
 }
 .note-card .note-date {
   color: var(--accent);
-  font: 12px/1.5 var(--font-mono);
+  font: 13px/1.5 var(--font-mono);
   white-space: nowrap;
 }
 .note-card h2 {
@@ -1738,6 +1754,7 @@ footer a {
 .note-card .tags {
   margin-top: auto;
   padding-top: 20px;
+  font-size: 12px;
 }
 .notes-empty {
   border-block: 1px solid var(--line);
