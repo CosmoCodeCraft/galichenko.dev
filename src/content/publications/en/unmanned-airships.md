@@ -16,7 +16,7 @@
     ],
   "year": 2024,
   "status": "published",
-  "featured": true,
+  "featured": false,
   "keywordsOriginal":
     [
       "Летательные аппараты легче воздуха",
@@ -55,6 +55,5 @@
   "ednUrl": "https://www.elibrary.ru/ehcanr",
   "localPdf": "/publications/pdfs/2024-unmanned-airships-environmental-assessment.pdf",
   "pdfKind": "publication-extract",
-  "featuredOrder": 3,
 }
 ---

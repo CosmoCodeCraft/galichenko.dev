@@ -21,6 +21,7 @@ interface AboutFocusArea {
   paragraphs: string[];
   states?: AboutFocusState[];
   scope?: string[];
+  link?: AboutInternalLink;
 }
 
 interface AboutExperience {
@@ -75,8 +76,10 @@ export interface AboutContent {
   portraitLabel: string;
   focusHeading: string;
   focus: AboutFocusArea[];
-  experienceHeading: string;
-  experience: AboutExperience[];
+  professionalExperienceHeading: string;
+  professionalExperience: AboutExperience[];
+  projectLeadershipHeading: string;
+  projectLeadership: AboutExperience[];
   trajectoryHeading: string;
   trajectory: string[];
   educationHeading: string;
@@ -97,19 +100,18 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
   en: {
     title: "About",
     metaDescription:
-      "About Sergey Galichenko: DevOps, platform engineering and systems integration with a control and embedded engineering foundation.",
+      "About Sergey Galichenko: DevOps and systems integration with a foundation in control, embedded systems, Linux infrastructure and applied research.",
     introduction: [
-      "I'm Sergey Galichenko, a Software Engineering MSc student at HSE University focused on DevOps, platform engineering and systems integration.",
-      "My focus is the part of engineering where independently developed components have to work as one system: services need to communicate, data has to persist, deployments have to be repeatable, and failures have to be diagnosable.",
-      "I came to software engineering through control and embedded systems, so I tend to reason across layers — from devices and networking to application services and infrastructure. Today I am moving that systems perspective further into containerized services, CI/CD, orchestration and observability.",
+      "I'm Sergey Galichenko, a Software Engineering MSc student at HSE University focused on DevOps and systems integration.",
+      "My background spans control and embedded systems, Linux infrastructure and applied research. My current work moves that experience into containerized services and deployment; CI/CD, orchestration and observability are the next layer I am developing.",
     ],
     portraitLabel: "Sergey Galichenko",
     focusHeading: "Current focus",
     focus: [
       {
-        title: "DevOps & Platform Engineering",
+        title: "Current infrastructure work",
         paragraphs: [
-          "I am developing the infrastructure side of my work around containerized environments, deployment automation, orchestration and observability.",
+          "In SIRD, I work on local deployment, service integration and infrastructure-level troubleshooting for a document-recognition MVP.",
         ],
         states: [
           {
@@ -137,37 +139,27 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
             ],
           },
         ],
+        link: {
+          label: "View SIRD project",
+          path: "projects/sird/",
+        },
       },
       {
-        title: "Systems Integration",
+        title: "Engineering foundation",
         paragraphs: [
-          "I work with the boundaries between services: HTTP APIs, container networking, service discovery, data persistence and failure diagnosis.",
-          "I am particularly interested in the point where individually working components have to become a reproducible, debuggable system.",
-        ],
-        scope: [
-          "HTTP APIs",
-          "Container networking",
-          "Service discovery",
-          "Data persistence",
-          "Failure diagnosis",
-        ],
-      },
-      {
-        title: "Systems & Embedded Foundation",
-        paragraphs: [
-          "My earlier work with microcontrollers, Raspberry Pi, sensors, actuators and control systems gave me experience with software that interacts with real processes and constraints.",
-          "That background remains useful when tracing problems across multiple layers rather than treating an application, network or device in isolation.",
+          "Earlier work with microcontrollers, Raspberry Pi, Linux and control systems gave me experience tracing problems across software and physical layers.",
         ],
         scope: [
           "Microcontrollers",
           "Raspberry Pi",
+          "Linux",
           "Sensors & actuators",
           "Control systems",
         ],
       },
     ],
-    experienceHeading: "Experience",
-    experience: [
+    professionalExperienceHeading: "Professional experience",
+    professionalExperience: [
       {
         period: "December 2025 — August 2026",
         role: "Programming Teacher",
@@ -176,20 +168,6 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
           "I taught programming and robotics to children and teenagers in small groups, prepared development environments, and diagnosed software, dependency and network-related problems during classes.",
           "The role strengthened two practical skills that transfer directly to engineering work: troubleshooting under time constraints and explaining technical systems clearly enough for another person to work with them.",
         ],
-      },
-      {
-        period: "February 2023 — June 2025",
-        role: "Engineer → Project Lead",
-        organization: "City Farm · Moscow Polytechnic University",
-        paragraphs: [
-          "I progressed from hands-on engineering work to leading a multidisciplinary student team that grew to 12 people.",
-          "My responsibilities covered control systems, experimental work, Linux-based infrastructure, task planning, project delivery, onboarding and coordination across several cultivation installations.",
-          "Moving into the lead role taught me to think beyond individual components and take responsibility for how the technical work, people and project constraints fit together.",
-        ],
-        link: {
-          label: "View City Farm project",
-          path: "projects/city-farm",
-        },
       },
       {
         period: "September 2023 — November 2024",
@@ -202,13 +180,28 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
         ],
       },
     ],
-    trajectoryHeading: "From control systems to platform engineering",
+    projectLeadershipHeading: "Project leadership",
+    projectLeadership: [
+      {
+        period: "February 2023 — June 2025",
+        role: "Engineer → Project Lead",
+        organization:
+          "City Farm · Moscow Polytechnic University · Student engineering project",
+        paragraphs: [
+          "Within a project-based learning programme, I progressed from hands-on engineering work to leading a multidisciplinary student team that grew to 12 people.",
+          "My work covered control systems, Linux-based infrastructure, experiments, task planning, project delivery, onboarding and coordination across several cultivation installations.",
+        ],
+        link: {
+          label: "View City Farm project",
+          path: "projects/city-farm/",
+        },
+      },
+    ],
+    trajectoryHeading: "From control systems to infrastructure",
     trajectory: [
-      "I started in control systems, where software had to coordinate sensors, actuators, timing and physical processes.",
-      "City Farm expanded that perspective into Linux administration, remote access, integration and responsibility for a larger system and team.",
-      "My bachelor research used computer vision as a diagnostic tool for an aeroponic system. The important part for my current engineering direction was not computer vision as a specialisation, but designing the interfaces between control, computing and operator layers and validating the complete workflow experimentally.",
-      "In my master's programme, SIRD moves the same systems interest into software infrastructure: service boundaries, containers, persistence, deployment, orchestration and observability.",
-      "The technologies changed, but the underlying problem remained the same: how to make separate components work together predictably as one system.",
+      "I started in control systems, where software had to coordinate sensors, actuators, timing and physical processes. City Farm expanded that work into Linux administration, remote access, integration and project leadership.",
+      "My bachelor research used computer vision as a diagnostic channel for an aeroponic system. The part most relevant to my current direction was the system architecture: separating deterministic control, edge processing and operator-level analysis, then validating the complete workflow experimentally.",
+      "In my master's programme, SIRD moves that experience into software infrastructure: service boundaries, containers, persistence and deployment. CI/CD, orchestration and observability are the next layer under development.",
     ],
     educationHeading: "Education",
     education: [
@@ -231,9 +224,7 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
     ],
     researchHeading: "Research & scientific community",
     researchIntroduction: [
-      "Research has been one way for me to validate engineering ideas with explicit methods, experiments and evidence.",
-      "My recent work includes papers accepted for publication at UralCon 2026 and INFO-2026 on aeroponic irrigation monitoring and its hardware-software architecture.",
-      "Earlier work includes automated cultivation systems, sustainable technologies and several interdisciplinary topics.",
+      "Research is part of my engineering background and a way to document methods, experiments and limitations. My recent work includes two 2026 papers on aeroponic irrigation monitoring; earlier work spans automated cultivation systems, sustainable technologies and interdisciplinary topics.",
     ],
     researchLinkLabel: "View research archive",
     community: {
@@ -329,22 +320,13 @@ export const aboutContent: Partial<Record<Locale, AboutContent>> = {
       {
         title: "Define boundaries before adding infrastructure",
         paragraphs: [
-          "A new service or infrastructure tool should solve a real problem: ownership, deployment, isolation, scaling or observability.",
-          "I prefer simplifying a system before automating unnecessary complexity.",
+          "A new service or infrastructure tool should solve a demonstrated problem in ownership, deployment, isolation, scaling or observability.",
         ],
       },
       {
         title: "Verify the end-to-end path",
         paragraphs: [
-          "A healthy container or successful unit test does not prove that the system works as a whole.",
-          "I prefer tracing real requests across service boundaries, checking networking, persistence and logs, and verifying the behaviour that a user or another system actually depends on.",
-        ],
-      },
-      {
-        title: "Make systems reproducible and observable",
-        paragraphs: [
-          "Configuration and deployment should be repeatable, and runtime behaviour should be visible enough to diagnose.",
-          "That is the direction of my current work with CI/CD, orchestration and observability tooling.",
+          "A healthy component is not enough; I verify the request path, networking, persistence and logs across the system.",
         ],
       },
     ],

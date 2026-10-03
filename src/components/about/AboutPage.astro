@@ -57,17 +57,27 @@ if (!content) throw new Error(`About content is missing for locale: ${locale}`);
                 </ul>
               </div>
             ))}
+            {area.link && (
+              <a class="about-inline-link" href={route(locale, area.link.path)}>
+                {area.link.label}
+              </a>
+            )}
           </article>
         ))
       }
     </div>
   </section>
 
-  <section class="about-section" aria-labelledby="about-experience-heading">
-    <h2 id="about-experience-heading">{content.experienceHeading}</h2>
+  <section
+    class="about-section"
+    aria-labelledby="about-professional-experience-heading"
+  >
+    <h2 id="about-professional-experience-heading">
+      {content.professionalExperienceHeading}
+    </h2>
     <ol class="about-dated-list">
       {
-        content.experience.map((experience) => (
+        content.professionalExperience.map((experience) => (
           <li class="about-dated-row">
             <p class="about-date">{experience.period}</p>
             <div class="about-row-content">
@@ -82,6 +92,39 @@ if (!content) throw new Error(`About content is missing for locale: ${locale}`);
                   href={route(locale, experience.link.path)}
                 >
                   {experience.link.label}
+                </a>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section
+    class="about-section"
+    aria-labelledby="about-project-leadership-heading"
+  >
+    <h2 id="about-project-leadership-heading">
+      {content.projectLeadershipHeading}
+    </h2>
+    <ol class="about-dated-list">
+      {
+        content.projectLeadership.map((project) => (
+          <li class="about-dated-row">
+            <p class="about-date">{project.period}</p>
+            <div class="about-row-content">
+              <h3>{project.role}</h3>
+              <p class="about-organisation">{project.organization}</p>
+              {project.paragraphs.map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+              {project.link && (
+                <a
+                  class="about-inline-link"
+                  href={route(locale, project.link.path)}
+                >
+                  {project.link.label}
                 </a>
               )}
             </div>

@@ -32,7 +32,8 @@
     ],
   "keywordsEnglish": [],
   "status": "accepted",
-  "featured": false,
+  "featured": true,
+  "featuredOrder": 1,
   "relatedProject": "vision",
 }
 ---

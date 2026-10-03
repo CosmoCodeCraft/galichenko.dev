@@ -48,7 +48,8 @@
       "microcontroller",
     ],
   "status": "accepted",
-  "featured": false,
+  "featured": true,
+  "featuredOrder": 2,
   "relatedProject": "vision",
 }
 ---

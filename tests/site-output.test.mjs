@@ -1,0 +1,147 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { load } from "cheerio";
+
+const siteUrl = "https://sergeygalichenko.dev";
+const personId = `${siteUrl}/#person`;
+
+async function page(route) {
+  const path =
+    route === "/"
+      ? join(process.cwd(), "dist/index.html")
+      : join(process.cwd(), "dist", route.replace(/^\//, ""), "index.html");
+  return load(await readFile(path, "utf8"));
+}
+
+function jsonLd($) {
+  return $('script[type="application/ld+json"]')
+    .map((_, element) => JSON.parse($(element).text()))
+    .get();
+}
+
+test("Home uses the requested project and research selections", async () => {
+  const $ = await page("/");
+  assert.equal(
+    $(".hero .role").text().trim(),
+    "DevOps & Systems Integration Engineer",
+  );
+  assert.deepEqual(
+    $("#projects .project-card h3")
+      .map((_, element) => $(element).text().trim())
+      .get(),
+    [
+      "SIRD — Intelligent Data Recognition System",
+      "City Farm",
+      "Computer Vision for Aeroponic Irrigation Monitoring",
+    ],
+  );
+  assert.deepEqual(
+    $("#research .publication-row h3")
+      .map((_, element) => $(element).text().trim())
+      .get(),
+    [
+      "A Computer Vision Approach to Automated Monitoring of Aeroponic Nozzle Operation",
+      "Аппаратно-программная архитектура системы контроля орошения аэропонной установки с применением технического зрения",
+    ],
+  );
+});
+
+test("About separates professional experience from project leadership", async () => {
+  const $ = await page("/about/");
+  assert.deepEqual(
+    $(".about-page > .about-section > h2")
+      .map((_, element) => $(element).text().trim())
+      .get(),
+    [
+      "Current focus",
+      "Professional experience",
+      "Project leadership",
+      "From control systems to infrastructure",
+      "Education",
+      "Research & scientific community",
+      "Selected recognition",
+      "Selected mentions",
+      "Engineering approach",
+    ],
+  );
+  const professional = $(
+    '[aria-labelledby="about-professional-experience-heading"]',
+  ).text();
+  const leadership = $(
+    '[aria-labelledby="about-project-leadership-heading"]',
+  ).text();
+  assert.doesNotMatch(professional, /City Farm/);
+  assert.match(leadership, /City Farm/);
+  assert.match(leadership, /Student engineering project/);
+});
+
+test("SIRD omits the placeholder evidence section", async () => {
+  const $ = await page("/projects/sird/");
+  const headings = $(".project-case-study h2")
+    .map((_, element) => $(element).text().trim())
+    .get();
+  assert.ok(!headings.includes("Evidence"));
+});
+
+test("detail pages emit project and publication structured data", async () => {
+  const project$ = await page("/projects/sird/");
+  const projectData = jsonLd(project$);
+  assert.ok(projectData.some((entity) => entity["@id"] === personId));
+  const project = projectData.find(
+    (entity) => entity["@type"] === "CreativeWork",
+  );
+  assert.equal(project["@id"], `${siteUrl}/projects/sird/#project`);
+  assert.deepEqual(project.contributor, { "@id": personId });
+
+  const publication$ = await page(
+    "/research/uralcon-aeroponic-nozzle-monitoring/",
+  );
+  const articleData = jsonLd(publication$);
+  assert.ok(articleData.some((entity) => entity["@id"] === personId));
+  const article = articleData.find(
+    (entity) => entity["@type"] === "ScholarlyArticle",
+  );
+  assert.equal(
+    article["@id"],
+    `${siteUrl}/research/uralcon-aeroponic-nozzle-monitoring/#article`,
+  );
+  assert.equal(article.creativeWorkStatus, "Accepted for publication");
+  assert.ok(!("datePublished" in article));
+  assert.ok(
+    article.author.some(
+      (author) =>
+        author["@id"] === personId && author.name.includes("Galichenko"),
+    ),
+  );
+  assert.equal(article.about["@id"], `${siteUrl}/projects/vision/#project`);
+});
+
+test("collection descriptions and alternate URLs match canonical form", async () => {
+  const descriptions = {
+    "/projects/":
+      "Engineering projects spanning systems integration, Linux infrastructure, embedded control, and applied research.",
+    "/research/":
+      "Publications and accepted work in engineering systems, aeroponics, computer vision, sustainable technologies, and interdisciplinary research.",
+    "/notes/":
+      "Short notes on engineering projects, research, education, and professional milestones.",
+  };
+
+  for (const [route, description] of Object.entries(descriptions)) {
+    const $ = await page(route);
+    assert.equal($('meta[name="description"]').attr("content"), description);
+  }
+
+  for (const route of [
+    "/projects/",
+    "/projects/sird/",
+    "/research/uralcon-aeroponic-nozzle-monitoring/",
+  ]) {
+    const $ = await page(route);
+    const canonical = $('link[rel="canonical"]').attr("href");
+    const alternate = $('link[rel="alternate"][hreflang="en"]').attr("href");
+    assert.equal(canonical, `${siteUrl}${route}`);
+    assert.equal(alternate, canonical);
+  }
+});

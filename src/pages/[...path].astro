@@ -16,6 +16,8 @@ import { homeCopy } from "../config/home";
 import { aboutContent } from "../content/about";
 import { cvContent } from "../content/cv";
 import { entries, entryPath, type Entry } from "../utils/content";
+import { structuredDataForEntry } from "../utils/structured-data";
+import { absoluteSiteUrl } from "../utils/urls";
 export const getStaticPaths = (async () => {
   const all = await entries();
   return [
@@ -51,6 +53,11 @@ const isCv = !entry && kind === "cv";
 const isPublication = entry?.collection === "publications";
 const isProject = entry?.collection === "projects";
 const isNote = entry?.collection === "notes";
+const collectionDescriptions = {
+  projects: d.projectsMetaDescription,
+  research: d.researchMetaDescription,
+  notes: d.notesMetaDescription,
+};
 const title = isHome
   ? site.name
   : entry
@@ -64,13 +71,15 @@ const description = isHome
     ? aboutContent[locale]?.metaDescription
     : isCv
       ? cvContent[locale]?.metaDescription
-      : isPublication
-        ? (entry.data.abstractEnglish ??
-          entry.data.titleEnglish ??
-          entry.data.titleOriginal)
-        : entry && "summary" in entry.data
-          ? entry.data.summary
-          : title;
+      : isCollectionIndex
+        ? collectionDescriptions[kind as keyof typeof collectionDescriptions]
+        : isPublication
+          ? (entry.data.abstractEnglish ??
+            entry.data.titleEnglish ??
+            entry.data.titleOriginal)
+          : entry && "summary" in entry.data
+            ? entry.data.summary
+            : title;
 const alternates = entry
   ? all
       .filter(
@@ -88,6 +97,9 @@ const pageTitle = isCv
   : isHome
     ? `${site.name} — DevOps & Systems Integration Engineer`
     : `${title} — ${site.name}`;
+const structuredData = entry
+  ? structuredDataForEntry(entry, absoluteSiteUrl(Astro.url.pathname))
+  : undefined;
 ---
 
 <BaseLayout
@@ -102,6 +114,7 @@ const pageTitle = isCv
     !isAbout &&
     !isCv}
   alternates={alternates}
+  structuredData={structuredData}
 >
   {
     isHome ? (

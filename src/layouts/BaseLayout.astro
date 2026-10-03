@@ -2,6 +2,8 @@
 import Header from "../components/Header.astro";
 import { site } from "../config/site";
 import { route, t, type Locale } from "../i18n";
+import { PERSON_ID, type StructuredData } from "../utils/structured-data";
+import { absoluteSiteUrl } from "../utils/urls";
 import "../styles/global.css";
 interface Props {
   locale: Locale;
@@ -9,6 +11,7 @@ interface Props {
   description?: string;
   noindex?: boolean;
   alternates?: { locale: Locale; url: string }[];
+  structuredData?: StructuredData;
 }
 const {
   locale,
@@ -16,13 +19,14 @@ const {
   description = title,
   noindex = false,
   alternates = [],
+  structuredData,
 } = Astro.props;
 const d = t(locale);
-const canonical = new URL(Astro.url.pathname, site.url).href;
+const canonical = absoluteSiteUrl(Astro.url.pathname);
 const person = {
   "@context": "https://schema.org",
   "@type": "Person",
-  "@id": new URL("/#person", site.url).href,
+  "@id": PERSON_ID,
   name: site.name,
   ...site.person,
   url: site.url,
@@ -56,7 +60,7 @@ const person = {
         <link
           rel="alternate"
           hreflang={a.locale}
-          href={new URL(a.url, site.url).href}
+          href={absoluteSiteUrl(a.url)}
         />
       ))
     }<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -72,7 +76,14 @@ const person = {
     <script
       type="application/ld+json"
       set:html={JSON.stringify(person).replace(/</g, "\u003c")}
-    /></head
+    />{
+      structuredData && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(structuredData).replace(/</g, "\u003c")}
+        />
+      )
+    }</head
   ><body id="top"
     ><Header locale={locale} /><main id="main" class="wrap" tabindex="-1">
       <slot />

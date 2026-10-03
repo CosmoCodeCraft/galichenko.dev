@@ -1,7 +1,13 @@
 export const en = {
   projects: "Projects",
+  projectsMetaDescription:
+    "Engineering projects spanning systems integration, Linux infrastructure, embedded control, and applied research.",
   research: "Research",
+  researchMetaDescription:
+    "Publications and accepted work in engineering systems, aeroponics, computer vision, sustainable technologies, and interdisciplinary research.",
   notes: "Notes",
+  notesMetaDescription:
+    "Short notes on engineering projects, research, education, and professional milestones.",
   notesIntro:
     "Short field notes on projects, research, education, and milestones.",
   about: "About",

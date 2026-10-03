@@ -16,7 +16,8 @@
     "deploy:build": "pnpm lint && pnpm typecheck && pnpm build",
     "content:new": "node scripts/content-new.mjs",
     "audit:bundle": "node scripts/audit-bundle.mjs",
-    "test:audit": "node --test tests/audit.test.mjs"
+    "test:audit": "node --test tests/audit.test.mjs",
+    "test:site-output": "node --test tests/site-output.test.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",

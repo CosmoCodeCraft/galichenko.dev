@@ -20,6 +20,6 @@ export const homeCopy: Partial<
     specialty:
       "MSc student in System and Software Engineering at HSE University.",
     intro:
-      "I’ve worked with embedded systems, Linux infrastructure, and computer vision across engineering and research projects. What interests me most is the integration work that turns separate components into systems that can be tested, deployed, and operated reliably.",
+      "My background spans embedded systems, Linux infrastructure and applied computer vision. I now focus on service integration and infrastructure: getting services to communicate correctly, persist data, and work together as a complete system.",
   },
 };

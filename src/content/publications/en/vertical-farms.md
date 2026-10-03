@@ -15,7 +15,7 @@
     ],
   "year": 2024,
   "status": "published",
-  "featured": true,
+  "featured": false,
   "keywordsOriginal":
     ["Аэропоника", "Гидропоника", "Вертикальная ферма", "Сельское хозяйство"],
   "keywordsEnglish": [],
@@ -40,6 +40,5 @@
   "ednUrl": "https://www.elibrary.ru/flliop",
   "localPdf": "/publications/pdfs/2024-vertical-farms-green-economy.pdf",
   "pdfKind": "publication-extract",
-  "featuredOrder": 2,
 }
 ---

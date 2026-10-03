@@ -17,7 +17,7 @@
     ],
   "year": 2025,
   "status": "published",
-  "featured": true,
+  "featured": false,
   "keywordsOriginal":
     [
       "Генеративный искусственный интеллект",
@@ -58,6 +58,5 @@
   "localPdf": "/publications/pdfs/2025-generative-ai-physical-education.pdf",
   "pdfKind": "publication-extract",
   "externalFullTextUrl": "https://www.elibrary.ru/download/elibrary_80344895_83630044.pdf",
-  "featuredOrder": 1,
 }
 ---
