@@ -29,15 +29,15 @@ document
   .forEach((el) => (el.hidden = false));
 controls.forEach((control) =>
   control.addEventListener("click", () => {
-    if (preference === "system") {
-      preference = matchMedia("(prefers-color-scheme: dark)").matches
+    preference =
+      preference === "system"
         ? "light"
-        : "dark";
-    } else {
-      preference = preference === "light" ? "dark" : "light";
-    }
+        : preference === "light"
+          ? "dark"
+          : "system";
     try {
-      localStorage.setItem("sg-theme", preference);
+      if (preference === "system") localStorage.removeItem("sg-theme");
+      else localStorage.setItem("sg-theme", preference);
     } catch {
       /* Preference still works for this page. */
     }
