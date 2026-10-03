@@ -41,6 +41,7 @@ const projects = defineCollection({
       archiveOrder: z.number().optional(),
       role: z.string(),
       cardRole: z.string().optional(),
+      cardContext: z.string().optional(),
       tags: z.array(z.string()),
       technologies: z.array(z.object({ name: z.string(), state })),
       cover: z

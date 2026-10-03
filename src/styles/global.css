@@ -392,9 +392,15 @@ a[aria-current="page"] {
   color: var(--secondary);
   line-height: 1.6;
 }
-.metadata > span {
+.metadata > span:not(.project-card-context) {
   color: var(--accent);
   font-weight: 600;
+}
+.project-card-context {
+  display: block;
+  margin-top: 4px;
+  color: var(--secondary);
+  font: 11px/1.5 var(--font-mono);
 }
 .project-card h3 {
   font-size: 24px;

@@ -37,6 +37,18 @@ test("Home uses the requested project and research selections", async () => {
       "Computer Vision for Aeroponic Irrigation Monitoring",
     ],
   );
+  const cityFarmCard = $("#projects .project-card")
+    .filter((_, element) => $(element).find("h3").text().trim() === "City Farm")
+    .first();
+  assert.match(
+    cityFarmCard.find(".metadata").text(),
+    /Engineer → Project Lead/,
+  );
+  assert.equal(
+    cityFarmCard.find(".project-card-context").text().trim(),
+    "Student engineering project · Moscow Polytechnic University",
+  );
+  assert.equal($("#projects .project-card-context").length, 1);
   assert.deepEqual(
     $("#research .publication-row h3")
       .map((_, element) => $(element).text().trim())
@@ -46,6 +58,22 @@ test("Home uses the requested project and research selections", async () => {
       "Аппаратно-программная архитектура системы контроля орошения аэропонной установки с применением технического зрения",
     ],
   );
+});
+
+test("Projects archive retains City Farm's role and project context", async () => {
+  const $ = await page("/projects/");
+  const cityFarmEntry = $(".project-archive-entry")
+    .filter((_, element) => $(element).find("h2").text().trim() === "City Farm")
+    .first();
+  assert.match(
+    cityFarmEntry.find(".metadata").text(),
+    /Engineer → Project Lead/,
+  );
+  assert.equal(
+    cityFarmEntry.find(".project-card-context").text().trim(),
+    "Student engineering project · Moscow Polytechnic University",
+  );
+  assert.equal($(".project-archive-entry .project-card-context").length, 1);
 });
 
 test("About separates professional experience from project leadership", async () => {

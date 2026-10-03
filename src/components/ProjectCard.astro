@@ -25,6 +25,7 @@ const d = t(p.locale);
     )
   }<p class="metadata">
     <span>{d[p.status]}</span> · {p.cardRole ?? p.role}
+    {p.cardContext && <span class="project-card-context">{p.cardContext}</span>}
   </p><h3 id={`project-${p.id}`}>{p.shortTitle ?? p.title}</h3><p
     class="description"
   >

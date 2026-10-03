@@ -56,6 +56,9 @@ function period(project: (typeof projects)[number]) {
               <div class="project-archive-copy">
                 <p class="metadata">
                   <span>{d[p.status]}</span> · {p.cardRole ?? p.role}
+                  {p.cardContext && (
+                    <span class="project-card-context">{p.cardContext}</span>
+                  )}
                 </p>
                 <h2 id={`archive-project-${p.id}`}>
                   {p.shortTitle ?? p.title}
