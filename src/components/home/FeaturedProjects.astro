@@ -11,12 +11,15 @@ const d = t(locale);
 const projects = await featured("projects", locale);
 ---
 
-<section class="section" id="projects">
-  <SectionHeader title={d.featuredProjects} description={d.projectsIntro} /><div
-    class="projects-grid"
-  >
-    {projects.map((project) => <ProjectCard project={project} />)}
-  </div><a class="text-link section-link" href={route(locale, "projects")}
-    >{d.allProjects}</a
-  >
+<section class="section home-projects" id="projects">
+  <div class="wrap">
+    <SectionHeader
+      title={d.featuredProjects}
+      description={d.projectsIntro}
+    /><div class="projects-grid">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div><a class="text-link section-link" href={route(locale, "projects")}
+      >{d.allProjects}</a
+    >
+  </div>
 </section>

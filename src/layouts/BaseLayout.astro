@@ -8,6 +8,7 @@ import "../styles/global.css";
 interface Props {
   locale: Locale;
   title: string;
+  home?: boolean;
   description?: string;
   noindex?: boolean;
   alternates?: { locale: Locale; url: string }[];
@@ -16,12 +17,14 @@ interface Props {
 const {
   locale,
   title,
+  home = false,
   description = title,
   noindex = false,
   alternates = [],
   structuredData,
 } = Astro.props;
 const d = t(locale);
+const mainClass = home ? "home-main" : "wrap";
 const canonical = absoluteSiteUrl(Astro.url.pathname);
 const person = {
   "@context": "https://schema.org",
@@ -85,24 +88,26 @@ const person = {
       )
     }</head
   ><body id="top"
-    ><Header locale={locale} /><main id="main" class="wrap" tabindex="-1">
+    ><Header locale={locale} /><main id="main" class={mainClass} tabindex="-1">
       <slot />
-    </main><footer class="wrap">
-      <div class="footer-identity">
-        <strong>{site.name}</strong><span>{d.footerRole}</span>
-      </div><nav class="footer-links" aria-label={d.nav}>
-        <a href={site.github}>{d.github}</a><a href={`mailto:${site.email}`}
-          >{d.email}</a
-        ><a href={route(locale, "cv")}>{d.cv}</a><a
-          href="#top"
-          class="footer-back-desktop"
-          >{d.backTop} <span aria-hidden="true">↑</span></a
-        >
-      </nav><div class="footer-closing">
-        <span class="footer-copyright">© {new Date().getFullYear()}</span><a
-          class="footer-back-mobile"
-          href="#top">{d.backTop} <span aria-hidden="true">↑</span></a
-        >
+    </main><footer>
+      <div class="wrap footer-inner">
+        <div class="footer-identity">
+          <strong>{site.name}</strong><span>{d.footerRole}</span>
+        </div><nav class="footer-links" aria-label={d.nav}>
+          <a href={site.github}>{d.github}</a><a href={`mailto:${site.email}`}
+            >{d.email}</a
+          ><a href={route(locale, "cv")}>{d.cv}</a><a
+            href="#top"
+            class="footer-back-desktop"
+            >{d.backTop} <span aria-hidden="true">↑</span></a
+          >
+        </nav><div class="footer-closing">
+          <span class="footer-copyright">© {new Date().getFullYear()}</span><a
+            class="footer-back-mobile"
+            href="#top">{d.backTop} <span aria-hidden="true">↑</span></a
+          >
+        </div>
       </div>
     </footer><script src="../utils/interactions.ts"
     ></script><!-- Cloudflare Web Analytics -->

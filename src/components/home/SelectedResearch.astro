@@ -11,15 +11,19 @@ const d = t(locale);
 const publications = await featured("publications", locale);
 ---
 
-<section class="section" id="research">
-  <SectionHeader title={d.selectedResearch} description={d.researchIntro} /><div
-  >
-    {
-      publications.map((publication) => (
-        <PublicationRow publication={publication} />
-      ))
-    }
-  </div><a class="text-link section-link" href={route(locale, "research")}
-    >{d.allResearch}</a
-  >
+<section class="section home-research" id="research">
+  <div class="wrap">
+    <SectionHeader
+      title={d.selectedResearch}
+      description={d.researchIntro}
+    /><div>
+      {
+        publications.map((publication) => (
+          <PublicationRow publication={publication} />
+        ))
+      }
+    </div><a class="text-link section-link" href={route(locale, "research")}
+      >{d.allResearch}</a
+    >
+  </div>
 </section>

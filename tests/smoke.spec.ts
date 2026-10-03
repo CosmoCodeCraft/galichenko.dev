@@ -87,12 +87,12 @@ test("Theme persistence, system changes, menu and keyboard", async ({
   await page.emulateMedia({ colorScheme: "dark" });
   await expect(page.locator("body")).toHaveCSS(
     "background-color",
-    "rgb(17, 26, 39)",
+    "rgb(20, 23, 27)",
   );
   await page.emulateMedia({ colorScheme: "light" });
   await expect(page.locator("body")).toHaveCSS(
     "background-color",
-    "rgb(240, 244, 248)",
+    "rgb(244, 245, 243)",
   );
   await page.keyboard.press("Escape");
   await expect(page.locator(".mobile-menu summary")).toBeFocused();
@@ -167,7 +167,7 @@ test("Routes and no-JS content", async ({ browser, page }) => {
   await expect(nojs.locator(".drawer a").first()).toBeVisible();
   await expect(nojs.locator("body")).toHaveCSS(
     "background-color",
-    "rgb(17, 26, 39)",
+    "rgb(20, 23, 27)",
   );
   await context.close();
 });

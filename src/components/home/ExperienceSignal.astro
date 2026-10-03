@@ -9,24 +9,26 @@ const d = t(locale);
 ---
 
 <section class="section experience" id="experience">
-  <div class="experience-content">
-    <div>
-      <p class="label">{d.experience}</p><h2>{d.experienceHeading}</h2>
-    </div><div class="experience-items">
-      {
-        experiences
-          .filter((e) => e.locale === locale)
-          .map((e) => (
-            <p>
-              <>
-                <strong>{e.role}</strong>
-                <span>{e.organization}</span>
-              </>
-            </p>
-          ))
-      }
-    </div>
-  </div><a class="text-link section-link" href={route(locale, "about")}
-    >{d.aboutExperience}</a
-  >
+  <div class="wrap">
+    <div class="experience-content">
+      <div>
+        <p class="label">{d.experience}</p><h2>{d.experienceHeading}</h2>
+      </div><div class="experience-items">
+        {
+          experiences
+            .filter((e) => e.locale === locale)
+            .map((e) => (
+              <p>
+                <>
+                  <strong>{e.role}</strong>
+                  <span>{e.organization}</span>
+                </>
+              </p>
+            ))
+        }
+      </div>
+    </div><a class="text-link section-link" href={route(locale, "about")}
+      >{d.aboutExperience}</a
+    >
+  </div>
 </section>
