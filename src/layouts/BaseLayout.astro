@@ -72,15 +72,23 @@ const person = {
     <script is:inline>
       document.documentElement.dataset.designFont = "plex";
       document.documentElement.dataset.designDark = "graphite";
+      document.documentElement.dataset.heroVisual = "observe";
       try {
         const p = localStorage.getItem("sg-theme");
         if (p === "light" || p === "dark")
           document.documentElement.dataset.theme = p;
         const font = localStorage.getItem("sg-design-font");
         const dark = localStorage.getItem("sg-design-dark");
+        const heroVisual = localStorage.getItem("sg-hero-visual");
         if (font === "system")
           document.documentElement.dataset.designFont = font;
         if (dark === "navy") document.documentElement.dataset.designDark = dark;
+        if (
+          heroVisual === "topology" ||
+          heroVisual === "observe" ||
+          heroVisual === "resilience"
+        )
+          document.documentElement.dataset.heroVisual = heroVisual;
       } catch {
         /* Storage may be unavailable. */
       }

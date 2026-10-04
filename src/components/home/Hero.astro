@@ -2,6 +2,7 @@
 import { homeCopy } from "../../config/home";
 import { site } from "../../config/site";
 import { t, type Locale } from "../../i18n";
+import HeroSystemVisual from "./HeroSystemVisual.astro";
 interface Props {
   locale: Locale;
 }
@@ -21,9 +22,7 @@ const d = t(locale);
       {copy.specialty}
     </p><p class="intro">{copy.intro}</p>
   </div><div class="hero-visual" aria-hidden="true">
-    <div class="visual-frame"></div><div class="visual-axis"></div><span
-      class="visual-mark">SG / 01</span
-    >
+    <HeroSystemVisual />
   </div><a class="scroll-hint" href="#projects"
     >{d.selectedWork} <span aria-hidden="true">↓</span></a
   >

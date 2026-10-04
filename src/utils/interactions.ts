@@ -1,6 +1,7 @@
 type ThemePreference = "system" | "light" | "dark";
 type FontPreference = "plex" | "system";
 type DarkPreference = "graphite" | "navy";
+type HeroVisualPreference = "topology" | "observe" | "resilience";
 const controls = document.querySelectorAll<HTMLButtonElement>(
   "[data-theme-control]",
 );
@@ -10,11 +11,19 @@ const fontControls = document.querySelectorAll<HTMLButtonElement>(
 const darkControls = document.querySelectorAll<HTMLButtonElement>(
   "[data-design-dark-option]",
 );
+const heroVisualControls = document.querySelectorAll<HTMLButtonElement>(
+  "[data-hero-visual-option]",
+);
 let preference: ThemePreference = "system";
 let fontPreference: FontPreference =
   document.documentElement.dataset.designFont === "system" ? "system" : "plex";
 let darkPreference: DarkPreference =
   document.documentElement.dataset.designDark === "navy" ? "navy" : "graphite";
+let heroVisualPreference: HeroVisualPreference =
+  document.documentElement.dataset.heroVisual === "topology" ||
+  document.documentElement.dataset.heroVisual === "resilience"
+    ? document.documentElement.dataset.heroVisual
+    : "observe";
 try {
   const saved = localStorage.getItem("sg-theme");
   if (saved === "light" || saved === "dark") preference = saved;
@@ -46,6 +55,12 @@ function applyDesignComparison() {
   darkControls.forEach((control) => {
     control.ariaPressed = String(
       control.dataset.designDarkOption === darkPreference,
+    );
+  });
+  document.documentElement.dataset.heroVisual = heroVisualPreference;
+  heroVisualControls.forEach((control) => {
+    control.ariaPressed = String(
+      control.dataset.heroVisualOption === heroVisualPreference,
     );
   });
 }
@@ -89,6 +104,21 @@ darkControls.forEach((control) =>
       control.dataset.designDarkOption === "navy" ? "navy" : "graphite";
     try {
       localStorage.setItem("sg-design-dark", darkPreference);
+    } catch {
+      /* Preference still works for this page. */
+    }
+    applyDesignComparison();
+  }),
+);
+heroVisualControls.forEach((control) =>
+  control.addEventListener("click", () => {
+    const selected = control.dataset.heroVisualOption;
+    heroVisualPreference =
+      selected === "topology" || selected === "resilience"
+        ? selected
+        : "observe";
+    try {
+      localStorage.setItem("sg-hero-visual", heroVisualPreference);
     } catch {
       /* Preference still works for this page. */
     }

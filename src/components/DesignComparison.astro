@@ -50,6 +50,33 @@
           >
         </div>
       </div>
+      <div class="design-comparison-row design-comparison-row--hero">
+        <span id="design-hero-label">Hero</span>
+        <div
+          class="design-comparison-segmented design-comparison-segmented--three"
+          role="group"
+          aria-labelledby="design-hero-label"
+        >
+          <button
+            type="button"
+            class="design-comparison-option"
+            data-hero-visual-option="topology"
+            aria-pressed="false">Topology</button
+          >
+          <button
+            type="button"
+            class="design-comparison-option"
+            data-hero-visual-option="observe"
+            aria-pressed="true">Observe</button
+          >
+          <button
+            type="button"
+            class="design-comparison-option"
+            data-hero-visual-option="resilience"
+            aria-pressed="false">Resilience</button
+          >
+        </div>
+      </div>
       <p>Dark palette applies in Dark mode.</p>
     </div>
   </details>
@@ -61,7 +88,7 @@
     right: max(12px, env(safe-area-inset-right));
     bottom: max(12px, env(safe-area-inset-bottom));
     z-index: 10;
-    width: min(276px, calc(100vw - 24px));
+    width: min(336px, calc(100vw - 24px));
     color: var(--text);
     font-family: var(--font-sans);
     font-size: 12px;
@@ -122,6 +149,9 @@
     border-radius: 4px;
     overflow: hidden;
   }
+  .design-comparison-segmented--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
   .design-comparison-option {
     min-width: 0;
     min-height: 40px;
@@ -164,6 +194,9 @@
       right: max(8px, env(safe-area-inset-right));
       bottom: max(8px, env(safe-area-inset-bottom));
       width: min(270px, calc(100vw - 16px));
+    }
+    .design-comparison-row--hero {
+      display: none;
     }
   }
   @media print {

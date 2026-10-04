@@ -246,10 +246,25 @@ test("temporary design comparison controls expose independent defaults", async (
       { value: "navy", pressed: "false" },
     ],
   );
+  assert.deepEqual(
+    panel
+      .find("[data-hero-visual-option]")
+      .map((_, element) => ({
+        value: $(element).attr("data-hero-visual-option"),
+        pressed: $(element).attr("aria-pressed"),
+      }))
+      .get(),
+    [
+      { value: "topology", pressed: "false" },
+      { value: "observe", pressed: "true" },
+      { value: "resilience", pressed: "false" },
+    ],
+  );
   const inlineScripts = $("script:not([src])")
     .map((_, element) => $(element).text())
     .get()
     .join("\n");
   assert.match(inlineScripts, /sg-design-font/);
   assert.match(inlineScripts, /sg-design-dark/);
+  assert.match(inlineScripts, /sg-hero-visual/);
 });
