@@ -444,23 +444,57 @@ a[aria-current="page"] {
   max-width: 470px;
   width: 100%;
   justify-self: end;
-  --hero-system-line: color-mix(in srgb, var(--line) 86%, var(--secondary));
+  --hero-system-line-primary: #91a2b7;
+  --hero-system-line-secondary: #c2cad4;
+  --hero-system-node: #60758e;
+  --hero-system-telemetry: #a6b5c6;
+  --hero-system-active: #2f6fda;
+  --hero-system-active-soft: #d9e7fa;
+  --hero-system-alert: #b6424b;
+  --hero-system-primary-opacity: 0.88;
+  --hero-system-secondary-opacity: 0.72;
+  --hero-system-telemetry-opacity: 0.66;
+}
+:root[data-theme="dark"] .hero-visual {
+  --hero-system-line-primary: color-mix(
+    in srgb,
+    var(--line) 86%,
+    var(--secondary)
+  );
+  --hero-system-line-secondary: var(--line);
   --hero-system-node: color-mix(in srgb, var(--secondary) 70%, var(--line));
-  --hero-system-muted: var(--line);
+  --hero-system-telemetry: var(--line);
   --hero-system-active: var(--accent);
-  --hero-system-alert: #a84650;
   --hero-system-active-soft: color-mix(
     in srgb,
     var(--accent) 22%,
     var(--background)
   );
-}
-:root[data-theme="dark"] .hero-visual {
   --hero-system-alert: #d86a72;
+  --hero-system-primary-opacity: 0.68;
+  --hero-system-secondary-opacity: 0.38;
+  --hero-system-telemetry-opacity: 0.36;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .hero-visual {
+    --hero-system-line-primary: color-mix(
+      in srgb,
+      var(--line) 86%,
+      var(--secondary)
+    );
+    --hero-system-line-secondary: var(--line);
+    --hero-system-node: color-mix(in srgb, var(--secondary) 70%, var(--line));
+    --hero-system-telemetry: var(--line);
+    --hero-system-active: var(--accent);
+    --hero-system-active-soft: color-mix(
+      in srgb,
+      var(--accent) 22%,
+      var(--background)
+    );
     --hero-system-alert: #d86a72;
+    --hero-system-primary-opacity: 0.68;
+    --hero-system-secondary-opacity: 0.38;
+    --hero-system-telemetry-opacity: 0.36;
   }
 }
 .hero-system-visual {
@@ -478,20 +512,20 @@ a[aria-current="page"] {
   vector-effect: non-scaling-stroke;
 }
 .hero-system-links--primary {
-  stroke: var(--hero-system-line);
+  stroke: var(--hero-system-line-primary);
   stroke-width: 1;
-  opacity: 0.68;
+  opacity: var(--hero-system-primary-opacity);
 }
 .hero-system-links--secondary {
-  stroke: var(--hero-system-muted);
+  stroke: var(--hero-system-line-secondary);
   stroke-width: 0.85;
-  opacity: 0.38;
+  opacity: var(--hero-system-secondary-opacity);
 }
 .hero-system-telemetry-links {
-  stroke: var(--hero-system-muted);
+  stroke: var(--hero-system-telemetry);
   stroke-width: 0.85;
   stroke-dasharray: 1.5 5;
-  opacity: 0.36;
+  opacity: var(--hero-system-telemetry-opacity);
 }
 .hero-system-nodes > :not(.hero-system-state-node, .hero-system-observe-node),
 .hero-system-state-node,
@@ -509,7 +543,7 @@ a[aria-current="page"] {
   stroke-width: 1.15;
 }
 .hero-system-state-node rect:last-child {
-  fill: var(--hero-system-muted);
+  fill: var(--hero-system-line-secondary);
   fill-opacity: 0.2;
 }
 .hero-system-observe-node {
@@ -555,6 +589,16 @@ a[aria-current="page"] {
 }
 .hero-system-pulse-telemetry .hero-system-pulse-tail {
   stroke-width: 1;
+}
+.hero-system-pulse-aux .hero-system-pulse-tail {
+  stroke: var(--hero-system-line-primary);
+  stroke-width: 0.8;
+  opacity: 0.55;
+}
+.hero-system-pulse-aux .hero-system-pulse-core {
+  fill: var(--hero-system-line-primary);
+  stroke-width: 0.35;
+  opacity: 0.68;
 }
 .hero-system-pulse-alert .hero-system-pulse-glow,
 .hero-system-pulse-alert .hero-system-pulse-core {
@@ -643,6 +687,13 @@ a[aria-current="page"] {
   stroke-linecap: round;
   stroke-width: 1.4;
 }
+.hero-system-aux-reaction {
+  fill: var(--background);
+  stroke: var(--hero-system-line-primary);
+  stroke-width: 0.8;
+  opacity: 0;
+  vector-effect: non-scaling-stroke;
+}
 .hero-system-telemetry-marker {
   fill: var(--hero-system-active);
   opacity: 0;
@@ -665,7 +716,7 @@ a[aria-current="page"] {
 }
 .hero-system-trace-connector {
   fill: none;
-  stroke: var(--hero-system-muted);
+  stroke: var(--hero-system-telemetry);
   stroke-width: 0.8;
   stroke-dasharray: 1 2.5;
   opacity: 0.5;
@@ -699,472 +750,424 @@ a[aria-current="page"] {
   offset-path: path("M205 72Q260 190 336 270");
 }
 .hero-system-pulse--b-observe {
-  offset-path: path("M205 218Q270 240 336 270");
+  offset-path: path("M205 218Q260 292 336 270");
 }
 .hero-system-pulse--state-observe {
   offset-path: path("M370 148Q390 215 336 270");
 }
-:root[data-hero-visual="calm"] .hero-system-pulse-primary.hero-system-event--a {
-  animation: hero-system-pulse-18 18s cubic-bezier(0.28, 0.05, 0.3, 1) infinite;
-  animation-delay: var(--event-delay);
+.hero-system-pulse--source-aux-one {
+  offset-path: path("M20 150L124 26");
 }
-:root[data-hero-visual="calm"]
-  .hero-system-source-reaction.hero-system-event--a {
-  animation: hero-system-source-18 18s ease-out infinite;
-  animation-delay: var(--event-delay);
+.hero-system-pulse--aux-one-a {
+  offset-path: path("M124 26L205 72");
 }
-:root[data-hero-visual="calm"]
-  .hero-system-router-reaction.hero-system-event--a {
-  animation: hero-system-router-18 18s ease-out infinite;
-  animation-delay: var(--event-delay);
+.hero-system-pulse--a-aux-two {
+  offset-path: path("M205 72L292 27");
 }
-:root[data-hero-visual="calm"]
-  .hero-system-service-reaction.hero-system-event--a {
-  animation: hero-system-service-18 18s ease-out infinite;
-  animation-delay: var(--event-delay);
+.hero-system-pulse--aux-two-three {
+  offset-path: path("M292 27L424 84");
 }
-:root[data-hero-visual="calm"]
-  .hero-system-state-reaction.hero-system-event--a {
-  animation: hero-system-state-18 18s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-
-:root[data-hero-visual="live"]
-  .hero-system-pulse-primary:is(.hero-system-event--a, .hero-system-event--b),
-:root[data-hero-visual="alert"]
-  .hero-system-pulse-primary:is(.hero-system-event--a, .hero-system-event--c) {
-  animation: hero-system-pulse-36 36s cubic-bezier(0.28, 0.05, 0.3, 1) infinite;
-  animation-delay: var(--event-delay);
-}
-:root[data-hero-visual="live"]
-  .hero-system-source-reaction:is(.hero-system-event--a, .hero-system-event--b),
-:root[data-hero-visual="alert"]
-  .hero-system-source-reaction:is(
-    .hero-system-event--a,
-    .hero-system-event--c
-  ) {
-  animation: hero-system-source-36 36s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-:root[data-hero-visual="live"]
-  .hero-system-router-reaction:is(.hero-system-event--a, .hero-system-event--b),
-:root[data-hero-visual="alert"]
-  .hero-system-router-reaction:is(
-    .hero-system-event--a,
-    .hero-system-event--c
-  ) {
-  animation: hero-system-router-36 36s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-:root[data-hero-visual="live"]
-  .hero-system-service-reaction:is(
-    .hero-system-event--a,
-    .hero-system-event--b
-  ),
-:root[data-hero-visual="alert"]
-  .hero-system-service-reaction:is(
-    .hero-system-event--a,
-    .hero-system-event--c
-  ) {
-  animation: hero-system-service-36 36s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-:root[data-hero-visual="live"]
-  .hero-system-state-reaction:is(.hero-system-event--a, .hero-system-event--b),
-:root[data-hero-visual="alert"]
-  .hero-system-state-reaction:is(.hero-system-event--a, .hero-system-event--c) {
-  animation: hero-system-state-36 36s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-:root[data-hero-visual="live"]
-  .hero-system-pulse-telemetry:is(.hero-system-event--a, .hero-system-event--b),
-:root[data-hero-visual="alert"]
-  .hero-system-pulse-telemetry:is(
-    .hero-system-event--a,
-    .hero-system-event--c
-  ) {
-  animation: hero-system-telemetry-36 36s cubic-bezier(0.3, 0.08, 0.35, 1)
+.hero-system-pulse-primary {
+  animation: hero-system-pulse-90 90s cubic-bezier(0.28, 0.05, 0.3, 1)
     infinite;
   animation-delay: var(--event-delay);
 }
-:root[data-hero-visual="live"]
-  .hero-system-telemetry-marker:is(
-    .hero-system-event--a,
-    .hero-system-event--b
-  ),
-:root[data-hero-visual="alert"]
-  .hero-system-telemetry-marker:is(
-    .hero-system-event--a,
-    .hero-system-event--c
-  ) {
-  animation: hero-system-marker-36 36s ease-out infinite;
+.hero-system-pulse-primary:is(.hero-system-pulse--a-state, .hero-system-pulse--b-state) {
+  animation-name: hero-system-pulse-long-90;
+}
+.hero-system-pulse-primary:is(.hero-system-pulse--a-c, .hero-system-pulse--b-c) {
+  animation-name: hero-system-pulse-short-90;
+}
+.hero-system-pulse-telemetry {
+  animation: hero-system-telemetry-90 90s cubic-bezier(0.3, 0.08, 0.35, 1)
+    infinite;
   animation-delay: var(--event-delay);
 }
-:root[data-hero-visual="alert"]
-  .hero-system-telemetry-marker--alert.hero-system-event--c {
-  animation-name: hero-system-alert-marker-36;
-}
-:root[data-hero-visual="live"]
-  .hero-system-observe-reaction:is(
-    .hero-system-event--a,
-    .hero-system-event--b
-  ),
-:root[data-hero-visual="alert"]
-  .hero-system-observe-reaction:is(
-    .hero-system-event--a,
-    .hero-system-event--c
-  ) {
-  animation: hero-system-observe-36 36s ease-out infinite;
+.hero-system-pulse-aux {
+  animation: hero-system-aux-pulse-90 90s cubic-bezier(0.3, 0.08, 0.35, 1)
+    infinite;
   animation-delay: var(--event-delay);
 }
-:root[data-hero-visual="live"]
-  .hero-system-observe-reaction:is(.hero-system-event--a, .hero-system-event--b)
-  .hero-system-observe-sweep,
-:root[data-hero-visual="alert"]
-  .hero-system-observe-reaction:is(.hero-system-event--a, .hero-system-event--c)
-  .hero-system-observe-sweep {
-  animation: hero-system-observe-sweep-36 36s ease-out infinite;
+.hero-system-source-reaction {
+  animation: hero-system-source-90 90s ease-out infinite;
   animation-delay: var(--event-delay);
 }
-:root[data-hero-visual="live"]
-  .hero-system-trace-response:is(.hero-system-event--a, .hero-system-event--b),
-:root[data-hero-visual="alert"]
-  .hero-system-trace-response:is(.hero-system-event--a, .hero-system-event--c) {
-  animation: hero-system-trace-group-36 36s ease-out infinite;
+.hero-system-router-reaction {
+  animation: hero-system-router-90 90s ease-out infinite;
   animation-delay: var(--event-delay);
 }
-:root[data-hero-visual="live"]
-  .hero-system-trace-response:is(.hero-system-event--a, .hero-system-event--b)
-  .hero-system-trace-span,
-:root[data-hero-visual="alert"]
-  .hero-system-trace-response:is(.hero-system-event--a, .hero-system-event--c)
-  .hero-system-trace-span {
-  animation: hero-system-trace-draw-36 36s ease-out infinite;
+.hero-system-service-reaction {
+  animation: hero-system-service-90 90s ease-out infinite;
+  animation-delay: var(--event-delay);
+}
+.hero-system-state-reaction {
+  animation: hero-system-state-90 90s ease-out infinite;
+  animation-delay: var(--event-delay);
+}
+.hero-system-aux-reaction {
+  animation: hero-system-aux-reaction-90 90s ease-out infinite;
+  animation-delay: var(--event-delay);
+}
+.hero-system-telemetry-marker {
+  animation: hero-system-marker-one-90 90s ease-out infinite;
+  animation-delay: var(--event-delay);
+}
+.hero-system-telemetry-marker--two {
+  animation-name: hero-system-marker-two-90;
+}
+.hero-system-telemetry-marker--three {
+  animation-name: hero-system-marker-three-90;
+}
+.hero-system-telemetry-marker--alert {
+  animation-name: hero-system-alert-marker-90;
+}
+.hero-system-observe-reaction {
+  animation: hero-system-observe-90 90s ease-out infinite;
+  animation-delay: var(--event-delay);
+}
+.hero-system-observe-sweep {
+  animation: hero-system-observe-sweep-90 90s ease-out infinite;
+  animation-delay: var(--event-delay);
+}
+.hero-system-trace-response {
+  animation: hero-system-trace-group-90 90s ease-out infinite;
+  animation-delay: var(--event-delay);
+}
+.hero-system-trace-span {
+  animation: hero-system-trace-draw-90 90s ease-out infinite;
   animation-delay: var(--trace-delay);
 }
-:root[data-hero-visual="alert"]
-  .hero-system-fault-reaction.hero-system-event--c {
-  animation: hero-system-fault-36 36s ease-out infinite;
+.hero-system-fault-reaction {
+  animation: hero-system-fault-90 90s ease-out infinite;
   animation-delay: var(--event-delay);
 }
-@keyframes hero-system-pulse-18 {
+@keyframes hero-system-pulse-90 {
   0% {
     offset-distance: 0%;
     opacity: 0;
   }
-  0.7% {
+  0.14% {
     opacity: 0.24;
   }
-  1.5% {
+  0.32% {
     opacity: 0.88;
   }
-  7.2% {
+  1.667% {
     offset-distance: 100%;
     opacity: 1;
   }
-  7.55% {
+  1.78% {
     offset-distance: 100%;
-    opacity: 0.52;
+    opacity: 0.5;
   }
-  7.9%,
+  1.9%,
   100% {
     offset-distance: 100%;
     opacity: 0;
   }
 }
-@keyframes hero-system-pulse-36 {
+@keyframes hero-system-pulse-long-90 {
   0% {
     offset-distance: 0%;
     opacity: 0;
   }
-  0.35% {
+  0.14% {
     opacity: 0.24;
   }
-  0.75% {
+  0.32% {
     opacity: 0.88;
   }
-  3.6% {
+  2% {
     offset-distance: 100%;
     opacity: 1;
   }
-  3.78% {
+  2.12% {
     offset-distance: 100%;
-    opacity: 0.52;
+    opacity: 0.5;
   }
-  3.95%,
+  2.24%,
   100% {
     offset-distance: 100%;
     opacity: 0;
   }
 }
-@keyframes hero-system-telemetry-36 {
+@keyframes hero-system-pulse-short-90 {
   0% {
     offset-distance: 0%;
     opacity: 0;
   }
-  0.35% {
+  0.14% {
+    opacity: 0.24;
+  }
+  0.32% {
+    opacity: 0.88;
+  }
+  1.444% {
+    offset-distance: 100%;
+    opacity: 1;
+  }
+  1.56% {
+    offset-distance: 100%;
+    opacity: 0.5;
+  }
+  1.68%,
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+@keyframes hero-system-telemetry-90 {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  0.14% {
     opacity: 0.2;
   }
-  0.7% {
+  0.3% {
     opacity: 0.72;
   }
-  2.4% {
+  1.444% {
     offset-distance: 100%;
     opacity: 0.82;
   }
-  2.63%,
+  1.62%,
   100% {
     offset-distance: 100%;
     opacity: 0;
   }
 }
-@keyframes hero-system-source-18 {
+@keyframes hero-system-aux-pulse-90 {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  0.2% {
+    opacity: 0.18;
+  }
+  0.4% {
+    opacity: 0.5;
+  }
+  1.667% {
+    offset-distance: 100%;
+    opacity: 0.56;
+  }
+  1.85%,
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+@keyframes hero-system-source-90 {
   0% {
     opacity: 0;
     transform: scale(0.76);
+  }
+  0.15% {
+    opacity: 0.34;
+  }
+  0.4% {
+    opacity: 0.84;
+    transform: scale(1);
   }
   0.7% {
-    opacity: 0.34;
-  }
-  1.5% {
-    opacity: 0.84;
-    transform: scale(1);
-  }
-  2.4% {
     opacity: 0.56;
     transform: scale(1.16);
   }
-  3.3%,
+  1%,
   100% {
     opacity: 0;
     transform: scale(1.28);
   }
 }
-@keyframes hero-system-source-36 {
-  0% {
-    opacity: 0;
-    transform: scale(0.76);
-  }
-  0.35% {
-    opacity: 0.34;
-  }
-  0.75% {
-    opacity: 0.84;
-    transform: scale(1);
-  }
-  1.2% {
-    opacity: 0.56;
-    transform: scale(1.16);
-  }
-  1.65%,
-  100% {
-    opacity: 0;
-    transform: scale(1.28);
-  }
-}
-@keyframes hero-system-router-18 {
+@keyframes hero-system-router-90 {
   0% {
     opacity: 0;
   }
-  0.55% {
+  0.15% {
     opacity: 0.24;
   }
-  1.2%,
-  2.2% {
+  0.35%,
+  0.62% {
     opacity: 0.84;
   }
-  3.1%,
+  0.88%,
   100% {
     opacity: 0;
   }
 }
-@keyframes hero-system-router-36 {
+@keyframes hero-system-service-90 {
   0% {
     opacity: 0;
   }
-  0.28% {
-    opacity: 0.24;
+  0.15% {
+    opacity: 0.22;
   }
-  0.6%,
-  1.1% {
-    opacity: 0.84;
+  0.4%,
+  0.72% {
+    opacity: 0.82;
+  }
+  1.1%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes hero-system-state-90 {
+  0% {
+    opacity: 0;
+  }
+  0.15% {
+    opacity: 0.22;
+  }
+  0.42%,
+  1.02% {
+    opacity: 0.82;
   }
   1.55%,
   100% {
     opacity: 0;
   }
 }
-@keyframes hero-system-service-18 {
+@keyframes hero-system-aux-reaction-90 {
   0% {
     opacity: 0;
   }
-  0.7% {
-    opacity: 0.22;
+  0.14%,
+  0.38% {
+    opacity: 0.5;
   }
-  1.6%,
-  3% {
-    opacity: 0.82;
-  }
-  4.2%,
+  0.62%,
   100% {
     opacity: 0;
   }
 }
-@keyframes hero-system-service-36 {
+@keyframes hero-system-marker-one-90 {
   0% {
     opacity: 0;
   }
-  0.35% {
-    opacity: 0.22;
+  0.16%,
+  8.2% {
+    opacity: 0.72;
   }
-  0.8%,
+  8.8%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes hero-system-marker-two-90 {
+  0% {
+    opacity: 0;
+  }
+  0.16%,
+  6.1% {
+    opacity: 0.72;
+  }
+  6.7%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes hero-system-marker-three-90 {
+  0% {
+    opacity: 0;
+  }
+  0.16%,
+  4% {
+    opacity: 0.72;
+  }
+  4.6%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes hero-system-alert-marker-90 {
+  0% {
+    opacity: 0;
+  }
+  0.15%,
   1.5% {
     opacity: 0.82;
   }
-  2.1%,
+  2.2%,
   100% {
     opacity: 0;
   }
 }
-@keyframes hero-system-state-18 {
+@keyframes hero-system-observe-90 {
   0% {
     opacity: 0;
   }
-  0.6% {
+  0.2% {
     opacity: 0.22;
   }
-  1.4%,
-  5.8% {
-    opacity: 0.82;
-  }
-  7.2%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes hero-system-state-36 {
-  0% {
-    opacity: 0;
-  }
-  0.3% {
-    opacity: 0.22;
-  }
-  0.7%,
-  2.9% {
-    opacity: 0.82;
-  }
-  3.6%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes hero-system-marker-36 {
-  0% {
-    opacity: 0;
-  }
-  0.3%,
-  8.8% {
+  0.55%,
+  1.5% {
     opacity: 0.72;
   }
-  10%,
+  2.3%,
   100% {
     opacity: 0;
   }
 }
-@keyframes hero-system-alert-marker-36 {
-  0% {
-    opacity: 0;
-  }
-  0.25%,
-  2.1% {
-    opacity: 0.82;
-  }
-  3.2%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes hero-system-observe-36 {
-  0% {
-    opacity: 0;
-  }
-  0.4% {
-    opacity: 0.22;
-  }
-  1.1%,
-  3.5% {
-    opacity: 0.72;
-  }
-  5%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes hero-system-observe-sweep-36 {
+@keyframes hero-system-observe-sweep-90 {
   0% {
     stroke-dashoffset: 1;
   }
-  2.8%,
-  3.5% {
-    stroke-dashoffset: 0;
-  }
+  1.55%,
   100% {
     stroke-dashoffset: 0;
   }
 }
-@keyframes hero-system-trace-group-36 {
+@keyframes hero-system-trace-group-90 {
   0% {
     opacity: 0;
   }
-  0.4%,
-  11.8% {
+  0.18%,
+  8.35% {
     opacity: 1;
   }
-  13.6%,
+  9.1%,
   100% {
     opacity: 0;
   }
 }
-@keyframes hero-system-trace-draw-36 {
+@keyframes hero-system-trace-draw-90 {
   0% {
     stroke-dashoffset: 1;
     opacity: 0;
   }
-  0.45% {
+  0.16% {
     opacity: 0.52;
   }
-  1.8%,
-  14% {
+  0.78%,
+  100% {
     stroke-dashoffset: 0;
     opacity: 0.68;
   }
-  15.5%,
-  100% {
-    stroke-dashoffset: 0;
-    opacity: 0;
-  }
 }
-@keyframes hero-system-fault-36 {
+@keyframes hero-system-fault-90 {
   0% {
     opacity: 0;
   }
-  0.35% {
+  0.18% {
     opacity: 0.3;
   }
-  0.9%,
-  2.5% {
+  0.45%,
+  1.25% {
     opacity: 0.78;
   }
-  3.8%,
+  1.9%,
   100% {
     opacity: 0;
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   .hero-system-pulse,
   .hero-system-reaction,
   .hero-system-observe-reaction,
   .hero-system-fault-reaction,
+  .hero-system-aux-reaction,
   .hero-system-telemetry-marker,
   .hero-system-trace-response,
   .hero-system-trace-span {

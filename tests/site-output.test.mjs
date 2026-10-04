@@ -246,25 +246,12 @@ test("temporary design comparison controls expose independent defaults", async (
       { value: "navy", pressed: "false" },
     ],
   );
-  assert.deepEqual(
-    panel
-      .find("[data-hero-visual-option]")
-      .map((_, element) => ({
-        value: $(element).attr("data-hero-visual-option"),
-        pressed: $(element).attr("aria-pressed"),
-      }))
-      .get(),
-    [
-      { value: "calm", pressed: "false" },
-      { value: "live", pressed: "true" },
-      { value: "alert", pressed: "false" },
-    ],
-  );
+  assert.equal(panel.find("[data-hero-visual-option]").length, 0);
   const inlineScripts = $("script:not([src])")
     .map((_, element) => $(element).text())
     .get()
     .join("\n");
   assert.match(inlineScripts, /sg-design-font/);
   assert.match(inlineScripts, /sg-design-dark/);
-  assert.match(inlineScripts, /sg-hero-visual/);
+  assert.doesNotMatch(inlineScripts, /sg-hero-visual/);
 });

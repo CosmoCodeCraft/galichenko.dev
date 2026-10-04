@@ -1,7 +1,6 @@
 type ThemePreference = "system" | "light" | "dark";
 type FontPreference = "plex" | "system";
 type DarkPreference = "graphite" | "navy";
-type HeroVisualPreference = "calm" | "live" | "alert";
 const controls = document.querySelectorAll<HTMLButtonElement>(
   "[data-theme-control]",
 );
@@ -11,19 +10,11 @@ const fontControls = document.querySelectorAll<HTMLButtonElement>(
 const darkControls = document.querySelectorAll<HTMLButtonElement>(
   "[data-design-dark-option]",
 );
-const heroVisualControls = document.querySelectorAll<HTMLButtonElement>(
-  "[data-hero-visual-option]",
-);
 let preference: ThemePreference = "system";
 let fontPreference: FontPreference =
   document.documentElement.dataset.designFont === "system" ? "system" : "plex";
 let darkPreference: DarkPreference =
   document.documentElement.dataset.designDark === "navy" ? "navy" : "graphite";
-let heroVisualPreference: HeroVisualPreference =
-  document.documentElement.dataset.heroVisual === "calm" ||
-  document.documentElement.dataset.heroVisual === "alert"
-    ? document.documentElement.dataset.heroVisual
-    : "live";
 try {
   const saved = localStorage.getItem("sg-theme");
   if (saved === "light" || saved === "dark") preference = saved;
@@ -55,12 +46,6 @@ function applyDesignComparison() {
   darkControls.forEach((control) => {
     control.ariaPressed = String(
       control.dataset.designDarkOption === darkPreference,
-    );
-  });
-  document.documentElement.dataset.heroVisual = heroVisualPreference;
-  heroVisualControls.forEach((control) => {
-    control.ariaPressed = String(
-      control.dataset.heroVisualOption === heroVisualPreference,
     );
   });
 }
@@ -110,20 +95,6 @@ darkControls.forEach((control) =>
     applyDesignComparison();
   }),
 );
-heroVisualControls.forEach((control) =>
-  control.addEventListener("click", () => {
-    const selected = control.dataset.heroVisualOption;
-    heroVisualPreference =
-      selected === "calm" || selected === "alert" ? selected : "live";
-    try {
-      localStorage.setItem("sg-hero-visual", heroVisualPreference);
-    } catch {
-      /* Preference still works for this page. */
-    }
-    applyDesignComparison();
-  }),
-);
-
 const projectToc = document.querySelector<HTMLElement>("[data-project-toc]");
 if (projectToc && "IntersectionObserver" in window) {
   const links = Array.from(
