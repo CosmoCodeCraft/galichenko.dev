@@ -1,5 +1,4 @@
 import {
-  HERO_QUEUE_CAPACITY,
   HeroSystemModel,
   type HeroRequestKind,
   type HeroServiceId,
@@ -45,6 +44,20 @@ interface LastTrace {
   routes: RouteId[];
   service: HeroServiceId;
   telemetry: RouteId[];
+  stages: TraceStage[];
+}
+
+interface TraceStage {
+  end?: number;
+  name: "accepted" | "router" | "processing" | "persistence" | "downstream" | "failure" | "feedback" | "retry" | "complete";
+  start: number;
+  tone?: "normal" | "heavy" | "alert";
+}
+
+interface RetryWaiter {
+  cleanup: () => void;
+  service: HeroServiceId;
+  settle: (reserved: boolean) => void;
 }
 
 interface HoldGesture {
@@ -59,12 +72,17 @@ interface HoldGesture {
 const desktopQuery = "(min-width: 42.01rem)";
 const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 const finePointerQuery = "(hover: hover) and (pointer: fine)";
+const MAX_ACTIVE_PULSES = 12;
+const SOURCE_GATE_MS = 100;
+const FEEDBACK_GATE_MS = 250;
+const MANUAL_TRACE_OWNERSHIP_MS = 12000;
 
 class HeroSystemController {
   private readonly routes = new Map<RouteId, SVGPathElement>();
   private readonly pulseTemplates = new Map<PulseKind, SVGGraphicsElement>();
   private readonly animations = new Set<Animation>();
   private readonly pulseInstances = new Set<SVGGraphicsElement>();
+  private readonly pulseAnimations = new Map<SVGGraphicsElement, Animation>();
   private readonly strongNodes = new Map<string, number>();
   private readonly reactionLocks = new Map<string, Promise<void>>();
   private readonly model = new HeroSystemModel();
@@ -78,6 +96,14 @@ class HeroSystemController {
   private hold?: HoldGesture;
   private lastTrace?: LastTrace;
   private pendingInspectionAt?: number;
+  private retryWaiter?: RetryWaiter;
+  private readonly telemetryPending = new Set<RouteId>();
+  private telemetryWeight = 0;
+  private telemetryWorker?: Promise<void>;
+  private telemetryLastAt = Number.NEGATIVE_INFINITY;
+  private sourceGateUntil = 0;
+  private feedbackGateUntil = 0;
+  private manualTraceOwnershipUntil = 0;
   private persistenceTask?: Promise<void>;
   private persistenceUntil = 0;
   private requestId = 0;
@@ -173,9 +199,18 @@ class HeroSystemController {
     this.manualTelemetryCount = 0;
     this.pumpRunning = false;
     this.retryReserved = false;
+    this.retryWaiter?.cleanup();
+    this.retryWaiter = undefined;
     this.maintenanceRunning = false;
     this.probeRunning = false;
     this.pendingInspectionAt = undefined;
+    this.telemetryPending.clear();
+    this.telemetryWeight = 0;
+    this.telemetryWorker = undefined;
+    this.telemetryLastAt = Number.NEGATIVE_INFINITY;
+    this.sourceGateUntil = 0;
+    this.feedbackGateUntil = 0;
+    this.manualTraceOwnershipUntil = 0;
     this.lastTrace = undefined;
     this.persistenceTask = undefined;
     this.persistenceUntil = 0;
@@ -228,14 +263,26 @@ class HeroSystemController {
       this.handleSourcePointerCancel,
     );
     source?.addEventListener("keydown", this.handleSourceKeyDown);
-    source?.addEventListener("focus", () => this.showNeighborhood("1"));
-    source?.addEventListener("blur", () => this.clearNeighborhood());
+    source?.addEventListener("focus", () => {
+      this.showNeighborhood("1");
+      this.setFocusRing("source", true);
+    });
+    source?.addEventListener("blur", () => {
+      this.clearNeighborhood();
+      this.setFocusRing("source", false);
+    });
 
     const observe = this.actionControl("observe");
     observe?.addEventListener("click", this.handleObserveClick);
     observe?.addEventListener("keydown", this.handleObserveKeyDown);
-    observe?.addEventListener("focus", () => this.showNeighborhood("10"));
-    observe?.addEventListener("blur", () => this.clearNeighborhood());
+    observe?.addEventListener("focus", () => {
+      this.showNeighborhood("10");
+      this.setFocusRing("observe", true);
+    });
+    observe?.addEventListener("blur", () => {
+      this.clearNeighborhood();
+      this.setFocusRing("observe", false);
+    });
   }
 
   private actionControl(action: "source" | "observe") {
@@ -244,9 +291,17 @@ class HeroSystemController {
     );
   }
 
+  private setFocusRing(action: "source" | "observe", visible: boolean) {
+    this.root
+      .querySelector(`[data-hero-focus-ring="${action}"]`)
+      ?.classList.toggle("is-visible", visible);
+  }
+
   private readonly handleSourcePointerDown = (event: PointerEvent) => {
     if (!this.canRun() || event.button !== 0 || this.hold) return;
     const source = event.currentTarget as SVGGraphicsElement;
+    event.preventDefault();
+    this.setFocusRing("source", false);
     source.setPointerCapture(event.pointerId);
     const hold: HoldGesture = {
       armed: false,
@@ -289,6 +344,7 @@ class HeroSystemController {
     if (source.hasPointerCapture(event.pointerId))
       source.releasePointerCapture(event.pointerId);
     if (!hold.cancelled) this.enqueueRequest(hold.armed ? "heavy" : "normal");
+    source.blur();
   };
 
   private readonly handleSourcePointerCancel = (event: PointerEvent) => {
@@ -310,6 +366,10 @@ class HeroSystemController {
   private readonly handleObserveClick = (event: MouseEvent) => {
     if (!this.canRun() || event.button !== 0) return;
     this.requestInspection();
+    if (event.detail > 0) {
+      (event.currentTarget as SVGGraphicsElement).blur();
+      this.setFocusRing("observe", false);
+    }
   };
 
   private readonly handleObserveKeyDown = (event: KeyboardEvent) => {
@@ -337,24 +397,31 @@ class HeroSystemController {
 
   private enqueueRequest(kind: HeroRequestKind) {
     if (!this.canRun()) return;
+    const now = performance.now();
+    if (now < this.sourceGateUntil) return;
+    this.sourceGateUntil = now + SOURCE_GATE_MS;
     this.endInspection();
+    this.pendingInspectionAt = undefined;
     const signal = this.abortController?.signal;
     if (!signal) return;
-    const accepted = this.queue.length < HERO_QUEUE_CAPACITY;
-    const now = performance.now();
+    const accepted = this.queue.length < this.model.admissionCapacity(now);
     this.model.recordSource(kind, accepted, now);
     this.ambientPauseUntil = now + 12000;
     this.ensureMaintenanceLoop(signal);
 
     if (!accepted) {
-      void this.react("rate-limit", undefined, signal, "is-warn").catch(
-        () => undefined,
-      );
+      if (now >= this.feedbackGateUntil) {
+        this.feedbackGateUntil = now + FEEDBACK_GATE_MS;
+        void this.react("rate-limit", undefined, signal, "is-warn").catch(
+          () => undefined,
+        );
+      }
       this.updateServiceVisuals();
       return;
     }
 
     this.queue.push({ id: ++this.requestId, kind });
+    this.manualTraceOwnershipUntil = now + MANUAL_TRACE_OWNERSHIP_MS;
     this.updateQueueMarkers();
     void this.react(
       "source",
@@ -374,7 +441,7 @@ class HeroSystemController {
         if (!service || !this.model.reserve(service)) break;
         const request = this.queue.shift();
         if (!request) {
-          this.model.release(service, performance.now());
+          this.releaseService(service);
           break;
         }
         this.updateQueueMarkers();
@@ -398,16 +465,26 @@ class HeroSystemController {
     initialService: HeroServiceId,
     signal: AbortSignal,
   ) {
+    const startedAt = performance.now();
+    const elapsed = () => performance.now() - startedAt;
+    const stages: TraceStage[] = [{ name: "accepted", start: 0 }];
     const successfulRoutes: RouteId[] = ["1-2"];
     let service = initialService;
     let failedService: HeroServiceId | undefined;
     let failedRoutes: RouteId[] = [];
 
     await this.pulse("1-2", request.kind, 1500, signal);
+    stages.push({ name: "router", start: elapsed() });
     await this.react("router", "2", signal);
     await this.wait(380, signal);
     const firstServiceRoute = this.routeToService(service);
     successfulRoutes.push(firstServiceRoute);
+    const processingStage: TraceStage = {
+      name: "processing",
+      start: elapsed(),
+      tone: request.kind === "heavy" ? "heavy" : "normal",
+    };
+    stages.push(processingStage);
     await this.pulse(firstServiceRoute, request.kind, 1600, signal);
 
     const assignment = this.model.assign(
@@ -424,23 +501,41 @@ class HeroSystemController {
       request.kind === "heavy" ? "is-heavy" : undefined,
     );
     await this.wait(request.kind === "heavy" ? 950 : 450, signal);
+    processingStage.end = elapsed();
 
     if (assignment.shouldTrip) {
+      processingStage.tone = "alert";
       failedService = service;
       failedRoutes = [firstServiceRoute, this.telemetryRoute(service)];
-      service = await this.failAndRetry(service, request.kind, signal);
+      const retryService = await this.failAndRetry(
+        service,
+        request.kind,
+        signal,
+        stages,
+        elapsed,
+      );
+      if (!retryService) {
+        this.retryReserved = false;
+        this.manualTraceOwnershipUntil = performance.now() + MANUAL_TRACE_OWNERSHIP_MS;
+        void this.pumpQueue(signal);
+        return;
+      }
+      service = retryService;
       successfulRoutes.push(this.routeToService(service));
     } else {
-      this.model.release(service, performance.now());
+      this.releaseService(service);
       void this.pumpQueue(signal);
     }
 
+    stages.push({ name: "persistence", start: elapsed() });
     const completionRoutes = await this.completeTransaction(
       service,
       request.kind,
       signal,
     );
     successfulRoutes.push(...completionRoutes);
+    stages.push({ name: "downstream", start: elapsed() - 1300 });
+    stages.push({ name: "complete", start: elapsed() });
     const telemetry = [
       "2-10" as const,
       this.telemetryRoute(service),
@@ -454,21 +549,26 @@ class HeroSystemController {
       routes: successfulRoutes,
       service,
       telemetry,
+      stages,
     };
+    this.manualTraceOwnershipUntil = performance.now() + MANUAL_TRACE_OWNERSHIP_MS;
     this.retryReserved = false;
     void this.pumpQueue(signal);
-    void this.runManualTelemetry(telemetry, signal).catch(() => undefined);
+    this.queueTelemetry(telemetry, signal, request.kind === "heavy" ? 2 : 1);
   }
 
   private async failAndRetry(
     failed: HeroServiceId,
     kind: HeroRequestKind,
     signal: AbortSignal,
-  ): Promise<HeroServiceId> {
+    stages: TraceStage[],
+    elapsed: () => number,
+  ): Promise<HeroServiceId | undefined> {
     const failedState = this.root.querySelector<SVGElement>(
       `[data-hero-service-state="${failed}"]`,
     );
     failedState?.classList.add("is-faulting");
+    stages.push({ name: "failure", start: elapsed(), tone: "alert" });
     const anomaly = this.emitAnomaly(failed, signal);
     await this.wait(180, signal);
     await this.pulse(
@@ -478,19 +578,28 @@ class HeroSystemController {
       signal,
       true,
     );
+    stages.push({ name: "feedback", start: elapsed(), tone: "alert" });
     await this.react("router", "2", signal, "is-alert");
-    this.model.open(failed, performance.now());
+    if (!this.model.open(failed, performance.now())) {
+      this.model.releaseTripClaim(failed);
+      this.releaseService(failed);
+      failedState?.classList.remove("is-faulting");
+      return;
+    }
     this.updateServiceVisuals();
     await anomaly;
     failedState?.classList.remove("is-faulting");
 
     const peer: HeroServiceId = failed === "3" ? "5" : "3";
-    while (!this.model.reserve(peer)) {
-      await this.wait(240, signal);
-    }
-    this.throwIfAborted(signal);
+    if (!(await this.waitForRetrySlot(peer, signal))) return;
 
     await this.wait(320, signal);
+    const retryStage: TraceStage = {
+      name: "retry",
+      start: elapsed(),
+      tone: "normal",
+    };
+    stages.push(retryStage);
     await this.pulse(this.routeToService(peer), kind, 1600, signal);
     this.model.assign(peer, kind, performance.now());
     this.updateServiceVisuals();
@@ -501,7 +610,8 @@ class HeroSystemController {
       kind === "heavy" ? "is-heavy" : undefined,
     );
     await this.wait(kind === "heavy" ? 950 : 450, signal);
-    this.model.release(peer, performance.now());
+    retryStage.end = elapsed();
+    this.releaseService(peer);
     this.retryReserved = false;
     void this.pumpQueue(signal);
     return peer;
@@ -528,18 +638,95 @@ class HeroSystemController {
     return [stateRoute, downstreamRoute];
   }
 
-  private async runManualTelemetry(routes: RouteId[], signal: AbortSignal) {
-    this.manualTelemetryCount += 1;
-    try {
+  private releaseService(service: HeroServiceId) {
+    this.model.release(service, performance.now());
+    this.wakeRetryWaiter();
+  }
+
+  private waitForRetrySlot(service: HeroServiceId, signal: AbortSignal) {
+    if (this.model.reserve(service)) return Promise.resolve(true);
+    return new Promise<boolean>((resolve) => {
+      let settled = false;
+      const finish = (reserved: boolean) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        if (this.retryWaiter?.settle === finish) this.retryWaiter = undefined;
+        resolve(reserved);
+      };
+      const timeout = window.setTimeout(() => finish(false), 6000);
+      const abort = () => finish(false);
+      const cleanup = () => {
+        clearTimeout(timeout);
+        signal.removeEventListener("abort", abort);
+      };
+      signal.addEventListener("abort", abort, { once: true });
+      this.retryWaiter = { cleanup, service, settle: finish };
+    });
+  }
+
+  private wakeRetryWaiter() {
+    const waiter = this.retryWaiter;
+    if (!waiter || !this.model.reserve(waiter.service)) return;
+    waiter.settle(true);
+  }
+
+  private queueTelemetry(
+    routes: RouteId[],
+    signal: AbortSignal,
+    weight = 1,
+  ) {
+    routes.forEach((route) => this.telemetryPending.add(route));
+    this.telemetryWeight = Math.min(9, this.telemetryWeight + weight);
+    this.telemetryLastAt = performance.now();
+    if (this.telemetryWorker) return;
+    this.telemetryWorker = this.runTelemetryWorker(signal)
+      .catch(() => undefined)
+      .finally(() => {
+        this.telemetryWorker = undefined;
+        this.manualTelemetryCount = 0;
+        this.clearTelemetryActivity();
+        this.maybeRunPendingInspection(signal);
+        if (this.telemetryPending.size > 0 && !signal.aborted)
+          this.queueTelemetry([], signal, 0);
+      });
+  }
+
+  private async runTelemetryWorker(signal: AbortSignal) {
+    this.manualTelemetryCount = 1;
+    while (this.telemetryPending.size > 0) {
+      await this.wait(200, signal);
+      const routes = [...this.telemetryPending];
+      const weight = this.telemetryWeight;
+      this.telemetryPending.clear();
+      this.telemetryWeight = 0;
+      this.showTelemetryActivity(Math.min(3, Math.max(1, weight)));
       for (const route of routes) {
-        await this.pulse(route, "telemetry", 1700, signal);
-        await this.wait(220, signal);
+        await this.pulse(route, "telemetry", 1600, signal);
+        await this.wait(180, signal);
       }
-      await this.react("observe", "10", signal);
-    } finally {
-      this.manualTelemetryCount = Math.max(0, this.manualTelemetryCount - 1);
-      this.maybeRunPendingInspection(signal);
+      await this.react(
+        "observe",
+        "10",
+        signal,
+        weight >= 3 ? "is-busy" : undefined,
+      );
     }
+    this.telemetryLastAt = performance.now();
+  }
+
+  private showTelemetryActivity(count: number) {
+    this.root
+      .querySelectorAll<SVGElement>("[data-hero-marker]")
+      .forEach((marker, index) =>
+        marker.classList.toggle("is-visible", index < count),
+      );
+  }
+
+  private clearTelemetryActivity() {
+    this.root
+      .querySelectorAll<SVGElement>("[data-hero-marker]")
+      .forEach((marker) => marker.classList.remove("is-visible"));
   }
 
   private async emitAnomaly(service: HeroServiceId, signal: AbortSignal) {
@@ -580,56 +767,62 @@ class HeroSystemController {
     signal: AbortSignal,
   ) {
     this.ambientActive = true;
+    const startedAt = performance.now();
+    const elapsed = () => performance.now() - startedAt;
+    const stages: TraceStage[] = [{ name: "accepted", start: 0 }];
     try {
       const routeToService = this.routeToService(service);
       const routeToState = this.routeToState(service);
       const routeToDownstream = this.routeToDownstream(service);
       await this.react("source", "1", signal);
       await this.pulse("1-2", "normal", 1500, signal);
+      stages.push({ name: "router", start: elapsed() });
       await this.react("router", "2", signal);
       await this.wait(380, signal);
+      const processing: TraceStage = {
+        name: "processing",
+        start: elapsed(),
+        tone: "normal",
+      };
+      stages.push(processing);
       await this.pulse(routeToService, "normal", 1600, signal);
       await this.react(`service-${service}`, service, signal);
       await this.wait(450, signal);
+      processing.end = elapsed();
+      stages.push({ name: "persistence", start: elapsed() });
       await this.pulse(routeToState, "normal", 1800, signal);
       const committed = this.commitState(signal);
       await this.wait(520, signal);
       await this.pulse(routeToDownstream, "normal", 1300, signal);
       await this.react("downstream", "4", signal);
       await committed;
+      stages.push({ name: "downstream", start: elapsed() - 1300 });
+      stages.push({ name: "complete", start: elapsed() });
       const telemetry = [
         "2-10" as const,
         this.telemetryRoute(service),
         "6-10" as const,
       ];
-      this.lastTrace = {
-        failedRoutes: [],
-        kind: "normal",
-        outcome: "healthy",
-        routes: ["1-2", routeToService, routeToState, routeToDownstream],
-        service,
-        telemetry,
-      };
-      await this.runAmbientObservability(telemetry, signal);
+      if (
+        performance.now() >= this.manualTraceOwnershipUntil &&
+        this.manualPrimaryCount === 0 &&
+        this.queue.length === 0
+      ) {
+        this.lastTrace = {
+          failedRoutes: [],
+          kind: "normal",
+          outcome: "healthy",
+          routes: ["1-2", routeToService, routeToState, routeToDownstream],
+          service,
+          telemetry,
+          stages,
+        };
+      }
+      this.queueTelemetry(telemetry, signal);
     } finally {
       this.ambientActive = false;
       this.maybeRunPendingInspection(signal);
     }
-  }
-
-  private async runAmbientObservability(
-    telemetry: RouteId[],
-    signal: AbortSignal,
-  ) {
-    this.resetTrace();
-    for (const [index, route] of telemetry.entries()) {
-      await this.pulse(route, "telemetry", 1700, signal);
-      await this.revealTraceStep(index, signal);
-      if (index < telemetry.length - 1) await this.wait(500, signal);
-    }
-    await this.react("observe", "10", signal);
-    await this.wait(2500, signal);
-    await this.fadeTrace(signal);
   }
 
   private async runBackgroundLoop(signal: AbortSignal) {
@@ -649,6 +842,7 @@ class HeroSystemController {
       this.model.pressure < 4 &&
       this.model.status("3") === "healthy" &&
       !this.inspectionActive &&
+      this.pulseInstances.size < MAX_ACTIVE_PULSES &&
       !this.isStrong("3")
     );
   }
@@ -682,7 +876,7 @@ class HeroSystemController {
     const signal = this.abortController?.signal;
     if (!signal) return;
     if (this.inspectionActive) return;
-    if (this.isOperationallyBusy()) {
+    if (this.isOperationallyBusy() || !this.telemetryIsSettled()) {
       this.pendingInspectionAt ??= performance.now();
       void this.react("observe", "10", signal).catch(() => undefined);
       this.ensureMaintenanceLoop(signal);
@@ -693,14 +887,22 @@ class HeroSystemController {
 
   private maybeRunPendingInspection(signal: AbortSignal) {
     if (this.pendingInspectionAt === undefined) return;
-    if (performance.now() - this.pendingInspectionAt > 12000) {
+    if (performance.now() - this.pendingInspectionAt > 10000) {
       this.pendingInspectionAt = undefined;
       return;
     }
-    if (!this.isOperationallyBusy()) {
+    if (!this.isOperationallyBusy() && this.telemetryIsSettled()) {
       this.pendingInspectionAt = undefined;
       void this.runInspection(signal);
     }
+  }
+
+  private telemetryIsSettled() {
+    return (
+      !this.telemetryWorker &&
+      this.telemetryPending.size === 0 &&
+      performance.now() - this.telemetryLastAt >= 1000
+    );
   }
 
   private isOperationallyBusy() {
@@ -718,7 +920,15 @@ class HeroSystemController {
     this.inspectionAbort = new AbortController();
     const signal = this.inspectionAbort.signal;
     this.root.classList.add("is-inspecting");
-    const trace = this.lastTrace;
+    const trace = this.lastTrace
+      ? {
+          ...this.lastTrace,
+          failedRoutes: [...this.lastTrace.failedRoutes],
+          routes: [...this.lastTrace.routes],
+          telemetry: [...this.lastTrace.telemetry],
+          stages: this.lastTrace.stages.map((stage) => ({ ...stage })),
+        }
+      : undefined;
     if (trace) {
       trace.routes.forEach((route) =>
         this.routes.get(route)?.classList.add("is-inspection-route"),
@@ -729,9 +939,7 @@ class HeroSystemController {
       trace.telemetry.forEach((route) =>
         this.routes.get(route)?.classList.add("is-inspection-telemetry"),
       );
-      this.root
-        .querySelectorAll<SVGElement>("[data-hero-trace-span]")
-        .forEach((span) => span.classList.add("is-visible"));
+      this.renderTraceWaterfall(trace);
     }
     try {
       await this.react("observe", "10", signal);
@@ -741,6 +949,36 @@ class HeroSystemController {
     } finally {
       if (this.inspectionAbort?.signal === signal) this.endInspection();
     }
+  }
+
+  private renderTraceWaterfall(trace: LastTrace) {
+    const stages = trace.stages.slice(-6);
+    const total = Math.max(
+      1,
+      ...stages.map((stage) => stage.end ?? stage.start),
+    );
+    const startX = 356;
+    const width = 66;
+    this.root
+      .querySelectorAll<SVGLineElement>("[data-hero-trace-span]")
+      .forEach((span, index) => {
+        const stage = stages[index];
+        if (!stage) return;
+        const x1 = startX + (stage.start / total) * width;
+        const duration = Math.max(
+          5,
+          (((stage.end ?? stage.start + total * 0.08) - stage.start) / total) *
+            width,
+        );
+        span.setAttribute("x1", x1.toFixed(1));
+        span.setAttribute(
+          "x2",
+          Math.min(startX + width, x1 + duration).toFixed(1),
+        );
+        span.classList.toggle("is-heavy", stage.tone === "heavy");
+        span.classList.toggle("is-alert", stage.tone === "alert");
+        span.classList.add("is-visible");
+      });
   }
 
   private endInspection() {
@@ -922,38 +1160,13 @@ class HeroSystemController {
     return this.persistenceTask;
   }
 
-  private async revealTraceStep(index: number, signal: AbortSignal) {
-    const marker = this.root.querySelector<SVGElement>(
-      `[data-hero-marker="${index}"]`,
-    );
-    const span = this.root.querySelector<SVGElement>(
-      `[data-hero-trace-span="${index}"]`,
-    );
-    marker?.classList.add("is-visible");
-    if (!span) return;
-    span.classList.add("is-visible");
-    await this.playClassAnimation(span, "is-drawing", signal);
-  }
-
-  private async fadeTrace(signal: AbortSignal) {
-    const trace = this.root.querySelector<SVGElement>("[data-hero-trace]");
-    const memory = this.root.querySelector<SVGElement>(
-      "[data-hero-telemetry-memory]",
-    );
-    await Promise.all([
-      trace ? this.playClassAnimation(trace, "is-fading", signal) : undefined,
-      memory ? this.playClassAnimation(memory, "is-fading", signal) : undefined,
-    ]);
-    this.resetTrace();
-  }
-
   private resetTrace() {
     this.root
       .querySelectorAll<SVGElement>(
         "[data-hero-trace-span], [data-hero-marker]",
       )
       .forEach((element) =>
-        element.classList.remove("is-visible", "is-drawing"),
+        element.classList.remove("is-visible", "is-drawing", "is-heavy", "is-alert"),
       );
     this.root
       .querySelectorAll<SVGElement>(
@@ -1022,6 +1235,14 @@ class HeroSystemController {
     reverse = false,
   ) {
     this.throwIfAborted(signal);
+    if (
+      kind === "telemetry" &&
+      [...this.pulseInstances].some(
+        (instance) => instance.dataset.heroPulseRoute === routeId,
+      )
+    )
+      return;
+    if (!this.ensurePulseCapacity(kind)) return;
     const route = this.routes.get(routeId);
     const template = this.pulseTemplates.get(kind);
     const pathData = route?.getAttribute("d");
@@ -1030,6 +1251,7 @@ class HeroSystemController {
     const pulse = template.cloneNode(true) as SVGGraphicsElement;
     pulse.removeAttribute("data-hero-pulse-template");
     pulse.dataset.heroPulseInstance = kind;
+    pulse.dataset.heroPulseRoute = routeId;
     pulse.style.setProperty("offset-path", `path("${pathData}")`);
     pulse.style.setProperty("offset-rotate", reverse ? "auto 180deg" : "auto");
     this.pulseLayer.append(pulse);
@@ -1058,12 +1280,36 @@ class HeroSystemController {
         easing: "cubic-bezier(0.28, 0.05, 0.3, 1)",
       },
     );
+    this.pulseAnimations.set(pulse, animation);
     try {
       await this.trackAnimation(animation, signal);
     } finally {
+      this.pulseAnimations.delete(pulse);
       this.pulseInstances.delete(pulse);
       pulse.remove();
     }
+  }
+
+  private ensurePulseCapacity(kind: PulseKind) {
+    if (this.pulseInstances.size < MAX_ACTIVE_PULSES) return true;
+    const priority = this.pulsePriority(kind);
+    const victim = [...this.pulseInstances].find((instance) => {
+      const activeKind = instance.dataset.heroPulseInstance as PulseKind;
+      return this.pulsePriority(activeKind) < priority;
+    });
+    if (!victim) return false;
+    this.pulseAnimations.get(victim)?.cancel();
+    this.pulseAnimations.delete(victim);
+    this.pulseInstances.delete(victim);
+    victim.remove();
+    return true;
+  }
+
+  private pulsePriority(kind: PulseKind) {
+    if (kind === "anomaly" || kind === "feedback" || kind === "probe") return 4;
+    if (kind === "normal" || kind === "heavy") return 3;
+    if (kind === "telemetry") return 2;
+    return 1;
   }
 
   private async playClassAnimation(
@@ -1162,6 +1408,7 @@ class HeroSystemController {
     this.animations.clear();
     this.pulseInstances.forEach((pulse) => pulse.remove());
     this.pulseInstances.clear();
+    this.pulseAnimations.clear();
     this.strongNodes.clear();
     this.reactionLocks.clear();
     delete this.root.dataset.heroBackground;

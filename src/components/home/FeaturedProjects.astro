@@ -11,8 +11,8 @@ const d = t(locale);
 const projects = await featured("projects", locale);
 ---
 
-<section class="section home-projects">
-  <div class="wrap home-projects-target" id="projects">
+<section class="section home-projects" id="projects">
+  <div class="wrap">
     <SectionHeader
       title={d.featuredProjects}
       description={d.projectsIntro}

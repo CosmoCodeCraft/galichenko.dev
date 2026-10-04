@@ -456,11 +456,17 @@ a[aria-current="page"] {
   --hero-system-active: #2f6fda;
   --hero-system-active-soft: #d9e7fa;
   --hero-system-aux-active: #6f8fb5;
-  --hero-system-warn: #b76b21;
+  --hero-system-warn: #d45f2e;
   --hero-system-alert: #b6424b;
   --hero-system-primary-opacity: 0.88;
   --hero-system-secondary-opacity: 0.72;
   --hero-system-telemetry-opacity: 0.66;
+  --hero-system-primary-related: 0.96;
+  --hero-system-primary-muted: 0.58;
+  --hero-system-secondary-related: 0.86;
+  --hero-system-secondary-muted: 0.42;
+  --hero-system-telemetry-related: 0.82;
+  --hero-system-telemetry-muted: 0.38;
 }
 :root[data-theme="dark"] .hero-visual {
   --hero-system-line-primary: color-mix(
@@ -487,6 +493,12 @@ a[aria-current="page"] {
   --hero-system-primary-opacity: 0.68;
   --hero-system-secondary-opacity: 0.38;
   --hero-system-telemetry-opacity: 0.36;
+  --hero-system-primary-related: 0.88;
+  --hero-system-primary-muted: 0.45;
+  --hero-system-secondary-related: 0.7;
+  --hero-system-secondary-muted: 0.22;
+  --hero-system-telemetry-related: 0.63;
+  --hero-system-telemetry-muted: 0.2;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .hero-visual {
@@ -514,6 +526,12 @@ a[aria-current="page"] {
     --hero-system-primary-opacity: 0.68;
     --hero-system-secondary-opacity: 0.38;
     --hero-system-telemetry-opacity: 0.36;
+    --hero-system-primary-related: 0.88;
+    --hero-system-primary-muted: 0.45;
+    --hero-system-secondary-related: 0.7;
+    --hero-system-secondary-muted: 0.22;
+    --hero-system-telemetry-related: 0.63;
+    --hero-system-telemetry-muted: 0.2;
   }
 }
 .hero-system-visual {
@@ -533,17 +551,23 @@ a[aria-current="page"] {
 .hero-system-links--primary {
   stroke: var(--hero-system-line-primary);
   stroke-width: 1;
+}
+.hero-system-links--primary > path {
   opacity: var(--hero-system-primary-opacity);
 }
 .hero-system-links--secondary {
   stroke: var(--hero-system-line-secondary);
   stroke-width: 0.85;
+}
+.hero-system-links--secondary > path {
   opacity: var(--hero-system-secondary-opacity);
 }
 .hero-system-telemetry-links {
   stroke: var(--hero-system-telemetry);
   stroke-width: 0.85;
   stroke-dasharray: 1.5 5;
+}
+.hero-system-telemetry-links > path {
   opacity: var(--hero-system-telemetry-opacity);
 }
 .hero-system-nodes > :not(.hero-system-state-node, .hero-system-observe-node),
@@ -721,6 +745,9 @@ a[aria-current="page"] {
 .hero-system-observe-reaction {
   stroke-width: 0.85;
 }
+.hero-system-observe-reaction.is-busy {
+  stroke-width: 1.1;
+}
 .hero-system-observe-reaction > circle {
   fill: none;
   opacity: 0.38;
@@ -838,10 +865,20 @@ a[aria-current="page"] {
   cursor: pointer;
 }
 .hero-system-hit-area--action:focus-visible {
+  stroke: transparent;
+  outline: none;
+}
+.hero-system-focus-rings {
   fill: none;
   stroke: var(--hero-system-active);
-  opacity: 0.72;
-  outline: none;
+  stroke-width: 0.85;
+  vector-effect: non-scaling-stroke;
+}
+.hero-system-focus-rings > * {
+  opacity: 0;
+}
+.hero-system-focus-rings > .is-visible {
+  opacity: 0.76;
 }
 @media (hover: hover) and (pointer: fine) {
   .hero-system-links path,
@@ -849,13 +886,33 @@ a[aria-current="page"] {
   .hero-system-nodes > * {
     transition:
       opacity 160ms var(--motion-ease-out),
-      stroke 160ms var(--motion-ease-out);
+      stroke 200ms var(--motion-ease-out);
   }
-  .hero-system-visual.has-neighborhood .is-neighborhood-muted {
-    opacity: 0.84;
+  .hero-system-visual.has-neighborhood .hero-system-links--primary .is-neighborhood-muted {
+    opacity: var(--hero-system-primary-muted);
   }
-  .hero-system-visual.has-neighborhood .is-neighborhood-route {
-    opacity: 1;
+  .hero-system-visual.has-neighborhood .hero-system-links--primary .is-neighborhood-route {
+    opacity: var(--hero-system-primary-related);
+  }
+  .hero-system-visual.has-neighborhood .hero-system-links--secondary .is-neighborhood-muted {
+    opacity: var(--hero-system-secondary-muted);
+  }
+  .hero-system-visual.has-neighborhood .hero-system-links--secondary .is-neighborhood-route {
+    opacity: var(--hero-system-secondary-related);
+  }
+  .hero-system-visual.has-neighborhood .hero-system-telemetry-links .is-neighborhood-muted {
+    opacity: var(--hero-system-telemetry-muted);
+  }
+  .hero-system-visual.has-neighborhood .hero-system-telemetry-links .is-neighborhood-route {
+    opacity: var(--hero-system-telemetry-related);
+  }
+  .hero-system-visual.has-neighborhood .hero-system-links path,
+  .hero-system-visual.has-neighborhood .hero-system-telemetry-links path,
+  .hero-system-visual.has-neighborhood .hero-system-nodes > * {
+    transition-duration: 160ms;
+  }
+  .hero-system-visual.has-neighborhood .hero-system-nodes > .is-neighborhood-muted {
+    opacity: 0.72;
   }
   .hero-system-visual.has-neighborhood .is-neighborhood-node {
     stroke: color-mix(
@@ -866,6 +923,13 @@ a[aria-current="page"] {
   }
   .hero-system-visual.has-neighborhood .is-neighborhood-focus {
     stroke: var(--hero-system-active);
+  }
+  .hero-system-visual.has-neighborhood .hero-system-links path.is-unavailable {
+    opacity: 0.25;
+  }
+  .hero-system-visual.has-neighborhood .hero-system-links path.is-degraded {
+    stroke: var(--hero-system-warn);
+    opacity: 0.5;
   }
 }
 .hero-system-visual.is-inspecting
@@ -920,6 +984,12 @@ a[aria-current="page"] {
 .hero-system-trace-span.is-visible {
   stroke-dashoffset: 0;
   opacity: 0.68;
+}
+.hero-system-trace-span.is-heavy {
+  stroke: var(--hero-system-warn);
+}
+.hero-system-trace-span.is-alert {
+  stroke: var(--hero-system-alert);
 }
 .hero-system-source-reaction.is-active {
   animation: hero-system-source-active 900ms ease-out;
@@ -1111,7 +1181,7 @@ a[aria-current="page"] {
 .home-projects {
   background: var(--surface);
 }
-.home-projects-target {
+.home-projects {
   scroll-margin-top: calc(var(--header-height) + 24px);
 }
 .home-research {

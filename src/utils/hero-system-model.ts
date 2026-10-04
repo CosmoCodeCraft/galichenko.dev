@@ -4,23 +4,25 @@ export type HeroServiceStatus = "healthy" | "degraded" | "open" | "recovering";
 
 export const HERO_QUEUE_CAPACITY = 4;
 
-const PRESSURE_MAX = 20;
-const STRESS_MAX = 12;
-const PRESSURE_DECAY_DELAY = 1500;
-const PRESSURE_DECAY_RATE = 0.7 / 1000;
-const STRESS_DECAY_RATE = 0.45 / 1000;
+const PRESSURE_MAX = 12;
+const STRESS_MAX = 8;
+const PRESSURE_DECAY_DELAY = 1000;
+const PRESSURE_DECAY_RATE = 1.5 / 1000;
+const STRESS_DECAY_RATE = 0.9 / 1000;
 const DEGRADED_AT = 3.5;
 const HEALTHY_BELOW = 2;
-const TRIP_STRESS = 5.5;
-const TRIP_PRESSURE = 7.5;
+const TRIP_STRESS = 6.5;
+const TRIP_PRESSURE = 9.5;
+const TRIP_DEGRADED_TIME = 1500;
 const MINIMUM_OPEN_TIME = 6000;
-const RECOVERY_STABLE_TIME = 3000;
+const RECOVERY_STABLE_TIME = 1500;
 const RECOVERY_PRESSURE = 2.5;
 const PROBE_ABORT_PRESSURE = 4;
 const BREAKER_GRACE = 30000;
 
 interface ServiceModel {
   busy: boolean;
+  degradedAt?: number;
   graceUntil: number;
   openedAt: number;
   recoveryStableSince?: number;
@@ -35,6 +37,7 @@ export interface ServiceAssignment {
 
 export class HeroSystemModel {
   pressure = 0;
+  private tripOwner?: HeroServiceId;
   private lastDecayAt = 0;
   private lastSourceAt = Number.NEGATIVE_INFINITY;
   private nextTie: HeroServiceId = "3";
@@ -60,8 +63,10 @@ export class HeroSystemModel {
     this.lastDecayAt = now;
     this.lastSourceAt = Number.NEGATIVE_INFINITY;
     this.nextTie = "3";
+    this.tripOwner = undefined;
     for (const service of Object.values(this.services)) {
       service.busy = false;
+      service.degradedAt = undefined;
       service.graceUntil = 0;
       service.openedAt = 0;
       service.recoveryStableSince = undefined;
@@ -103,10 +108,13 @@ export class HeroSystemModel {
           0,
           service.stress - elapsed * STRESS_DECAY_RATE,
         );
-      if (service.status === "healthy" && service.stress >= DEGRADED_AT)
+      if (service.status === "healthy" && service.stress >= DEGRADED_AT) {
         service.status = "degraded";
-      else if (service.status === "degraded" && service.stress < HEALTHY_BELOW)
+        service.degradedAt = now;
+      } else if (service.status === "degraded" && service.stress < HEALTHY_BELOW) {
         service.status = "healthy";
+        service.degradedAt = undefined;
+      }
     }
     this.lastDecayAt = now;
   }
@@ -144,26 +152,51 @@ export class HeroSystemModel {
   ): ServiceAssignment {
     this.evaluate(now);
     const service = this.services[id];
-    const wasDegraded = service.status === "degraded";
     service.busy = true;
     service.stress = Math.min(
       STRESS_MAX,
       service.stress + (kind === "heavy" ? 3 : 1),
     );
-    if (service.status === "healthy" && service.stress >= DEGRADED_AT)
+    if (service.status === "healthy" && service.stress >= DEGRADED_AT) {
       service.status = "degraded";
+      service.degradedAt = now;
+    }
 
     const peer = this.services[id === "3" ? "5" : "3"];
+    const canClaimTrip =
+      this.tripOwner === undefined &&
+      service.status === "degraded" &&
+      service.degradedAt !== undefined &&
+      now - service.degradedAt >= TRIP_DEGRADED_TIME &&
+      service.stress >= TRIP_STRESS &&
+      this.pressure >= TRIP_PRESSURE &&
+      peer.status !== "open" &&
+      peer.status !== "recovering" &&
+      now >= service.graceUntil;
+    if (canClaimTrip) this.tripOwner = id;
     return {
-      shouldTrip:
-        wasDegraded &&
-        service.stress >= TRIP_STRESS &&
-        this.pressure >= TRIP_PRESSURE &&
-        peer.status !== "open" &&
-        peer.status !== "recovering" &&
-        now >= service.graceUntil,
+      shouldTrip: canClaimTrip,
       stress: service.stress,
     };
+  }
+
+  admissionCapacity(now: number) {
+    this.evaluate(now);
+    if (
+      this.tripOwner !== undefined ||
+      (["3", "5"] as const).some((id) => {
+        const status = this.services[id].status;
+        return status === "open" || status === "recovering";
+      })
+    )
+      return 2;
+    if (
+      (["3", "5"] as const).some(
+        (id) => this.services[id].status === "degraded",
+      )
+    )
+      return 3;
+    return HERO_QUEUE_CAPACITY;
   }
 
   reserve(id: HeroServiceId) {
@@ -186,7 +219,12 @@ export class HeroSystemModel {
   open(id: HeroServiceId, now: number) {
     this.evaluate(now);
     const peer = this.services[id === "3" ? "5" : "3"];
-    if (peer.status === "open" || peer.status === "recovering") return false;
+    if (
+      this.tripOwner !== id ||
+      peer.status === "open" ||
+      peer.status === "recovering"
+    )
+      return false;
     const service = this.services[id];
     service.busy = false;
     service.openedAt = now;
@@ -237,9 +275,21 @@ export class HeroSystemModel {
     const service = this.services[id];
     service.status = "healthy";
     service.stress = 0;
+    service.degradedAt = undefined;
     service.openedAt = 0;
     service.recoveryStableSince = undefined;
     service.graceUntil = now + BREAKER_GRACE;
+    if (this.tripOwner === id) this.tripOwner = undefined;
+  }
+
+  releaseTripClaim(id: HeroServiceId) {
+    const service = this.services[id];
+    if (
+      this.tripOwner === id &&
+      service.status !== "open" &&
+      service.status !== "recovering"
+    )
+      this.tripOwner = undefined;
   }
 
   status(id: HeroServiceId) {
@@ -255,6 +305,7 @@ export class HeroSystemModel {
   }
 
   isolatedService(): HeroServiceId | undefined {
+    if (this.tripOwner !== undefined) return this.tripOwner;
     return (["3", "5"] as const).find((id) => {
       const status = this.services[id].status;
       return status === "open" || status === "recovering";

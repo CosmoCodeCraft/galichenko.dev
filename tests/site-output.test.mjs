@@ -64,8 +64,8 @@ test("Home keeps its project anchor and external chrome links semantic", async (
   const $ = await page("/");
   const projectsTarget = $("#projects");
   assert.equal(projectsTarget.length, 1);
-  assert.equal(projectsTarget.hasClass("home-projects-target"), true);
-  assert.equal(projectsTarget.closest("section").attr("id"), undefined);
+  assert.equal(projectsTarget.hasClass("home-projects"), true);
+  assert.equal(projectsTarget.is("section"), true);
   assert.equal($('.scroll-hint[href="#projects"]').length, 1);
 
   const githubLinks = $('a[href="https://github.com/CosmoCodeCraft"]');

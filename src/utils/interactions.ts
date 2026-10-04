@@ -67,18 +67,18 @@ selectedWork?.addEventListener("click", (event) => {
     event.altKey
   )
     return;
-  const target = document.getElementById("projects");
+  const target = document.querySelector<HTMLElement>(".home-projects");
   if (!target) return;
   event.preventDefault();
-  const scrollMargin =
-    Number.parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+  const headerHeight =
+    document.querySelector<HTMLElement>(".site-header")?.getBoundingClientRect()
+      .height ?? 0;
   const desired =
-    window.scrollY + target.getBoundingClientRect().top - scrollMargin + 64;
+    window.scrollY + target.getBoundingClientRect().top - headerHeight + 14;
   const maximum = Math.max(
     0,
     document.documentElement.scrollHeight - window.innerHeight,
   );
-  if (location.hash !== "#projects") history.pushState(null, "", "#projects");
   window.scrollTo({
     top: Math.min(maximum, Math.max(0, desired)),
     behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
