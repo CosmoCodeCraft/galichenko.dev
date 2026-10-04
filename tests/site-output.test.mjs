@@ -76,6 +76,27 @@ test("Home keeps its project anchor and external chrome links semantic", async (
   });
 });
 
+test("Hero exposes only its two production controls and route metadata", async () => {
+  const $ = await page("/");
+  assert.equal($(".hero-visual").attr("aria-hidden"), undefined);
+  assert.equal($("[data-hero-system]").attr("role"), "group");
+  assert.deepEqual(
+    $("[data-hero-action]")
+      .map((_, element) => ({
+        action: $(element).attr("data-hero-action"),
+        label: $(element).attr("data-hero-control-label"),
+      }))
+      .get(),
+    [
+      { action: "source", label: "Send request through system" },
+      { action: "observe", label: "Inspect latest system trace" },
+    ],
+  );
+  assert.equal($("[data-hero-route][data-hero-connects]").length, 16);
+  assert.equal($("[data-hero-pulse-template]").length, 7);
+  assert.equal($("[data-hero-pulse-instance]").length, 0);
+});
+
 test("Projects archive retains City Farm's role and project context", async () => {
   const $ = await page("/projects/");
   const cityFarmEntry = $(".project-archive-entry")

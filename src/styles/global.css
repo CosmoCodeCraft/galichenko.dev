@@ -456,6 +456,7 @@ a[aria-current="page"] {
   --hero-system-active: #2f6fda;
   --hero-system-active-soft: #d9e7fa;
   --hero-system-aux-active: #6f8fb5;
+  --hero-system-warn: #b76b21;
   --hero-system-alert: #b6424b;
   --hero-system-primary-opacity: 0.88;
   --hero-system-secondary-opacity: 0.72;
@@ -481,6 +482,7 @@ a[aria-current="page"] {
     var(--hero-system-active) 45%,
     var(--hero-system-node)
   );
+  --hero-system-warn: #e0a04b;
   --hero-system-alert: #d86a72;
   --hero-system-primary-opacity: 0.68;
   --hero-system-secondary-opacity: 0.38;
@@ -507,6 +509,7 @@ a[aria-current="page"] {
       var(--hero-system-active) 45%,
       var(--hero-system-node)
     );
+    --hero-system-warn: #e0a04b;
     --hero-system-alert: #d86a72;
     --hero-system-primary-opacity: 0.68;
     --hero-system-secondary-opacity: 0.38;
@@ -578,6 +581,12 @@ a[aria-current="page"] {
   offset-rotate: auto;
   opacity: 0;
 }
+[data-hero-pulse-template] {
+  display: none;
+}
+[data-hero-pulse-instance] {
+  display: block;
+}
 .hero-system-pulse-anchor {
   fill: transparent;
   stroke: none;
@@ -606,6 +615,14 @@ a[aria-current="page"] {
 .hero-system-pulse-telemetry .hero-system-pulse-tail {
   stroke-width: 1;
 }
+.hero-system-pulse-heavy .hero-system-pulse-glow,
+.hero-system-pulse-heavy .hero-system-pulse-core {
+  fill: var(--hero-system-warn);
+}
+.hero-system-pulse-heavy .hero-system-pulse-tail {
+  stroke: url("#hero-system-tail-warn");
+  stroke-width: 1.35;
+}
 .hero-system-pulse-aux .hero-system-pulse-tail {
   stroke: var(--hero-system-aux-active);
   stroke-width: 0.8;
@@ -625,6 +642,15 @@ a[aria-current="page"] {
 .hero-system-pulse-alert .hero-system-pulse-tail,
 .hero-system-pulse-feedback .hero-system-pulse-tail {
   stroke: var(--hero-system-alert);
+}
+.hero-system-pulse-probe .hero-system-pulse-tail {
+  stroke: var(--hero-system-aux-active);
+  stroke-width: 0.7;
+  opacity: 0.62;
+}
+.hero-system-pulse-probe .hero-system-pulse-core {
+  fill: var(--hero-system-aux-active);
+  stroke-width: 0.25;
 }
 .hero-system-reaction,
 .hero-system-observe-reaction,
@@ -651,13 +677,15 @@ a[aria-current="page"] {
   fill: var(--background);
   stroke-width: 1.3;
 }
-.hero-system-router-reaction > path:nth-child(2) {
-  fill: var(--hero-system-active-soft);
-  stroke-width: 0.85;
+.hero-system-router-core {
+  fill: var(--hero-system-active);
+  stroke: none;
 }
-.hero-system-router-split {
-  fill: none;
-  stroke-width: 0.8;
+.hero-system-router-reaction.is-alert {
+  stroke: var(--hero-system-alert);
+}
+.hero-system-router-reaction.is-alert .hero-system-router-core {
+  fill: var(--hero-system-alert);
 }
 .hero-system-service-reaction > :first-child {
   fill: var(--background);
@@ -666,6 +694,14 @@ a[aria-current="page"] {
 .hero-system-service-core {
   fill: var(--hero-system-active);
   stroke: none;
+}
+.hero-system-source-reaction.is-heavy,
+.hero-system-service-reaction.is-heavy {
+  stroke: var(--hero-system-warn);
+}
+.hero-system-source-reaction.is-heavy .hero-system-source-core,
+.hero-system-service-reaction.is-heavy .hero-system-service-core {
+  fill: var(--hero-system-warn);
 }
 .hero-system-service-step {
   fill: none;
@@ -678,6 +714,9 @@ a[aria-current="page"] {
 .hero-system-state-reaction rect:last-child {
   fill: var(--hero-system-active-soft);
   stroke-width: 1.1;
+}
+.hero-system-state-reaction.is-committed {
+  opacity: 0.76;
 }
 .hero-system-observe-reaction {
   stroke-width: 0.85;
@@ -712,6 +751,144 @@ a[aria-current="page"] {
   stroke-width: 0.8;
   opacity: 0;
   vector-effect: non-scaling-stroke;
+}
+.hero-system-service-states > * {
+  fill: none;
+  stroke: var(--hero-system-warn);
+  stroke-width: 1;
+  opacity: 0;
+  vector-effect: non-scaling-stroke;
+  transition:
+    opacity 240ms var(--motion-ease-out),
+    stroke 240ms var(--motion-ease-out);
+}
+.hero-system-service-states > [data-hero-status="degraded"] {
+  opacity: 0.58;
+}
+.hero-system-service-states > [data-hero-status="open"] {
+  stroke: var(--hero-system-alert);
+  opacity: 0.7;
+}
+.hero-system-service-states > [data-hero-status="recovering"] {
+  stroke: var(--hero-system-warn);
+  stroke-dasharray: 3 3;
+  opacity: 0.62;
+}
+.hero-system-service-states > .is-faulting {
+  stroke: var(--hero-system-alert);
+  opacity: 0.82;
+}
+.hero-system-links path.is-unavailable {
+  opacity: 0.25;
+}
+.hero-system-links path.is-degraded {
+  stroke: var(--hero-system-warn);
+  opacity: 0.5;
+}
+.hero-system-hold-ring,
+.hero-system-rate-limit-ring {
+  fill: none;
+  stroke: var(--hero-system-active);
+  stroke-width: 0.85;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  vector-effect: non-scaling-stroke;
+}
+.hero-system-hold-ring {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transform: rotate(-90deg);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.hero-system-hold-ring.is-holding {
+  opacity: 0.48;
+  animation: hero-system-hold 700ms linear forwards;
+}
+.hero-system-hold-ring.is-armed {
+  stroke: var(--hero-system-warn);
+  opacity: 0.72;
+}
+.hero-system-rate-limit-ring.is-active {
+  stroke: var(--hero-system-warn);
+  animation: hero-system-rate-limit 720ms ease-out;
+}
+.hero-system-queue circle {
+  fill: var(--hero-system-active);
+  opacity: 0;
+  transition:
+    opacity 180ms var(--motion-ease-out),
+    fill 180ms var(--motion-ease-out);
+}
+.hero-system-queue circle.is-visible {
+  opacity: 0.55;
+}
+.hero-system-queue circle.is-warn {
+  fill: var(--hero-system-warn);
+  opacity: 0.68;
+}
+.hero-system-hit-area {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 1;
+  pointer-events: all;
+}
+.hero-system-visual.is-interactive .hero-system-hit-area--action {
+  cursor: pointer;
+}
+.hero-system-hit-area--action:focus-visible {
+  fill: none;
+  stroke: var(--hero-system-active);
+  opacity: 0.72;
+  outline: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hero-system-links path,
+  .hero-system-telemetry-links path,
+  .hero-system-nodes > * {
+    transition:
+      opacity 160ms var(--motion-ease-out),
+      stroke 160ms var(--motion-ease-out);
+  }
+  .hero-system-visual.has-neighborhood .is-neighborhood-muted {
+    opacity: 0.84;
+  }
+  .hero-system-visual.has-neighborhood .is-neighborhood-route {
+    opacity: 1;
+  }
+  .hero-system-visual.has-neighborhood .is-neighborhood-node {
+    stroke: color-mix(
+      in srgb,
+      var(--hero-system-node) 84%,
+      var(--hero-system-active)
+    );
+  }
+  .hero-system-visual.has-neighborhood .is-neighborhood-focus {
+    stroke: var(--hero-system-active);
+  }
+}
+.hero-system-visual.is-inspecting
+  .hero-system-links
+  path:not(.is-inspection-route, .is-inspection-failed),
+.hero-system-visual.is-inspecting
+  .hero-system-telemetry-links
+  path:not(.is-inspection-telemetry, .is-inspection-failed),
+.hero-system-visual.is-inspecting .hero-system-nodes {
+  opacity: 0.68;
+}
+.hero-system-links path.is-inspection-route {
+  stroke: var(--hero-system-active);
+  opacity: 0.92;
+}
+.hero-system-links path.is-inspection-failed,
+.hero-system-telemetry-links path.is-inspection-failed {
+  stroke: var(--hero-system-alert);
+  opacity: 0.72;
+}
+.hero-system-telemetry-links path.is-inspection-telemetry {
+  stroke: var(--hero-system-active);
+  opacity: 0.7;
 }
 [data-hero-marker] {
   fill: var(--hero-system-active);
@@ -862,6 +1039,27 @@ a[aria-current="page"] {
     opacity: 0.78;
   }
 }
+@keyframes hero-system-hold {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes hero-system-rate-limit {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  32% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+}
 @keyframes hero-system-trace-draw {
   0% {
     stroke-dashoffset: 1;
@@ -895,6 +1093,10 @@ a[aria-current="page"] {
   .hero-system-observe-reaction,
   .hero-system-fault-reaction,
   .hero-system-aux-reaction,
+  .hero-system-hold-ring,
+  .hero-system-rate-limit-ring,
+  .hero-system-service-states,
+  .hero-system-queue,
   [data-hero-marker],
   [data-hero-alert-marker],
   .hero-system-trace-response,

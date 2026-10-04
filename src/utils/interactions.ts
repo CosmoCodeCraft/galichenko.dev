@@ -54,6 +54,38 @@ function applyDesignComparison() {
 applyTheme();
 applyDesignComparison();
 initHeroSystem();
+const selectedWork = document.querySelector<HTMLAnchorElement>(
+  '.scroll-hint[href="#projects"]',
+);
+selectedWork?.addEventListener("click", (event) => {
+  if (
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  )
+    return;
+  const target = document.getElementById("projects");
+  if (!target) return;
+  event.preventDefault();
+  const scrollMargin =
+    Number.parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+  const desired =
+    window.scrollY + target.getBoundingClientRect().top - scrollMargin + 64;
+  const maximum = Math.max(
+    0,
+    document.documentElement.scrollHeight - window.innerHeight,
+  );
+  if (location.hash !== "#projects") history.pushState(null, "", "#projects");
+  window.scrollTo({
+    top: Math.min(maximum, Math.max(0, desired)),
+    behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth",
+  });
+});
 document
   .querySelectorAll<HTMLElement>("[data-enhanced]")
   .forEach((el) => (el.hidden = false));
