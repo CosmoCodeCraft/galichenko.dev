@@ -544,6 +544,7 @@ a[aria-current="page"] {
 .hero-system-telemetry-links,
 .hero-system-observe-node,
 .hero-system-observe-reaction,
+.hero-system-telemetry-summary,
 .hero-system-trace-response {
   fill: none;
   vector-effect: non-scaling-stroke;
@@ -599,6 +600,26 @@ a[aria-current="page"] {
   fill: var(--hero-system-active);
   stroke: none;
   opacity: 0.34;
+}
+.hero-system-visual.is-telemetry-active .hero-system-observe-node {
+  opacity: 0.82;
+}
+.hero-system-visual.is-telemetry-active .hero-system-observe-core {
+  opacity: 0.58;
+}
+.hero-system-visual.is-telemetry-active .hero-system-observe-reaction {
+  opacity: 0.24;
+}
+.hero-system-visual.is-telemetry-busy .hero-system-observe-node {
+  stroke-width: 1.15;
+  opacity: 0.94;
+}
+.hero-system-visual.is-telemetry-busy .hero-system-observe-core {
+  opacity: 0.78;
+}
+.hero-system-visual.is-telemetry-busy .hero-system-observe-reaction {
+  stroke-width: 1.1;
+  opacity: 0.42;
 }
 .hero-system-pulse {
   offset-distance: 0%;
@@ -978,6 +999,20 @@ a[aria-current="page"] {
   opacity: 0;
   vector-effect: non-scaling-stroke;
 }
+.hero-system-telemetry-summary line {
+  fill: none;
+  stroke: var(--hero-system-active);
+  stroke-width: 0.85;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  vector-effect: non-scaling-stroke;
+}
+.hero-system-telemetry-summary line.is-visible {
+  stroke-dashoffset: 0;
+  opacity: 0.48;
+}
 .hero-system-trace-response {
   opacity: 1;
 }
@@ -1017,6 +1052,12 @@ a[aria-current="page"] {
 }
 .hero-system-trace-span.is-visible.is-drawing {
   animation: hero-system-trace-draw 650ms ease-out forwards;
+}
+.hero-system-telemetry-summary line.is-visible.is-drawing {
+  animation: hero-system-trace-draw 520ms ease-out forwards;
+}
+.hero-system-telemetry-summary.is-fading {
+  animation: hero-system-trace-fade 700ms ease-out forwards;
 }
 .hero-system-trace-response.is-fading,
 .hero-system-telemetry-memory.is-fading {
@@ -1170,6 +1211,8 @@ a[aria-current="page"] {
   [data-hero-marker],
   [data-hero-alert-marker],
   .hero-system-trace-response,
+  .hero-system-telemetry-summary,
+  .hero-system-telemetry-summary line,
   .hero-system-trace-span {
     animation: none !important;
     opacity: 0;

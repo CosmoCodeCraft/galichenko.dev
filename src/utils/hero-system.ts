@@ -101,6 +101,9 @@ class HeroSystemController {
   private telemetryWeight = 0;
   private telemetryWorker?: Promise<void>;
   private telemetryLastAt = Number.NEGATIVE_INFINITY;
+  private telemetrySummaryAbort?: AbortController;
+  private telemetrySummaryTask?: Promise<void>;
+  private ambientSummaryPending = false;
   private sourceGateUntil = 0;
   private feedbackGateUntil = 0;
   private manualTraceOwnershipUntil = 0;
@@ -109,6 +112,9 @@ class HeroSystemController {
   private requestId = 0;
   private ambientPauseUntil = 0;
   private ambientActive = false;
+  private transientFaultActive = false;
+  private ambientHealthyUntilFault = 2;
+  private ambientFaultGapIndex = 0;
   private inspectionActive = false;
   private manualPrimaryCount = 0;
   private manualTelemetryCount = 0;
@@ -194,6 +200,9 @@ class HeroSystemController {
     this.queue.length = 0;
     this.started = false;
     this.ambientActive = false;
+    this.transientFaultActive = false;
+    this.ambientHealthyUntilFault = 2;
+    this.ambientFaultGapIndex = 0;
     this.inspectionActive = false;
     this.manualPrimaryCount = 0;
     this.manualTelemetryCount = 0;
@@ -208,6 +217,10 @@ class HeroSystemController {
     this.telemetryWeight = 0;
     this.telemetryWorker = undefined;
     this.telemetryLastAt = Number.NEGATIVE_INFINITY;
+    this.telemetrySummaryAbort?.abort();
+    this.telemetrySummaryAbort = undefined;
+    this.telemetrySummaryTask = undefined;
+    this.ambientSummaryPending = false;
     this.sourceGateUntil = 0;
     this.feedbackGateUntil = 0;
     this.manualTraceOwnershipUntil = 0;
@@ -273,6 +286,7 @@ class HeroSystemController {
     });
 
     const observe = this.actionControl("observe");
+    observe?.addEventListener("pointerdown", this.handleObservePointerDown);
     observe?.addEventListener("click", this.handleObserveClick);
     observe?.addEventListener("keydown", this.handleObserveKeyDown);
     observe?.addEventListener("focus", () => {
@@ -372,6 +386,12 @@ class HeroSystemController {
     }
   };
 
+  private readonly handleObservePointerDown = (event: PointerEvent) => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    this.setFocusRing("observe", false);
+  };
+
   private readonly handleObserveKeyDown = (event: KeyboardEvent) => {
     if (
       !this.canRun() ||
@@ -402,6 +422,7 @@ class HeroSystemController {
     this.sourceGateUntil = now + SOURCE_GATE_MS;
     this.endInspection();
     this.pendingInspectionAt = undefined;
+    this.cancelTelemetrySummary();
     const signal = this.abortController?.signal;
     if (!signal) return;
     const accepted = this.queue.length < this.model.admissionCapacity(now);
@@ -433,7 +454,13 @@ class HeroSystemController {
   }
 
   private async pumpQueue(signal: AbortSignal) {
-    if (this.pumpRunning || this.retryReserved || signal.aborted) return;
+    if (
+      this.pumpRunning ||
+      this.retryReserved ||
+      this.transientFaultActive ||
+      signal.aborted
+    )
+      return;
     this.pumpRunning = true;
     try {
       while (this.queue.length > 0 && !this.retryReserved) {
@@ -675,9 +702,11 @@ class HeroSystemController {
     routes: RouteId[],
     signal: AbortSignal,
     weight = 1,
+    requestAmbientSummary = false,
   ) {
     routes.forEach((route) => this.telemetryPending.add(route));
     this.telemetryWeight = Math.min(9, this.telemetryWeight + weight);
+    if (requestAmbientSummary) this.ambientSummaryPending = true;
     this.telemetryLastAt = performance.now();
     if (this.telemetryWorker) return;
     this.telemetryWorker = this.runTelemetryWorker(signal)
@@ -689,29 +718,33 @@ class HeroSystemController {
         this.maybeRunPendingInspection(signal);
         if (this.telemetryPending.size > 0 && !signal.aborted)
           this.queueTelemetry([], signal, 0);
+        else if (this.ambientSummaryPending && !signal.aborted)
+          this.scheduleTelemetrySummary(signal);
       });
   }
 
   private async runTelemetryWorker(signal: AbortSignal) {
     this.manualTelemetryCount = 1;
+    this.root.classList.add("is-telemetry-active");
+    void this.react("observe", "10", signal).catch(() => undefined);
     while (this.telemetryPending.size > 0) {
       await this.wait(200, signal);
       const routes = [...this.telemetryPending];
       const weight = this.telemetryWeight;
       this.telemetryPending.clear();
       this.telemetryWeight = 0;
-      this.showTelemetryActivity(Math.min(3, Math.max(1, weight)));
+      const visibleMarkers = Math.min(
+        3,
+        Math.max(1, weight, routes.length),
+      );
+      this.showTelemetryActivity(visibleMarkers);
+      if (visibleMarkers >= 3) this.root.classList.add("is-telemetry-busy");
       for (const route of routes) {
         await this.pulse(route, "telemetry", 1600, signal);
         await this.wait(180, signal);
       }
-      await this.react(
-        "observe",
-        "10",
-        signal,
-        weight >= 3 ? "is-busy" : undefined,
-      );
     }
+    await this.wait(320, signal);
     this.telemetryLastAt = performance.now();
   }
 
@@ -724,9 +757,73 @@ class HeroSystemController {
   }
 
   private clearTelemetryActivity() {
+    this.root.classList.remove("is-telemetry-active", "is-telemetry-busy");
     this.root
       .querySelectorAll<SVGElement>("[data-hero-marker]")
       .forEach((marker) => marker.classList.remove("is-visible"));
+  }
+
+  private scheduleTelemetrySummary(signal: AbortSignal) {
+    if (this.telemetrySummaryTask || this.inspectionActive) return;
+    this.telemetrySummaryAbort = new AbortController();
+    const summarySignal = this.telemetrySummaryAbort.signal;
+    this.telemetrySummaryTask = (async () => {
+      try {
+        await this.wait(1000, summarySignal);
+        if (
+          signal.aborted ||
+          !this.telemetryIsSettled() ||
+          this.inspectionActive ||
+          this.manualPrimaryCount > 0 ||
+          this.queue.length > 0
+        )
+          return;
+        this.ambientSummaryPending = false;
+        const lines = this.root.querySelectorAll<SVGElement>(
+          "[data-hero-summary-line]",
+        );
+        for (const line of lines) {
+          line.classList.add("is-visible");
+          await this.playClassAnimation(line, "is-drawing", summarySignal);
+          await this.wait(120, summarySignal);
+        }
+        await this.wait(1700, summarySignal);
+        const group = this.root.querySelector<SVGElement>(
+          "[data-hero-telemetry-summary]",
+        );
+        if (group)
+          await this.playClassAnimation(group, "is-fading", summarySignal);
+      } catch {
+        /* Source input, inspection, or reset cancels passive summary. */
+      } finally {
+        this.resetTelemetrySummary();
+      }
+    })().finally(() => {
+      this.telemetrySummaryTask = undefined;
+      this.telemetrySummaryAbort = undefined;
+      if (
+        this.ambientSummaryPending &&
+        !signal.aborted &&
+        !this.telemetryWorker
+      )
+        this.scheduleTelemetrySummary(signal);
+    });
+  }
+
+  private cancelTelemetrySummary() {
+    this.ambientSummaryPending = false;
+    this.telemetrySummaryAbort?.abort();
+    this.resetTelemetrySummary();
+  }
+
+  private resetTelemetrySummary() {
+    this.root
+      .querySelectorAll<SVGElement>(
+        "[data-hero-telemetry-summary], [data-hero-summary-line]",
+      )
+      .forEach((element) =>
+        element.classList.remove("is-visible", "is-drawing", "is-fading"),
+      );
   }
 
   private async emitAnomaly(service: HeroServiceId, signal: AbortSignal) {
@@ -741,6 +838,7 @@ class HeroSystemController {
 
   private async runAmbientLoop(signal: AbortSignal) {
     let preferred: HeroServiceId = "3";
+    const faultGaps = [5, 4, 6, 5];
     await this.wait(3000, signal);
     while (!signal.aborted) {
       if (
@@ -748,32 +846,46 @@ class HeroSystemController {
         this.queue.length > 0 ||
         this.manualPrimaryCount > 0 ||
         this.retryReserved ||
-        this.inspectionActive
+        this.inspectionActive ||
+        this.model.isolatedService()
       ) {
         await this.wait(1000, signal);
         continue;
       }
-      const isolated = this.model.isolatedService();
-      const service =
-        isolated === preferred ? (preferred === "3" ? "5" : "3") : preferred;
-      await this.runAmbientTransaction(service, signal);
+      const transientFault =
+        this.ambientHealthyUntilFault === 0 &&
+        this.telemetryIsSettled() &&
+        !this.probeRunning;
+      await this.runAmbientTransaction(preferred, signal, transientFault);
+      if (transientFault) {
+        this.ambientHealthyUntilFault = faultGaps[this.ambientFaultGapIndex];
+        this.ambientFaultGapIndex =
+          (this.ambientFaultGapIndex + 1) % faultGaps.length;
+      } else {
+        this.ambientHealthyUntilFault = Math.max(
+          0,
+          this.ambientHealthyUntilFault - 1,
+        );
+      }
       preferred = preferred === "3" ? "5" : "3";
       await this.wait(8000, signal);
     }
   }
 
   private async runAmbientTransaction(
-    service: HeroServiceId,
+    initialService: HeroServiceId,
     signal: AbortSignal,
+    transientFault = false,
   ) {
     this.ambientActive = true;
+    this.transientFaultActive = transientFault;
     const startedAt = performance.now();
     const elapsed = () => performance.now() - startedAt;
     const stages: TraceStage[] = [{ name: "accepted", start: 0 }];
+    const failedRoutes: RouteId[] = [];
+    let failedService: HeroServiceId | undefined;
+    let service = initialService;
     try {
-      const routeToService = this.routeToService(service);
-      const routeToState = this.routeToState(service);
-      const routeToDownstream = this.routeToDownstream(service);
       await this.react("source", "1", signal);
       await this.pulse("1-2", "normal", 1500, signal);
       stages.push({ name: "router", start: elapsed() });
@@ -785,10 +897,52 @@ class HeroSystemController {
         tone: "normal",
       };
       stages.push(processing);
-      await this.pulse(routeToService, "normal", 1600, signal);
+      await this.pulse(this.routeToService(service), "normal", 1600, signal);
       await this.react(`service-${service}`, service, signal);
       await this.wait(450, signal);
       processing.end = elapsed();
+
+      if (transientFault) {
+        processing.tone = "alert";
+        failedService = service;
+        failedRoutes.push(
+          this.routeToService(service),
+          this.telemetryRoute(service),
+        );
+        stages.push({ name: "failure", start: elapsed(), tone: "alert" });
+        const failedState = this.root.querySelector<SVGElement>(
+          `[data-hero-service-state="${service}"]`,
+        );
+        failedState?.classList.add("is-faulting");
+        const anomaly = this.emitAnomaly(service, signal);
+        await this.wait(160, signal);
+        await this.pulse(
+          this.routeToService(service),
+          "feedback",
+          1250,
+          signal,
+          true,
+        );
+        stages.push({ name: "feedback", start: elapsed(), tone: "alert" });
+        await this.react("router", "2", signal, "is-alert");
+        await anomaly;
+        failedState?.classList.remove("is-faulting");
+        service = service === "3" ? "5" : "3";
+        const retry: TraceStage = {
+          name: "retry",
+          start: elapsed(),
+          tone: "normal",
+        };
+        stages.push(retry);
+        await this.pulse(this.routeToService(service), "normal", 1450, signal);
+        await this.react(`service-${service}`, service, signal);
+        await this.wait(380, signal);
+        retry.end = elapsed();
+      }
+
+      const routeToService = this.routeToService(service);
+      const routeToState = this.routeToState(service);
+      const routeToDownstream = this.routeToDownstream(service);
       stages.push({ name: "persistence", start: elapsed() });
       await this.pulse(routeToState, "normal", 1800, signal);
       const committed = this.commitState(signal);
@@ -809,18 +963,21 @@ class HeroSystemController {
         this.queue.length === 0
       ) {
         this.lastTrace = {
-          failedRoutes: [],
+          failedRoutes,
+          failedService,
           kind: "normal",
-          outcome: "healthy",
+          outcome: failedService ? "failover" : "healthy",
           routes: ["1-2", routeToService, routeToState, routeToDownstream],
           service,
           telemetry,
           stages,
         };
       }
-      this.queueTelemetry(telemetry, signal);
+      this.queueTelemetry(telemetry, signal, 1, true);
     } finally {
       this.ambientActive = false;
+      this.transientFaultActive = false;
+      void this.pumpQueue(signal);
       this.maybeRunPendingInspection(signal);
     }
   }
@@ -840,7 +997,10 @@ class HeroSystemController {
     this.model.evaluate(performance.now());
     return (
       this.model.pressure < 4 &&
-      this.model.status("3") === "healthy" &&
+      !this.model.isolatedService() &&
+      !this.transientFaultActive &&
+      !this.retryReserved &&
+      !this.probeRunning &&
       !this.inspectionActive &&
       this.pulseInstances.size < MAX_ACTIVE_PULSES &&
       !this.isStrong("3")
@@ -916,6 +1076,7 @@ class HeroSystemController {
 
   private async runInspection(globalSignal: AbortSignal) {
     if (this.inspectionActive || globalSignal.aborted) return;
+    this.cancelTelemetrySummary();
     this.inspectionActive = true;
     this.inspectionAbort = new AbortController();
     const signal = this.inspectionAbort.signal;
@@ -1412,7 +1573,12 @@ class HeroSystemController {
     this.strongNodes.clear();
     this.reactionLocks.clear();
     delete this.root.dataset.heroBackground;
-    this.root.classList.remove("is-inspecting", "has-neighborhood");
+    this.root.classList.remove(
+      "is-inspecting",
+      "has-neighborhood",
+      "is-telemetry-active",
+      "is-telemetry-busy",
+    );
     this.root
       .querySelectorAll<SVGElement>(
         ".is-active, .is-visible, .is-drawing, .is-fading, .is-heavy, .is-warn, .is-alert, .is-committed, .is-faulting, .is-unavailable, .is-degraded, .is-inspection-route, .is-inspection-failed, .is-inspection-telemetry, .is-neighborhood-route, .is-neighborhood-node, .is-neighborhood-focus, .is-neighborhood-muted",
@@ -1444,6 +1610,7 @@ class HeroSystemController {
       .querySelectorAll<SVGElement>("[data-hero-service-state]")
       .forEach((state) => (state.dataset.heroStatus = "healthy"));
     this.updateQueueMarkers();
+    this.resetTelemetrySummary();
     this.resetTrace();
   }
 }

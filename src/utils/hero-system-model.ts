@@ -14,10 +14,10 @@ const HEALTHY_BELOW = 2;
 const TRIP_STRESS = 6.5;
 const TRIP_PRESSURE = 9.5;
 const TRIP_DEGRADED_TIME = 1500;
-const MINIMUM_OPEN_TIME = 6000;
-const RECOVERY_STABLE_TIME = 1500;
-const RECOVERY_PRESSURE = 2.5;
-const PROBE_ABORT_PRESSURE = 4;
+const MINIMUM_OPEN_TIME = 4750;
+const RECOVERY_STABLE_TIME = 1000;
+const RECOVERY_PRESSURE = 3.5;
+const PROBE_ABORT_PRESSURE = 5;
 const BREAKER_GRACE = 30000;
 
 interface ServiceModel {
@@ -243,7 +243,8 @@ export class HeroSystemModel {
       this.pressure <= RECOVERY_PRESSURE &&
       queueLength === 0 &&
       !peer.busy &&
-      peer.stress < DEGRADED_AT;
+      peer.status !== "open" &&
+      peer.status !== "recovering";
     if (!safe) {
       service.recoveryStableSince = undefined;
       return false;
