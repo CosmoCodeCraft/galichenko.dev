@@ -103,6 +103,51 @@ test("Theme persistence, system changes, menu and keyboard", async ({
     .evaluate((el) => el.getBoundingClientRect().top);
   expect(top).toBeGreaterThanOrEqual(66);
 });
+test("Design comparison preferences switch independently and persist", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/");
+
+  const root = page.locator("html");
+  const panel = page.locator("[data-design-comparison]");
+  await expect(panel).toBeVisible();
+  await expect(root).toHaveAttribute("data-design-font", "plex");
+  await expect(root).toHaveAttribute("data-design-dark", "graphite");
+  await panel.locator("summary").click();
+
+  await panel.getByRole("button", { name: "System" }).click();
+  await expect(root).toHaveAttribute("data-design-font", "system");
+  await expect(panel.getByRole("button", { name: "System" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await panel.getByRole("button", { name: "Navy" }).click();
+  await expect(root).toHaveAttribute("data-design-dark", "navy");
+  await expect(page.locator("body")).toHaveCSS(
+    "background-color",
+    "rgb(17, 26, 39)",
+  );
+
+  await page.locator(".mobile-menu summary").click();
+  await page.locator(".drawer [data-theme-control]").click();
+  await expect(root).toHaveAttribute("data-theme", "light");
+  await expect(root).toHaveAttribute("data-design-dark", "navy");
+  await expect(page.locator("body")).toHaveCSS(
+    "background-color",
+    "rgb(244, 245, 243)",
+  );
+
+  await page.reload();
+  await expect(root).toHaveAttribute("data-design-font", "system");
+  await expect(root).toHaveAttribute("data-design-dark", "navy");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBeTruthy();
+});
 test("Landscape mobile header and centered final project card", async ({
   page,
 }) => {

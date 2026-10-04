@@ -215,3 +215,41 @@ test("production output self-hosts the required IBM Plex subsets", async () => {
     194892,
   );
 });
+
+test("temporary design comparison controls expose independent defaults", async () => {
+  const $ = await page("/");
+  const panel = $("[data-design-comparison]");
+  assert.equal(panel.length, 1);
+  assert.deepEqual(
+    panel
+      .find("[data-design-font-option]")
+      .map((_, element) => ({
+        value: $(element).attr("data-design-font-option"),
+        pressed: $(element).attr("aria-pressed"),
+      }))
+      .get(),
+    [
+      { value: "plex", pressed: "true" },
+      { value: "system", pressed: "false" },
+    ],
+  );
+  assert.deepEqual(
+    panel
+      .find("[data-design-dark-option]")
+      .map((_, element) => ({
+        value: $(element).attr("data-design-dark-option"),
+        pressed: $(element).attr("aria-pressed"),
+      }))
+      .get(),
+    [
+      { value: "graphite", pressed: "true" },
+      { value: "navy", pressed: "false" },
+    ],
+  );
+  const inlineScripts = $("script:not([src])")
+    .map((_, element) => $(element).text())
+    .get()
+    .join("\n");
+  assert.match(inlineScripts, /sg-design-font/);
+  assert.match(inlineScripts, /sg-design-dark/);
+});

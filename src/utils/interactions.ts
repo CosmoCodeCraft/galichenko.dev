@@ -1,15 +1,27 @@
 type ThemePreference = "system" | "light" | "dark";
+type FontPreference = "plex" | "system";
+type DarkPreference = "graphite" | "navy";
 const controls = document.querySelectorAll<HTMLButtonElement>(
   "[data-theme-control]",
 );
+const fontControls = document.querySelectorAll<HTMLButtonElement>(
+  "[data-design-font-option]",
+);
+const darkControls = document.querySelectorAll<HTMLButtonElement>(
+  "[data-design-dark-option]",
+);
 let preference: ThemePreference = "system";
+let fontPreference: FontPreference =
+  document.documentElement.dataset.designFont === "system" ? "system" : "plex";
+let darkPreference: DarkPreference =
+  document.documentElement.dataset.designDark === "navy" ? "navy" : "graphite";
 try {
   const saved = localStorage.getItem("sg-theme");
   if (saved === "light" || saved === "dark") preference = saved;
 } catch {
   /* Keep system preference. */
 }
-function apply() {
+function applyTheme() {
   if (preference === "system") delete document.documentElement.dataset.theme;
   else document.documentElement.dataset.theme = preference;
   controls.forEach((control) => {
@@ -23,7 +35,22 @@ function apply() {
       text.textContent = `${control.dataset.compactLabelPrefix}: ${label}`;
   });
 }
-apply();
+function applyDesignComparison() {
+  document.documentElement.dataset.designFont = fontPreference;
+  document.documentElement.dataset.designDark = darkPreference;
+  fontControls.forEach((control) => {
+    control.ariaPressed = String(
+      control.dataset.designFontOption === fontPreference,
+    );
+  });
+  darkControls.forEach((control) => {
+    control.ariaPressed = String(
+      control.dataset.designDarkOption === darkPreference,
+    );
+  });
+}
+applyTheme();
+applyDesignComparison();
 document
   .querySelectorAll<HTMLElement>("[data-enhanced]")
   .forEach((el) => (el.hidden = false));
@@ -41,7 +68,31 @@ controls.forEach((control) =>
     } catch {
       /* Preference still works for this page. */
     }
-    apply();
+    applyTheme();
+  }),
+);
+fontControls.forEach((control) =>
+  control.addEventListener("click", () => {
+    fontPreference =
+      control.dataset.designFontOption === "system" ? "system" : "plex";
+    try {
+      localStorage.setItem("sg-design-font", fontPreference);
+    } catch {
+      /* Preference still works for this page. */
+    }
+    applyDesignComparison();
+  }),
+);
+darkControls.forEach((control) =>
+  control.addEventListener("click", () => {
+    darkPreference =
+      control.dataset.designDarkOption === "navy" ? "navy" : "graphite";
+    try {
+      localStorage.setItem("sg-design-dark", darkPreference);
+    } catch {
+      /* Preference still works for this page. */
+    }
+    applyDesignComparison();
   }),
 );
 
