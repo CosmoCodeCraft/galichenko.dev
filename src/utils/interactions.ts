@@ -27,23 +27,6 @@ function applyTheme() {
 }
 applyTheme();
 initHeroSystem();
-const homeMain = document.querySelector(".home-main");
-const navigationEntry = performance.getEntriesByType(
-  "navigation",
-)[0] as PerformanceNavigationTiming | undefined;
-if (homeMain && navigationEntry?.type === "reload") {
-  if (location.hash === "#projects")
-    history.replaceState(history.state, "", `${location.pathname}${location.search}`);
-  window.addEventListener(
-    "pageshow",
-    () => {
-      const resetScroll = () => window.scrollTo({ top: 0, behavior: "auto" });
-      resetScroll();
-      requestAnimationFrame(resetScroll);
-    },
-    { once: true },
-  );
-}
 const selectedWork = document.querySelector<HTMLAnchorElement>(
   '.scroll-hint[href="#projects"]',
 );
@@ -76,6 +59,36 @@ selectedWork?.addEventListener("click", (event) => {
       : "smooth",
   });
 });
+document
+  .querySelectorAll<HTMLAnchorElement>(
+    '.footer-back-desktop[href="#top"], .footer-back-mobile[href="#top"]',
+  )
+  .forEach((backToTop) =>
+    backToTop.addEventListener("click", (event) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      )
+        return;
+      event.preventDefault();
+      if (location.hash === "#top")
+        history.replaceState(
+          history.state,
+          "",
+          `${location.pathname}${location.search}`,
+        );
+      window.scrollTo({
+        top: 0,
+        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "auto"
+          : "smooth",
+      });
+    }),
+  );
 document
   .querySelectorAll<HTMLElement>("[data-enhanced]")
   .forEach((el) => (el.hidden = false));

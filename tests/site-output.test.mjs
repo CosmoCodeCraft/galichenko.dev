@@ -76,13 +76,14 @@ test("Home keeps its project anchor and external chrome links semantic", async (
   });
 });
 
-test("Home reload handling preserves direct project links and accepted scroll offset", async () => {
+test("In-page navigation preserves deep links without polluting enhanced URLs", async () => {
   const source = await readFile(
     join(process.cwd(), "src/utils/interactions.ts"),
     "utf8",
   );
-  assert.match(source, /navigationEntry\?\.type === "reload"/);
-  assert.match(source, /location\.hash === "#projects"/);
+  assert.doesNotMatch(source, /PerformanceNavigationTiming|pageshow/);
+  assert.match(source, /footer-back-desktop\[href=/);
+  assert.match(source, /location\.hash === "#top"/);
   assert.match(source, /history\.replaceState/);
   assert.match(source, /getBoundingClientRect\(\)\.top - headerHeight \+ 14/);
   assert.doesNotMatch(source, /scrollRestoration/);
