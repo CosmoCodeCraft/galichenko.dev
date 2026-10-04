@@ -72,7 +72,7 @@ const person = {
     <script is:inline>
       document.documentElement.dataset.designFont = "plex";
       document.documentElement.dataset.designDark = "graphite";
-      document.documentElement.dataset.heroVisual = "trace";
+      document.documentElement.dataset.heroVisual = "live";
       try {
         const p = localStorage.getItem("sg-theme");
         if (p === "light" || p === "dark")
@@ -84,15 +84,18 @@ const person = {
           document.documentElement.dataset.designFont = font;
         if (dark === "navy") document.documentElement.dataset.designDark = dark;
         const heroVisualAliases = {
-          topology: "flow",
-          observe: "trace",
-          resilience: "adaptive",
+          topology: "calm",
+          observe: "live",
+          resilience: "live",
+          flow: "calm",
+          trace: "live",
+          adaptive: "live",
         };
         const resolvedHeroVisual = heroVisualAliases[heroVisual] || heroVisual;
         if (
-          resolvedHeroVisual === "flow" ||
-          resolvedHeroVisual === "trace" ||
-          resolvedHeroVisual === "adaptive"
+          resolvedHeroVisual === "calm" ||
+          resolvedHeroVisual === "live" ||
+          resolvedHeroVisual === "alert"
         ) {
           document.documentElement.dataset.heroVisual = resolvedHeroVisual;
           if (resolvedHeroVisual !== heroVisual)
