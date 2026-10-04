@@ -1,5 +1,4 @@
 ---
-import DesignComparison from "../components/DesignComparison.astro";
 import Header from "../components/Header.astro";
 import { site } from "../config/site";
 import { route, t, type Locale } from "../i18n";
@@ -70,17 +69,10 @@ const person = {
       ))
     }<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script is:inline>
-      document.documentElement.dataset.designFont = "plex";
-      document.documentElement.dataset.designDark = "graphite";
       try {
         const p = localStorage.getItem("sg-theme");
         if (p === "light" || p === "dark")
           document.documentElement.dataset.theme = p;
-        const font = localStorage.getItem("sg-design-font");
-        const dark = localStorage.getItem("sg-design-dark");
-        if (font === "system")
-          document.documentElement.dataset.designFont = font;
-        if (dark === "navy") document.documentElement.dataset.designDark = dark;
       } catch {
         /* Storage may be unavailable. */
       }
@@ -124,8 +116,7 @@ const person = {
           >
         </div>
       </div>
-    </footer><DesignComparison /><script src="../utils/interactions.ts"
-    ></script><!-- Cloudflare Web Analytics -->
+    </footer><script src="../utils/interactions.ts"></script><!-- Cloudflare Web Analytics -->
     <script
       is:inline
       type="module"

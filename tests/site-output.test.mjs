@@ -265,42 +265,23 @@ test("production output self-hosts the required IBM Plex subsets", async () => {
   );
 });
 
-test("temporary design comparison controls expose independent defaults", async () => {
+test("production output uses permanent Plex and Navy design defaults", async () => {
   const $ = await page("/");
-  const panel = $("[data-design-comparison]");
-  assert.equal(panel.length, 1);
-  assert.deepEqual(
-    panel
-      .find("[data-design-font-option]")
-      .map((_, element) => ({
-        value: $(element).attr("data-design-font-option"),
-        pressed: $(element).attr("aria-pressed"),
-      }))
-      .get(),
-    [
-      { value: "plex", pressed: "true" },
-      { value: "system", pressed: "false" },
-    ],
-  );
-  assert.deepEqual(
-    panel
-      .find("[data-design-dark-option]")
-      .map((_, element) => ({
-        value: $(element).attr("data-design-dark-option"),
-        pressed: $(element).attr("aria-pressed"),
-      }))
-      .get(),
-    [
-      { value: "graphite", pressed: "true" },
-      { value: "navy", pressed: "false" },
-    ],
-  );
-  assert.equal(panel.find("[data-hero-visual-option]").length, 0);
+  assert.equal($("[data-design-comparison]").length, 0);
+  assert.equal($("[data-design-font-option]").length, 0);
+  assert.equal($("[data-design-dark-option]").length, 0);
   const inlineScripts = $("script:not([src])")
     .map((_, element) => $(element).text())
     .get()
     .join("\n");
-  assert.match(inlineScripts, /sg-design-font/);
-  assert.match(inlineScripts, /sg-design-dark/);
+  assert.doesNotMatch(inlineScripts, /sg-design-font/);
+  assert.doesNotMatch(inlineScripts, /sg-design-dark/);
   assert.doesNotMatch(inlineScripts, /sg-hero-visual/);
+  const styles = await readFile(
+    join(process.cwd(), "src/styles/global.css"),
+    "utf8",
+  );
+  assert.match(styles, /"IBM Plex Sans"/);
+  assert.match(styles, /--background: #111a27/);
+  assert.doesNotMatch(styles, /data-design-font|data-design-dark/);
 });
