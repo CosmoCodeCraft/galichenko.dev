@@ -76,6 +76,18 @@ test("Home keeps its project anchor and external chrome links semantic", async (
   });
 });
 
+test("Home reload handling preserves direct project links and accepted scroll offset", async () => {
+  const source = await readFile(
+    join(process.cwd(), "src/utils/interactions.ts"),
+    "utf8",
+  );
+  assert.match(source, /navigationEntry\?\.type === "reload"/);
+  assert.match(source, /location\.hash === "#projects"/);
+  assert.match(source, /history\.replaceState/);
+  assert.match(source, /getBoundingClientRect\(\)\.top - headerHeight \+ 14/);
+  assert.doesNotMatch(source, /scrollRestoration/);
+});
+
 test("Hero exposes only its two production controls and route metadata", async () => {
   const $ = await page("/");
   assert.equal($(".hero-visual").attr("aria-hidden"), undefined);

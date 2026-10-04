@@ -54,6 +54,23 @@ function applyDesignComparison() {
 applyTheme();
 applyDesignComparison();
 initHeroSystem();
+const homeMain = document.querySelector(".home-main");
+const navigationEntry = performance.getEntriesByType(
+  "navigation",
+)[0] as PerformanceNavigationTiming | undefined;
+if (homeMain && navigationEntry?.type === "reload") {
+  if (location.hash === "#projects")
+    history.replaceState(history.state, "", `${location.pathname}${location.search}`);
+  window.addEventListener(
+    "pageshow",
+    () => {
+      const resetScroll = () => window.scrollTo({ top: 0, behavior: "auto" });
+      resetScroll();
+      requestAnimationFrame(resetScroll);
+    },
+    { once: true },
+  );
+}
 const selectedWork = document.querySelector<HTMLAnchorElement>(
   '.scroll-hint[href="#projects"]',
 );
