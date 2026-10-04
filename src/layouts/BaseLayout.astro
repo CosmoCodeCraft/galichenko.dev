@@ -110,11 +110,11 @@ const person = {
         <div class="footer-identity">
           <strong>{site.name}</strong><span>{d.footerRole}</span>
         </div><nav class="footer-links" aria-label={d.nav}>
-          <a href={site.github}>{d.github}</a><a href={`mailto:${site.email}`}
-            >{d.email}</a
-          ><a href={route(locale, "cv")}>{d.cv}</a><a
-            href="#top"
-            class="footer-back-desktop"
+          <a href={site.github} target="_blank" rel="noopener noreferrer"
+            >{d.github}</a
+          ><a href={`mailto:${site.email}`}>{d.email}</a><a
+            href={route(locale, "cv")}>{d.cv}</a
+          ><a href="#top" class="footer-back-desktop"
             >{d.backTop} <span aria-hidden="true">↑</span></a
           >
         </nav><div class="footer-closing">

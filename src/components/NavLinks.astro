@@ -32,7 +32,12 @@ const d = t(locale);
 {
   group !== "primary" && (
     <div class="nav-social">
-      <a class="nav-action-link" href={site.github}>
+      <a
+        class="nav-action-link"
+        href={site.github}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <NavIcon name="github" />
         <span>{d.github}</span>
       </a>

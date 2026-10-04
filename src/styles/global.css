@@ -434,7 +434,12 @@ a[aria-current="page"] {
   padding: 8px 0;
 }
 .scroll-hint span {
+  display: inline-block;
   margin-left: 16px;
+  transition: transform var(--motion-fast) var(--motion-ease-out);
+}
+.scroll-hint:is(:hover, :focus-visible) span {
+  transform: translateY(4px);
 }
 .hero-visual {
   aspect-ratio: 1.12;
@@ -450,6 +455,7 @@ a[aria-current="page"] {
   --hero-system-telemetry: #a6b5c6;
   --hero-system-active: #2f6fda;
   --hero-system-active-soft: #d9e7fa;
+  --hero-system-aux-active: #6f8fb5;
   --hero-system-alert: #b6424b;
   --hero-system-primary-opacity: 0.88;
   --hero-system-secondary-opacity: 0.72;
@@ -469,6 +475,11 @@ a[aria-current="page"] {
     in srgb,
     var(--accent) 22%,
     var(--background)
+  );
+  --hero-system-aux-active: color-mix(
+    in srgb,
+    var(--hero-system-active) 45%,
+    var(--hero-system-node)
   );
   --hero-system-alert: #d86a72;
   --hero-system-primary-opacity: 0.68;
@@ -490,6 +501,11 @@ a[aria-current="page"] {
       in srgb,
       var(--accent) 22%,
       var(--background)
+    );
+    --hero-system-aux-active: color-mix(
+      in srgb,
+      var(--hero-system-active) 45%,
+      var(--hero-system-node)
     );
     --hero-system-alert: #d86a72;
     --hero-system-primary-opacity: 0.68;
@@ -591,20 +607,23 @@ a[aria-current="page"] {
   stroke-width: 1;
 }
 .hero-system-pulse-aux .hero-system-pulse-tail {
-  stroke: var(--hero-system-line-primary);
+  stroke: var(--hero-system-aux-active);
   stroke-width: 0.8;
-  opacity: 0.55;
+  opacity: 0.72;
 }
 .hero-system-pulse-aux .hero-system-pulse-core {
-  fill: var(--hero-system-line-primary);
+  fill: var(--hero-system-aux-active);
   stroke-width: 0.35;
-  opacity: 0.68;
+  opacity: 0.82;
 }
 .hero-system-pulse-alert .hero-system-pulse-glow,
-.hero-system-pulse-alert .hero-system-pulse-core {
+.hero-system-pulse-alert .hero-system-pulse-core,
+.hero-system-pulse-feedback .hero-system-pulse-glow,
+.hero-system-pulse-feedback .hero-system-pulse-core {
   fill: var(--hero-system-alert);
 }
-.hero-system-pulse-alert .hero-system-pulse-tail {
+.hero-system-pulse-alert .hero-system-pulse-tail,
+.hero-system-pulse-feedback .hero-system-pulse-tail {
   stroke: var(--hero-system-alert);
 }
 .hero-system-reaction,
@@ -689,17 +708,24 @@ a[aria-current="page"] {
 }
 .hero-system-aux-reaction {
   fill: var(--background);
-  stroke: var(--hero-system-line-primary);
+  stroke: var(--hero-system-aux-active);
   stroke-width: 0.8;
   opacity: 0;
   vector-effect: non-scaling-stroke;
 }
-.hero-system-telemetry-marker {
+[data-hero-marker] {
   fill: var(--hero-system-active);
   opacity: 0;
 }
-.hero-system-telemetry-marker--alert {
+[data-hero-alert-marker] {
   fill: var(--hero-system-alert);
+  opacity: 0;
+}
+[data-hero-marker].is-visible {
+  opacity: 0.72;
+}
+[data-hero-alert-marker].is-visible {
+  opacity: 0.82;
 }
 .hero-system-trace-span {
   fill: none;
@@ -712,463 +738,165 @@ a[aria-current="page"] {
   vector-effect: non-scaling-stroke;
 }
 .hero-system-trace-response {
-  opacity: 0;
+  opacity: 1;
 }
-.hero-system-trace-connector {
-  fill: none;
-  stroke: var(--hero-system-telemetry);
-  stroke-width: 0.8;
-  stroke-dasharray: 1 2.5;
-  opacity: 0.5;
-  vector-effect: non-scaling-stroke;
+.hero-system-trace-span.is-visible {
+  stroke-dashoffset: 0;
+  opacity: 0.68;
 }
-.hero-system-pulse--source-router {
-  offset-path: path("M20 150Q62 141 105 145");
+.hero-system-source-reaction.is-active {
+  animation: hero-system-source-active 900ms ease-out;
 }
-.hero-system-pulse--router-a {
-  offset-path: path("M105 145Q151 104 205 72");
+.hero-system-router-reaction.is-active {
+  animation: hero-system-router-active 800ms ease-out;
 }
-.hero-system-pulse--router-b {
-  offset-path: path("M105 145Q151 186 205 218");
+.hero-system-service-reaction.is-active {
+  animation: hero-system-service-active 980ms ease-out;
 }
-.hero-system-pulse--a-state {
-  offset-path: path("M205 72Q280 85 370 148");
+.hero-system-state-reaction.is-active {
+  animation: hero-system-state-active 1400ms ease-out;
 }
-.hero-system-pulse--b-state {
-  offset-path: path("M205 218Q285 205 370 148");
+.hero-system-aux-reaction.is-active {
+  animation: hero-system-aux-active 560ms ease-out;
 }
-.hero-system-pulse--a-c {
-  offset-path: path("M205 72L286 118");
+.hero-system-observe-reaction.is-active {
+  animation: hero-system-observe-active 1800ms ease-out;
 }
-.hero-system-pulse--b-c {
-  offset-path: path("M205 218L286 118");
+.hero-system-observe-reaction.is-active .hero-system-observe-sweep {
+  animation: hero-system-observe-sweep-active 1800ms ease-out;
 }
-.hero-system-pulse--router-observe {
-  offset-path: path("M105 145Q215 220 336 270");
+.hero-system-fault-reaction.is-active {
+  animation: hero-system-fault-active 1800ms ease-out;
 }
-.hero-system-pulse--a-observe {
-  offset-path: path("M205 72Q260 190 336 270");
+.hero-system-trace-span.is-visible.is-drawing {
+  animation: hero-system-trace-draw 650ms ease-out forwards;
 }
-.hero-system-pulse--b-observe {
-  offset-path: path("M205 218Q260 292 336 270");
+.hero-system-trace-response.is-fading,
+.hero-system-telemetry-memory.is-fading {
+  animation: hero-system-trace-fade 800ms ease-out forwards;
 }
-.hero-system-pulse--state-observe {
-  offset-path: path("M370 148Q390 215 336 270");
-}
-.hero-system-pulse--source-aux-one {
-  offset-path: path("M20 150L124 26");
-}
-.hero-system-pulse--aux-one-a {
-  offset-path: path("M124 26L205 72");
-}
-.hero-system-pulse--a-aux-two {
-  offset-path: path("M205 72L292 27");
-}
-.hero-system-pulse--aux-two-three {
-  offset-path: path("M292 27L424 84");
-}
-.hero-system-pulse-primary {
-  animation: hero-system-pulse-90 90s cubic-bezier(0.28, 0.05, 0.3, 1)
-    infinite;
-  animation-delay: var(--event-delay);
-}
-.hero-system-pulse-primary:is(.hero-system-pulse--a-state, .hero-system-pulse--b-state) {
-  animation-name: hero-system-pulse-long-90;
-}
-.hero-system-pulse-primary:is(.hero-system-pulse--a-c, .hero-system-pulse--b-c) {
-  animation-name: hero-system-pulse-short-90;
-}
-.hero-system-pulse-telemetry {
-  animation: hero-system-telemetry-90 90s cubic-bezier(0.3, 0.08, 0.35, 1)
-    infinite;
-  animation-delay: var(--event-delay);
-}
-.hero-system-pulse-aux {
-  animation: hero-system-aux-pulse-90 90s cubic-bezier(0.3, 0.08, 0.35, 1)
-    infinite;
-  animation-delay: var(--event-delay);
-}
-.hero-system-source-reaction {
-  animation: hero-system-source-90 90s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-.hero-system-router-reaction {
-  animation: hero-system-router-90 90s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-.hero-system-service-reaction {
-  animation: hero-system-service-90 90s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-.hero-system-state-reaction {
-  animation: hero-system-state-90 90s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-.hero-system-aux-reaction {
-  animation: hero-system-aux-reaction-90 90s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-.hero-system-telemetry-marker {
-  animation: hero-system-marker-one-90 90s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-.hero-system-telemetry-marker--two {
-  animation-name: hero-system-marker-two-90;
-}
-.hero-system-telemetry-marker--three {
-  animation-name: hero-system-marker-three-90;
-}
-.hero-system-telemetry-marker--alert {
-  animation-name: hero-system-alert-marker-90;
-}
-.hero-system-observe-reaction {
-  animation: hero-system-observe-90 90s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-.hero-system-observe-sweep {
-  animation: hero-system-observe-sweep-90 90s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-.hero-system-trace-response {
-  animation: hero-system-trace-group-90 90s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-.hero-system-trace-span {
-  animation: hero-system-trace-draw-90 90s ease-out infinite;
-  animation-delay: var(--trace-delay);
-}
-.hero-system-fault-reaction {
-  animation: hero-system-fault-90 90s ease-out infinite;
-  animation-delay: var(--event-delay);
-}
-@keyframes hero-system-pulse-90 {
-  0% {
-    offset-distance: 0%;
-    opacity: 0;
-  }
-  0.14% {
-    opacity: 0.24;
-  }
-  0.32% {
-    opacity: 0.88;
-  }
-  1.667% {
-    offset-distance: 100%;
-    opacity: 1;
-  }
-  1.78% {
-    offset-distance: 100%;
-    opacity: 0.5;
-  }
-  1.9%,
-  100% {
-    offset-distance: 100%;
-    opacity: 0;
-  }
-}
-@keyframes hero-system-pulse-long-90 {
-  0% {
-    offset-distance: 0%;
-    opacity: 0;
-  }
-  0.14% {
-    opacity: 0.24;
-  }
-  0.32% {
-    opacity: 0.88;
-  }
-  2% {
-    offset-distance: 100%;
-    opacity: 1;
-  }
-  2.12% {
-    offset-distance: 100%;
-    opacity: 0.5;
-  }
-  2.24%,
-  100% {
-    offset-distance: 100%;
-    opacity: 0;
-  }
-}
-@keyframes hero-system-pulse-short-90 {
-  0% {
-    offset-distance: 0%;
-    opacity: 0;
-  }
-  0.14% {
-    opacity: 0.24;
-  }
-  0.32% {
-    opacity: 0.88;
-  }
-  1.444% {
-    offset-distance: 100%;
-    opacity: 1;
-  }
-  1.56% {
-    offset-distance: 100%;
-    opacity: 0.5;
-  }
-  1.68%,
-  100% {
-    offset-distance: 100%;
-    opacity: 0;
-  }
-}
-@keyframes hero-system-telemetry-90 {
-  0% {
-    offset-distance: 0%;
-    opacity: 0;
-  }
-  0.14% {
-    opacity: 0.2;
-  }
-  0.3% {
-    opacity: 0.72;
-  }
-  1.444% {
-    offset-distance: 100%;
-    opacity: 0.82;
-  }
-  1.62%,
-  100% {
-    offset-distance: 100%;
-    opacity: 0;
-  }
-}
-@keyframes hero-system-aux-pulse-90 {
-  0% {
-    offset-distance: 0%;
-    opacity: 0;
-  }
-  0.2% {
-    opacity: 0.18;
-  }
-  0.4% {
-    opacity: 0.5;
-  }
-  1.667% {
-    offset-distance: 100%;
-    opacity: 0.56;
-  }
-  1.85%,
-  100% {
-    offset-distance: 100%;
-    opacity: 0;
-  }
-}
-@keyframes hero-system-source-90 {
+@keyframes hero-system-source-active {
   0% {
     opacity: 0;
     transform: scale(0.76);
   }
-  0.15% {
-    opacity: 0.34;
-  }
-  0.4% {
+  28% {
     opacity: 0.84;
     transform: scale(1);
   }
-  0.7% {
+  66% {
     opacity: 0.56;
     transform: scale(1.16);
   }
-  1%,
   100% {
     opacity: 0;
     transform: scale(1.28);
   }
 }
-@keyframes hero-system-router-90 {
-  0% {
+@keyframes hero-system-router-active {
+  0%,
+  100% {
     opacity: 0;
   }
-  0.15% {
-    opacity: 0.24;
-  }
-  0.35%,
-  0.62% {
+  25%,
+  68% {
     opacity: 0.84;
   }
-  0.88%,
+}
+@keyframes hero-system-service-active {
+  0%,
   100% {
     opacity: 0;
   }
-}
-@keyframes hero-system-service-90 {
-  0% {
-    opacity: 0;
-  }
-  0.15% {
-    opacity: 0.22;
-  }
-  0.4%,
-  0.72% {
+  28%,
+  68% {
     opacity: 0.82;
   }
-  1.1%,
+}
+@keyframes hero-system-state-active {
+  0%,
   100% {
     opacity: 0;
   }
-}
-@keyframes hero-system-state-90 {
-  0% {
-    opacity: 0;
-  }
-  0.15% {
-    opacity: 0.22;
-  }
-  0.42%,
-  1.02% {
+  22%,
+  72% {
     opacity: 0.82;
   }
-  1.55%,
+}
+@keyframes hero-system-aux-active {
+  0%,
   100% {
     opacity: 0;
   }
+  30%,
+  68% {
+    opacity: 0.58;
+  }
 }
-@keyframes hero-system-aux-reaction-90 {
-  0% {
-    opacity: 0;
-  }
-  0.14%,
-  0.38% {
-    opacity: 0.5;
-  }
-  0.62%,
+@keyframes hero-system-observe-active {
+  0%,
   100% {
     opacity: 0;
   }
-}
-@keyframes hero-system-marker-one-90 {
-  0% {
-    opacity: 0;
-  }
-  0.16%,
-  8.2% {
+  22%,
+  74% {
     opacity: 0.72;
   }
-  8.8%,
-  100% {
-    opacity: 0;
-  }
 }
-@keyframes hero-system-marker-two-90 {
-  0% {
-    opacity: 0;
-  }
-  0.16%,
-  6.1% {
-    opacity: 0.72;
-  }
-  6.7%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes hero-system-marker-three-90 {
-  0% {
-    opacity: 0;
-  }
-  0.16%,
-  4% {
-    opacity: 0.72;
-  }
-  4.6%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes hero-system-alert-marker-90 {
-  0% {
-    opacity: 0;
-  }
-  0.15%,
-  1.5% {
-    opacity: 0.82;
-  }
-  2.2%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes hero-system-observe-90 {
-  0% {
-    opacity: 0;
-  }
-  0.2% {
-    opacity: 0.22;
-  }
-  0.55%,
-  1.5% {
-    opacity: 0.72;
-  }
-  2.3%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes hero-system-observe-sweep-90 {
+@keyframes hero-system-observe-sweep-active {
   0% {
     stroke-dashoffset: 1;
   }
-  1.55%,
+  72%,
   100% {
     stroke-dashoffset: 0;
   }
 }
-@keyframes hero-system-trace-group-90 {
-  0% {
-    opacity: 0;
-  }
-  0.18%,
-  8.35% {
-    opacity: 1;
-  }
-  9.1%,
+@keyframes hero-system-fault-active {
+  0%,
   100% {
     opacity: 0;
   }
+  24%,
+  70% {
+    opacity: 0.78;
+  }
 }
-@keyframes hero-system-trace-draw-90 {
+@keyframes hero-system-trace-draw {
   0% {
     stroke-dashoffset: 1;
     opacity: 0;
   }
-  0.16% {
+  20% {
     opacity: 0.52;
   }
-  0.78%,
   100% {
     stroke-dashoffset: 0;
     opacity: 0.68;
   }
 }
-@keyframes hero-system-fault-90 {
-  0% {
-    opacity: 0;
+@keyframes hero-system-trace-fade {
+  from {
+    opacity: 1;
   }
-  0.18% {
-    opacity: 0.3;
-  }
-  0.45%,
-  1.25% {
-    opacity: 0.78;
-  }
-  1.9%,
-  100% {
+  to {
     opacity: 0;
   }
 }
-
 @media (prefers-reduced-motion: reduce) {
+  .scroll-hint span {
+    transition: none;
+  }
+  .scroll-hint:is(:hover, :focus-visible) span {
+    transform: none;
+  }
   .hero-system-pulse,
   .hero-system-reaction,
   .hero-system-observe-reaction,
   .hero-system-fault-reaction,
   .hero-system-aux-reaction,
-  .hero-system-telemetry-marker,
+  [data-hero-marker],
+  [data-hero-alert-marker],
   .hero-system-trace-response,
   .hero-system-trace-span {
     animation: none !important;
@@ -1180,6 +908,9 @@ a[aria-current="page"] {
 }
 .home-projects {
   background: var(--surface);
+}
+.home-projects-target {
+  scroll-margin-top: calc(var(--header-height) + 24px);
 }
 .home-research {
   padding-block: 96px;

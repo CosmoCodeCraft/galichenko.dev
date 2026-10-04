@@ -60,6 +60,22 @@ test("Home uses the requested project and research selections", async () => {
   );
 });
 
+test("Home keeps its project anchor and external chrome links semantic", async () => {
+  const $ = await page("/");
+  const projectsTarget = $("#projects");
+  assert.equal(projectsTarget.length, 1);
+  assert.equal(projectsTarget.hasClass("home-projects-target"), true);
+  assert.equal(projectsTarget.closest("section").attr("id"), undefined);
+  assert.equal($('.scroll-hint[href="#projects"]').length, 1);
+
+  const githubLinks = $('a[href="https://github.com/CosmoCodeCraft"]');
+  assert.equal(githubLinks.length, 3);
+  githubLinks.each((_, element) => {
+    assert.equal($(element).attr("target"), "_blank");
+    assert.equal($(element).attr("rel"), "noopener noreferrer");
+  });
+});
+
 test("Projects archive retains City Farm's role and project context", async () => {
   const $ = await page("/projects/");
   const cityFarmEntry = $(".project-archive-entry")

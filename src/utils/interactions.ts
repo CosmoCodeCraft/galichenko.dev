@@ -1,3 +1,5 @@
+import { initHeroSystem } from "./hero-system";
+
 type ThemePreference = "system" | "light" | "dark";
 type FontPreference = "plex" | "system";
 type DarkPreference = "graphite" | "navy";
@@ -51,6 +53,7 @@ function applyDesignComparison() {
 }
 applyTheme();
 applyDesignComparison();
+initHeroSystem();
 document
   .querySelectorAll<HTMLElement>("[data-enhanced]")
   .forEach((el) => (el.hidden = false));
