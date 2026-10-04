@@ -126,6 +126,43 @@ test("Projects archive retains City Farm's role and project context", async () =
   assert.equal($(".project-archive-entry .project-card-context").length, 1);
 });
 
+test("galichenko.dev and CV emit completed release content", async () => {
+  const project = await page("/projects/galichenko-dev/");
+  const projectText = project("main").text();
+  assert.match(projectText, /Completed/);
+  assert.match(projectText, /Sep 2026\s*[—–-]\s*Oct 2026/);
+  assert.doesNotMatch(projectText, /Project and research detail interface/);
+  assert.equal(
+    project(
+      'img[alt="Projects and Research archive interfaces with the citation tool for structured publication content"]',
+    ).length,
+    1,
+  );
+
+  const cv = await page("/cv/");
+  assert.equal(cv('meta[name="robots"]').length, 0);
+  assert.equal(
+    cv('a.cv-download-control[href="/files/sergey-galichenko-resume.pdf"][download]')
+      .text()
+      .trim(),
+    "Download PDF",
+  );
+  assert.doesNotMatch(cv("main").text(), /PDF coming soon/);
+  const portfolio = cv(".cv-project")
+    .filter((_, element) => cv(element).find("h3").text().trim() === "galichenko.dev")
+    .first();
+  assert.match(portfolio.text(), /Sep 2026\s*[—–-]\s*Oct 2026/);
+  const sird = cv(".cv-project")
+    .filter((_, element) => cv(element).find("h3").text().trim().startsWith("SIRD"))
+    .first();
+  assert.match(sird.text(), /Present/);
+
+  const resume = await readFile(
+    join(process.cwd(), "dist/files/sergey-galichenko-resume.pdf"),
+  );
+  assert.equal(resume.subarray(0, 5).toString(), "%PDF-");
+});
+
 test("About separates professional experience from project leadership", async () => {
   const $ = await page("/about/");
   assert.deepEqual(

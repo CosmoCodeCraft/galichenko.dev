@@ -1,6 +1,8 @@
 # galichenko.dev
 
-Static Astro + strict TypeScript portfolio. English Home, collection archives, publication details, project case studies and About are content-driven; CV remains a temporary route. GitHub Pages deployment is handled by the repository workflow.
+galichenko.dev is a static Astro + strict TypeScript engineering portfolio and research archive. Projects, research publications, Notes, About and CV are content-driven; GitHub Actions validates and deploys the site to GitHub Pages at sergeygalichenko.dev.
+
+Live: https://sergeygalichenko.dev
 
 ## Local development
 
@@ -48,9 +50,7 @@ docs/deployment.md       GitHub Pages deployment guide
 
 ## Content boundaries
 
-Project covers and the first media on each project case study use supplied real media; later case-study positions remain labelled neutral placeholders until further photographs, diagrams and results are supplied. SIRD technologies and unknown dates/venues are not invented. The UralCon paper remains accepted, not published. Russian UI is ready but its pages are disabled until translations are supplied. Substantive project, publication and About pages are indexed; the unfinished CV route remains noindex.
-
-CV, Russian content, remaining case-study media and hero animation remain outside the current scope.
+English public content is enabled; Russian UI remains disabled until translations are supplied. The CV is a production route with a downloadable resume, and the Home Hero includes a bounded client-side interaction model. The first standalone galichenko.dev version is complete, while project, publication and Notes archives will continue to grow. SIRD technologies and unknown dates or venues are not invented, and the UralCon paper remains accepted rather than published. Remaining media placeholders belong only to case studies that still lack supplied evidence.
 
 In this Codex workspace, Node/pnpm are bundled rather than on the shell PATH. To use the existing installation:
 

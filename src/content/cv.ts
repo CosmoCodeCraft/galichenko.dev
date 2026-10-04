@@ -65,7 +65,7 @@ export const cvContent: Partial<Record<Locale, CvContent>> = {
       "Resume of Sergey Galichenko, a Software Engineering MSc student focused on DevOps and systems integration, with experience in Linux, Docker, service networking, PostgreSQL and infrastructure automation.",
     title: "Resume",
     professionalTitle: "DevOps & Systems Integration Engineer",
-    pdfPath: undefined,
+    pdfPath: "/files/sergey-galichenko-resume.pdf",
     pdfLabel: "Download PDF",
     pdfUnavailableLabel: "PDF coming soon",
     summaryHeading: "Summary",
@@ -151,10 +151,10 @@ export const cvContent: Partial<Record<Locale, CvContent>> = {
       {
         title: "galichenko.dev",
         context: "Software Engineering · Personal project",
-        period: { start: "2026-09", present: true },
+        period: { start: "2026-09", end: "2026-10" },
         bullets: [
-          "Designed and deployed a static Astro / TypeScript portfolio and research archive with a custom domain and GitHub Pages hosting.",
-          "Automated validation and deployment through GitHub Actions, including linting, type checking and static build before publication.",
+          "Designed and deployed a static Astro / TypeScript engineering portfolio and research archive with typed content, a custom domain and GitHub Pages delivery.",
+          "Built automated validation/deployment and a bounded client-side system interaction model with explicit concurrency, admission-control and recovery behavior.",
         ],
         technologies: ["Astro", "TypeScript", "GitHub Actions", "GitHub Pages"],
         links: [

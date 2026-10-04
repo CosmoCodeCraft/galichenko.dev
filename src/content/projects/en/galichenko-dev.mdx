@@ -6,9 +6,9 @@
   "translationKey": "galichenko-dev",
   "title": "Personal Portfolio & Research Archive",
   "shortTitle": "Personal Portfolio & Research Archive",
-  "summary": "A static personal website designed as a maintainable, structured archive for engineering projects, research publications and technical notes.",
-  "detailSummary": "A static personal website designed as a maintainable, structured archive for engineering projects, research publications and technical notes.",
-  "detailStatus": "Ongoing",
+  "summary": "A static engineering portfolio and research archive built around structured evidence, maintainable content and fast static delivery.",
+  "detailSummary": "A static engineering portfolio and research archive designed around distinct reader needs, typed content, reproducible delivery and progressively enhanced interaction.",
+  "detailStatus": "Completed",
   "detailRole": "Product & Software Engineering",
   "detailStack":
     [
@@ -18,11 +18,11 @@
       "GitHub Actions",
       "GitHub Pages",
     ],
-  "outcome": "Deployed on GitHub Pages with a custom domain, typed content collections, publication detail pages, research-resource handling and automated deployment.",
-  "outcomeLabel": "currentState",
-  "status": "ongoing",
+  "outcome": "A deployed engineering portfolio and research archive with a custom domain, typed content collections, project and publication case studies, deterministic citation tooling, bounded client-side interaction, automated validation and GitHub Pages deployment.",
+  "outcomeLabel": "outcome",
+  "status": "completed",
   "startDate": "2026-09",
-  "present": true,
+  "endDate": "2026-10",
   "featured": false,
   "archiveOrder": 2,
   "cardRole": "Software Engineering",
@@ -39,14 +39,14 @@
   "cover":
     {
       "src": "../../../assets/projects/galichenko-dev/cover.webp",
-      "alt": "Desktop and mobile mockups of the portfolio interface in light and dark themes",
+      "alt": "Light desktop and dark mobile views of sergeygalichenko.dev showing the Home interface and interactive system topology",
       "cropAllowed": true,
     },
   "detailHero":
     {
       "type": "image",
       "src": "../../../assets/projects/galichenko-dev/cover.webp",
-      "alt": "Desktop and mobile mockups of the portfolio interface in light and dark themes",
+      "alt": "Light desktop and dark mobile views of sergeygalichenko.dev showing the Home interface and interactive system topology",
     },
   "links":
     [
@@ -60,66 +60,84 @@
     [
       { "label": "Context", "id": "context-and-requirements" },
       {
-        "label": "Information architecture",
-        "id": "information-architecture-and-content-model",
+        "label": "Content architecture",
+        "id": "content-architecture",
       },
       {
         "label": "Technical architecture",
-        "id": "static-technical-architecture",
+        "id": "static-system-architecture",
       },
+      { "label": "Interactive system", "id": "a-small-resilient-system-model" },
       { "label": "Research tooling", "id": "research-and-publication-tooling" },
-      {
-        "label": "Validation and deployment",
-        "id": "validation-deployment-and-implementation-workflow",
-      },
-      { "label": "Current scope", "id": "current-scope-and-evidence" },
+      { "label": "Validation", "id": "validation-and-delivery" },
+      { "label": "Outcome", "id": "outcome" },
     ],
 }
 ---
 
 import ProjectMedia from "../../../components/project/ProjectMedia.astro";
+import contentArchitecture from "../../../assets/projects/galichenko-dev/media/content-architecture.webp";
 
 ## Context and requirements
 
-The project started from a simple requirement — create a personal website that could be shared with employers, faculty and colleagues.
+The project started with a broader question than how to build a personal website: what information should different readers be able to find, how quickly should they find it, and what evidence should remain available when they need more depth?
 
-Before implementation, I defined the readers and the depth of information each would need:
+I treated hiring managers, technical leads, researchers, faculty and engineering colleagues as distinct readers. That led to an identity-first Home page, selected work as the primary evidence, separate Projects, Research and Notes archives, and detailed pages for engineering and scholarly material.
 
-- a hiring manager scanning projects quickly;
-- a technical lead evaluating engineering depth;
-- a faculty member looking for research publications;
-- a colleague following a direct link to a specific project or publication.
+This requirements-first approach shaped the information architecture before implementation rather than allowing the framework or visual design to determine the structure.
 
-That requirement analysis shaped both the page hierarchy and the content model instead of leaving them as consequences of implementation.
+## Content architecture
 
-## Information architecture and content model
+Projects, publications and notes are stored as structured content rather than embedded directly into page components. Astro Content Collections and TypeScript schemas validate their metadata and allow new records to reuse the same archive, detail-page, linking and metadata infrastructure.
 
-Home provides a quick first impression; Projects, Research and Notes provide browsable archives; and detail pages carry the engineering or scholarly depth. Project pages record the problem, contribution, decisions and evidence, while publication pages expose abstracts, bibliographic metadata, identifiers and available resources.
+Project pages focus on the problem, role, engineering decisions, implementation and evidence. Publication records carry richer scholarly metadata including authorship, status, venue, identifiers, abstracts, keywords, related projects and available resources.
 
-Projects, publications and notes are stored as structured content. Typed Content Collection schemas define the metadata for each type, so new records can normally be added without changing page components. The routing and content structure also anticipate future localization, although English remains the only enabled public language.
+The structure also anticipates localization without requiring a second implementation of the site. English is the current public language.
 
-<ProjectMedia label="Project and research detail interface" role="content" />
+<ProjectMedia
+  src={contentArchitecture}
+  alt="Projects and Research archive interfaces with the citation tool for structured publication content"
+  caption="Projects, research records and citation tooling are generated from structured content."
+  role="content"
+  wide={true}
+/>
 
-## Static technical architecture
+## Static system architecture
 
-The site uses Astro and TypeScript to generate static pages. That architecture fits a public archive whose content changes through the repository and does not need a runtime backend, database or client-side application shell.
+Astro and TypeScript generate the site as static output. GitHub Pages serves that output on the custom `sergeygalichenko.dev` domain.
 
-Content and presentation remain separate, but the source of truth stays in typed files rather than a CMS. This avoids authentication, hosting and operational infrastructure that the current project does not require.
+The architecture deliberately avoids a runtime application backend, database, CMS and user-account system because none is required for the current product. Keeping the runtime surface small reduces operational complexity and attack surface while making the public site inexpensive to host and straightforward to reproduce.
+
+Client-side code is reserved for progressive enhancements such as navigation behavior, theme handling, citation interaction and the interactive system topology on the Home page.
+
+## A small resilient system model
+
+The Home-page topology began as a visual counterweight to the identity block and developed into a bounded client-side system model.
+
+Normal traffic is routed across processing paths; repeated interaction introduces bounded concurrency, admission control and backpressure. Sustained deliberate load can isolate one processing path, trigger a single failover, and later return the path only after a health probe. Observability activity is aggregated separately and can expose the trace of the latest completed transaction.
+
+The model is intentionally local and finite: it performs no network requests, keeps queues and transient SVG work bounded, and cannot produce a total simulated outage. It is an interaction detail rather than a claim that the portfolio itself requires distributed infrastructure.
 
 ## Research and publication tooling
 
-Publication records carry richer scholarly metadata than project or note entries: titles, authors, status, source and conference details, abstracts, keywords, eLIBRARY and EDN identifiers, related projects, and links to local or external full text where available. The same record powers the archive, detail route, sitemap and citation interface.
+Research content has requirements that ordinary portfolio cards do not. Publication records distinguish bibliographic metadata, local files, publisher resources and scholarly records instead of treating them as interchangeable links.
 
-The “Cite this work” tool deterministically generates GOST R 7.0.5–2008, IEEE, APA 7 and BibTeX citations from that stored metadata. It does not depend on runtime requests to external scholarly services. Local PDFs, publisher pages, external full text and scholarly records remain distinct resource types rather than interchangeable links.
+The citation tool generates GOST R 7.0.5–2008, IEEE, APA 7 and BibTeX representations deterministically from the stored publication metadata. No external scholarly API is required at runtime.
 
-## Validation, deployment and implementation workflow
+The same structured records also drive archive pages, detail routes, relationships between projects and publications, metadata and sitemap output.
 
-GitHub Actions validates and builds the site before deploying the static output to GitHub Pages. The deployed site uses the custom `sergeygalichenko.dev` domain, while content, application code and deployment configuration remain version-controlled together.
+## Validation and delivery
 
-Codex is used extensively as an implementation tool. I define the requirements, architecture, content model and acceptance criteria, then review changes and decide what enters the site; AI assistance does not replace human technical ownership.
+The repository keeps application code, content and deployment configuration together. GitHub Actions validates and builds the static output before deployment to GitHub Pages.
 
-## Current scope and evidence
+The development workflow uses linting, strict TypeScript checks, production builds and focused output tests. Separate audit tooling can generate reproducible review bundles containing rendered output, metadata and selected screenshots without changing the production site.
 
-The site intentionally avoids a runtime backend, database, user accounts, CMS and complex analytics infrastructure because none currently solves a project requirement. Localization is architecturally anticipated but not enabled.
+Codex was used extensively as an implementation assistant. I defined the requirements, architecture, interaction behavior and acceptance criteria, reviewed the resulting changes and decided what entered the production branch.
 
-The live site and public repository provide the evidence: typed Content Collections, publication schemas and routes, deterministic citation tooling, publication resources, project case studies, and the automated GitHub Pages workflow.
+## Outcome
+
+The first standalone version was completed in October 2026.
+
+The result is a deployed engineering portfolio and research archive with a custom domain, typed content model, project and publication case studies, deterministic citation tooling, responsive light and dark themes, a bounded interactive Hero system, automated validation and GitHub Pages deployment.
+
+The implementation phase is complete, while the archive itself is expected to keep growing as new engineering work, publications and notes are added.
