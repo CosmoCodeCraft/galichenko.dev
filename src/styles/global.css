@@ -456,28 +456,28 @@ a[aria-current="page"] {
 }
 .hero-system-visual {
   display: block;
-  width: 80%;
+  width: 95%;
   height: auto;
   overflow: visible;
 }
 .hero-system-links,
 .hero-system-telemetry-links,
-.hero-system-active-paths,
-.hero-system-wave-base,
-.hero-system-observe-node {
+.hero-system-observe-node,
+.hero-system-observe-reaction,
+.hero-system-trace-response {
   fill: none;
   vector-effect: non-scaling-stroke;
 }
 .hero-system-links {
   stroke: var(--hero-system-line);
   stroke-width: 1;
-  opacity: 0.72;
+  opacity: 0.62;
 }
 .hero-system-telemetry-links {
   stroke: var(--hero-system-muted);
-  stroke-width: 1;
-  stroke-dasharray: 2 4;
-  opacity: 0.48;
+  stroke-width: 0.85;
+  stroke-dasharray: 1.5 5;
+  opacity: 0.36;
 }
 .hero-system-nodes > :not(.hero-system-state-node, .hero-system-observe-node),
 .hero-system-state-node,
@@ -488,201 +488,391 @@ a[aria-current="page"] {
 .hero-system-nodes > circle,
 .hero-system-nodes > rect,
 .hero-system-router,
-.hero-system-state-node circle {
+.hero-system-state-node rect {
   fill: var(--background);
 }
 .hero-system-router {
   stroke-width: 1.15;
 }
-.hero-system-state-node circle:last-child {
+.hero-system-state-node rect:last-child {
   fill: var(--hero-system-muted);
-  fill-opacity: 0.24;
+  fill-opacity: 0.2;
 }
 .hero-system-observe-node {
-  opacity: 0.72;
+  opacity: 0.68;
 }
 .hero-system-observe-node path {
-  stroke-width: 1.25;
+  stroke-width: 1.1;
 }
 .hero-system-observe-core {
   fill: var(--hero-system-active);
   stroke: none;
-  opacity: 0.42;
+  opacity: 0.34;
 }
-.hero-system-wave-base {
-  stroke: var(--hero-system-muted);
-  stroke-width: 1;
-  opacity: 0.5;
+.hero-system-pulse {
+  offset-distance: 0%;
+  offset-rotate: auto;
+  opacity: 0;
 }
-.hero-system-flow,
-.hero-system-wave-active {
+.hero-system-pulse-anchor {
+  fill: transparent;
+  stroke: none;
+}
+.hero-system-pulse-glow {
+  fill: var(--hero-system-active);
+  filter: url("#hero-system-soft-glow");
+  opacity: 0.28;
+}
+.hero-system-pulse-tail {
   fill: none;
-  stroke: var(--hero-system-active);
+  stroke: url("#hero-system-tail");
   stroke-linecap: round;
   stroke-width: 1.25;
-  stroke-dasharray: 0.26 1;
-  stroke-dashoffset: 1;
-  opacity: 0;
   vector-effect: non-scaling-stroke;
 }
-.hero-system-node-active {
+.hero-system-pulse-core {
+  fill: var(--hero-system-active);
+  stroke: var(--background);
+  stroke-width: 0.45;
+  vector-effect: non-scaling-stroke;
+}
+.hero-system-pulse-telemetry .hero-system-pulse-glow {
+  opacity: 0.2;
+}
+.hero-system-pulse-telemetry .hero-system-pulse-tail {
+  stroke-width: 1;
+}
+.hero-system-reaction,
+.hero-system-observe-reaction {
   fill: var(--hero-system-active-soft);
   stroke: var(--hero-system-active);
   stroke-width: 1;
   opacity: 0;
   vector-effect: non-scaling-stroke;
 }
-:root:is(
-    [data-hero-visual="topology"],
-    [data-hero-visual="observe"],
-    [data-hero-visual="resilience"]
-  )
-  .hero-system-flow--normal {
-  animation: hero-system-normal-flow 16s linear infinite;
+.hero-system-state-reaction rect:first-child {
+  fill: none;
+  stroke-width: 0.8;
 }
-:root:is(
-    [data-hero-visual="topology"],
-    [data-hero-visual="observe"],
-    [data-hero-visual="resilience"]
-  )
-  .hero-system-node-active--normal {
-  animation: hero-system-normal-node 16s ease-out infinite;
+.hero-system-state-reaction rect:last-child {
+  fill: var(--hero-system-active-soft);
+  stroke-width: 1.1;
 }
-:root[data-hero-visual="observe"] .hero-system-flow--telemetry {
-  animation: hero-system-telemetry-flow 16s linear infinite;
+.hero-system-observe-reaction {
+  stroke-width: 0.85;
 }
-:root[data-hero-visual="observe"] .hero-system-node-active--telemetry {
-  animation: hero-system-telemetry-node 16s ease-out infinite;
+.hero-system-observe-reaction path {
+  stroke-width: 1.25;
 }
-:root[data-hero-visual="observe"] .hero-system-wave-active {
-  animation: hero-system-wave 16s ease-out infinite;
+.hero-system-trace-span {
+  fill: none;
+  stroke: var(--hero-system-active);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  vector-effect: non-scaling-stroke;
 }
-:root[data-hero-visual="resilience"] .hero-system-flow--alternate {
-  animation: hero-system-alternate-flow 16s linear infinite;
+.hero-system-trace-span--1 {
+  --span-delay: 0s;
 }
-:root[data-hero-visual="resilience"] .hero-system-node-active--alternate {
-  animation: hero-system-alternate-node 16s ease-out infinite;
+.hero-system-trace-span--2 {
+  --span-delay: 240ms;
 }
-.hero-system-step-2 {
-  animation-delay: 300ms !important;
+.hero-system-trace-span--3 {
+  --span-delay: 480ms;
 }
-.hero-system-step-3 {
-  animation-delay: 600ms !important;
+.hero-system-pulse--source-router {
+  offset-path: path("M20 150L105 145");
 }
-.hero-system-step-4 {
-  animation-delay: 900ms !important;
+.hero-system-pulse--router-a {
+  offset-path: path("M105 145L205 72");
 }
-@keyframes hero-system-normal-flow {
-  0%,
-  10% {
-    stroke-dashoffset: 1;
+.hero-system-pulse--router-b {
+  offset-path: path("M105 145L205 218");
+}
+.hero-system-pulse--a-state {
+  offset-path: path("M205 72Q280 85 370 148");
+}
+.hero-system-pulse--b-state {
+  offset-path: path("M205 218Q285 205 370 148");
+}
+.hero-system-pulse--a-c {
+  offset-path: path("M205 72L286 118");
+}
+.hero-system-pulse--b-c {
+  offset-path: path("M205 218L286 118");
+}
+.hero-system-pulse--router-observe {
+  offset-path: path("M105 145Q215 220 336 270");
+}
+.hero-system-pulse--a-observe {
+  offset-path: path("M205 72Q260 190 336 270");
+}
+.hero-system-pulse--b-observe {
+  offset-path: path("M205 218Q270 240 336 270");
+}
+.hero-system-pulse--state-observe {
+  offset-path: path("M370 148Q390 215 336 270");
+}
+:root:is([data-hero-visual="flow"], [data-hero-visual="trace"])
+  .hero-system-pulse-primary.hero-system-event--a {
+  animation: hero-system-pulse-18 18s cubic-bezier(0.28, 0.05, 0.3, 1) infinite;
+  animation-delay: var(--event-delay);
+}
+:root:is([data-hero-visual="flow"], [data-hero-visual="trace"])
+  .hero-system-reaction.hero-system-event--a {
+  animation: hero-system-reaction-18 18s ease-out infinite;
+  animation-delay: var(--event-delay);
+}
+:root[data-hero-visual="trace"]
+  .hero-system-pulse-telemetry.hero-system-event--a {
+  animation: hero-system-telemetry-18 18s cubic-bezier(0.3, 0.08, 0.35, 1)
+    infinite;
+  animation-delay: var(--event-delay);
+}
+:root[data-hero-visual="trace"]
+  .hero-system-observe-reaction.hero-system-event--a {
+  animation: hero-system-observe-18 18s ease-out infinite;
+  animation-delay: var(--event-delay);
+}
+:root[data-hero-visual="trace"]
+  .hero-system-trace-response.hero-system-event--a
+  .hero-system-trace-span {
+  animation: hero-system-trace-18 18s ease-out infinite;
+  animation-delay: calc(var(--event-delay) + var(--span-delay));
+}
+:root[data-hero-visual="adaptive"]
+  .hero-system-pulse-primary:is(.hero-system-event--a, .hero-system-event--b) {
+  animation: hero-system-pulse-36 36s cubic-bezier(0.28, 0.05, 0.3, 1) infinite;
+  animation-delay: var(--event-delay);
+}
+:root[data-hero-visual="adaptive"]
+  .hero-system-reaction:is(.hero-system-event--a, .hero-system-event--b) {
+  animation: hero-system-reaction-36 36s ease-out infinite;
+  animation-delay: var(--event-delay);
+}
+:root[data-hero-visual="adaptive"]
+  .hero-system-pulse-telemetry:is(
+    .hero-system-event--a,
+    .hero-system-event--b
+  ) {
+  animation: hero-system-telemetry-36 36s cubic-bezier(0.3, 0.08, 0.35, 1)
+    infinite;
+  animation-delay: var(--event-delay);
+}
+:root[data-hero-visual="adaptive"]
+  .hero-system-observe-reaction:is(
+    .hero-system-event--a,
+    .hero-system-event--b
+  ) {
+  animation: hero-system-observe-36 36s ease-out infinite;
+  animation-delay: var(--event-delay);
+}
+:root[data-hero-visual="adaptive"]
+  .hero-system-trace-response:is(.hero-system-event--a, .hero-system-event--b)
+  .hero-system-trace-span {
+  animation: hero-system-trace-36 36s ease-out infinite;
+  animation-delay: calc(var(--event-delay) + var(--span-delay));
+}
+@keyframes hero-system-pulse-18 {
+  0% {
+    offset-distance: 0%;
     opacity: 0;
   }
-  12% {
-    opacity: 0.18;
+  0.7% {
+    opacity: 0.24;
   }
-  18% {
-    stroke-dashoffset: 0;
-    opacity: 0.82;
+  1.5% {
+    opacity: 0.88;
   }
-  21%,
+  7.2% {
+    offset-distance: 100%;
+    opacity: 1;
+  }
+  7.55% {
+    offset-distance: 100%;
+    opacity: 0.52;
+  }
+  7.9%,
   100% {
-    stroke-dashoffset: -0.26;
+    offset-distance: 100%;
     opacity: 0;
   }
 }
-@keyframes hero-system-normal-node {
-  0%,
-  11%,
-  22%,
-  100% {
+@keyframes hero-system-pulse-36 {
+  0% {
+    offset-distance: 0%;
     opacity: 0;
   }
-  16%,
-  18% {
-    opacity: 0.78;
+  0.35% {
+    opacity: 0.24;
   }
-}
-@keyframes hero-system-telemetry-flow {
-  0%,
-  23% {
-    stroke-dashoffset: 1;
-    opacity: 0;
+  0.75% {
+    opacity: 0.88;
   }
-  25% {
-    opacity: 0.14;
+  3.6% {
+    offset-distance: 100%;
+    opacity: 1;
   }
-  30% {
-    stroke-dashoffset: 0;
-    opacity: 0.7;
+  3.78% {
+    offset-distance: 100%;
+    opacity: 0.52;
   }
-  33%,
+  3.95%,
   100% {
-    stroke-dashoffset: -0.26;
+    offset-distance: 100%;
     opacity: 0;
   }
 }
-@keyframes hero-system-telemetry-node {
-  0%,
-  28%,
-  36%,
-  100% {
+@keyframes hero-system-telemetry-18 {
+  0% {
+    offset-distance: 0%;
     opacity: 0;
   }
-  31%,
-  33% {
+  0.7% {
+    opacity: 0.2;
+  }
+  1.4% {
     opacity: 0.72;
   }
-}
-@keyframes hero-system-wave {
-  0%,
-  29%,
-  37%,
+  4.8% {
+    offset-distance: 100%;
+    opacity: 0.82;
+  }
+  5.25%,
   100% {
-    stroke-dashoffset: 1;
+    offset-distance: 100%;
     opacity: 0;
-  }
-  32%,
-  34% {
-    stroke-dashoffset: 0;
-    opacity: 0.68;
   }
 }
-@keyframes hero-system-alternate-flow {
-  0%,
-  54% {
-    stroke-dashoffset: 1;
+@keyframes hero-system-telemetry-36 {
+  0% {
+    offset-distance: 0%;
     opacity: 0;
   }
-  56% {
-    opacity: 0.16;
+  0.35% {
+    opacity: 0.2;
   }
-  62% {
-    stroke-dashoffset: 0;
+  0.7% {
+    opacity: 0.72;
+  }
+  2.4% {
+    offset-distance: 100%;
+    opacity: 0.82;
+  }
+  2.63%,
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+@keyframes hero-system-reaction-18 {
+  0% {
+    opacity: 0;
+  }
+  0.7% {
+    opacity: 0.28;
+  }
+  1.5%,
+  2.1% {
     opacity: 0.78;
   }
-  65%,
+  3%,
   100% {
-    stroke-dashoffset: -0.26;
     opacity: 0;
   }
 }
-@keyframes hero-system-alternate-node {
-  0%,
-  55%,
-  66%,
+@keyframes hero-system-reaction-36 {
+  0% {
+    opacity: 0;
+  }
+  0.35% {
+    opacity: 0.28;
+  }
+  0.75%,
+  1.05% {
+    opacity: 0.78;
+  }
+  1.5%,
   100% {
     opacity: 0;
   }
-  60%,
-  62% {
-    opacity: 0.74;
+}
+@keyframes hero-system-observe-18 {
+  0% {
+    opacity: 0;
+  }
+  0.8% {
+    opacity: 0.26;
+  }
+  1.8%,
+  3% {
+    opacity: 0.68;
+  }
+  4.2%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes hero-system-observe-36 {
+  0% {
+    opacity: 0;
+  }
+  0.4% {
+    opacity: 0.26;
+  }
+  0.9%,
+  1.5% {
+    opacity: 0.68;
+  }
+  2.1%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes hero-system-trace-18 {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  1.4% {
+    opacity: 0.58;
+  }
+  5.5% {
+    stroke-dashoffset: 0;
+    opacity: 0.66;
+  }
+  8.5%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+@keyframes hero-system-trace-36 {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  0.7% {
+    opacity: 0.58;
+  }
+  2.75% {
+    stroke-dashoffset: 0;
+    opacity: 0.66;
+  }
+  4.25%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-system-flow,
-  .hero-system-wave-active,
-  .hero-system-node-active {
+  .hero-system-pulse,
+  .hero-system-reaction,
+  .hero-system-observe-reaction,
+  .hero-system-trace-span {
     animation: none !important;
     opacity: 0;
   }

@@ -255,9 +255,9 @@ test("temporary design comparison controls expose independent defaults", async (
       }))
       .get(),
     [
-      { value: "topology", pressed: "false" },
-      { value: "observe", pressed: "true" },
-      { value: "resilience", pressed: "false" },
+      { value: "flow", pressed: "false" },
+      { value: "trace", pressed: "true" },
+      { value: "adaptive", pressed: "false" },
     ],
   );
   const inlineScripts = $("script:not([src])")

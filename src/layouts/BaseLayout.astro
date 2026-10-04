@@ -72,7 +72,7 @@ const person = {
     <script is:inline>
       document.documentElement.dataset.designFont = "plex";
       document.documentElement.dataset.designDark = "graphite";
-      document.documentElement.dataset.heroVisual = "observe";
+      document.documentElement.dataset.heroVisual = "trace";
       try {
         const p = localStorage.getItem("sg-theme");
         if (p === "light" || p === "dark")
@@ -83,12 +83,21 @@ const person = {
         if (font === "system")
           document.documentElement.dataset.designFont = font;
         if (dark === "navy") document.documentElement.dataset.designDark = dark;
+        const heroVisualAliases = {
+          topology: "flow",
+          observe: "trace",
+          resilience: "adaptive",
+        };
+        const resolvedHeroVisual = heroVisualAliases[heroVisual] || heroVisual;
         if (
-          heroVisual === "topology" ||
-          heroVisual === "observe" ||
-          heroVisual === "resilience"
-        )
-          document.documentElement.dataset.heroVisual = heroVisual;
+          resolvedHeroVisual === "flow" ||
+          resolvedHeroVisual === "trace" ||
+          resolvedHeroVisual === "adaptive"
+        ) {
+          document.documentElement.dataset.heroVisual = resolvedHeroVisual;
+          if (resolvedHeroVisual !== heroVisual)
+            localStorage.setItem("sg-hero-visual", resolvedHeroVisual);
+        }
       } catch {
         /* Storage may be unavailable. */
       }

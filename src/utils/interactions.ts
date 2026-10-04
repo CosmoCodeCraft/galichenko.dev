@@ -1,7 +1,7 @@
 type ThemePreference = "system" | "light" | "dark";
 type FontPreference = "plex" | "system";
 type DarkPreference = "graphite" | "navy";
-type HeroVisualPreference = "topology" | "observe" | "resilience";
+type HeroVisualPreference = "flow" | "trace" | "adaptive";
 const controls = document.querySelectorAll<HTMLButtonElement>(
   "[data-theme-control]",
 );
@@ -20,10 +20,10 @@ let fontPreference: FontPreference =
 let darkPreference: DarkPreference =
   document.documentElement.dataset.designDark === "navy" ? "navy" : "graphite";
 let heroVisualPreference: HeroVisualPreference =
-  document.documentElement.dataset.heroVisual === "topology" ||
-  document.documentElement.dataset.heroVisual === "resilience"
+  document.documentElement.dataset.heroVisual === "flow" ||
+  document.documentElement.dataset.heroVisual === "adaptive"
     ? document.documentElement.dataset.heroVisual
-    : "observe";
+    : "trace";
 try {
   const saved = localStorage.getItem("sg-theme");
   if (saved === "light" || saved === "dark") preference = saved;
@@ -114,9 +114,7 @@ heroVisualControls.forEach((control) =>
   control.addEventListener("click", () => {
     const selected = control.dataset.heroVisualOption;
     heroVisualPreference =
-      selected === "topology" || selected === "resilience"
-        ? selected
-        : "observe";
+      selected === "flow" || selected === "adaptive" ? selected : "trace";
     try {
       localStorage.setItem("sg-hero-visual", heroVisualPreference);
     } catch {
