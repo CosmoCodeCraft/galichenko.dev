@@ -216,6 +216,7 @@ try {
     [
       join(dirname(require.resolve("astro/package.json")), "astro.js"),
       "preview",
+      "--ignore-lock",
       "--host",
       "127.0.0.1",
       "--port",

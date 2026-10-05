@@ -87,7 +87,7 @@ test("Theme persistence, system changes, menu and keyboard", async ({
   await page.emulateMedia({ colorScheme: "dark" });
   await expect(page.locator("body")).toHaveCSS(
     "background-color",
-    "rgb(20, 23, 27)",
+    "rgb(17, 26, 39)",
   );
   await page.emulateMedia({ colorScheme: "light" });
   await expect(page.locator("body")).toHaveCSS(
@@ -103,7 +103,7 @@ test("Theme persistence, system changes, menu and keyboard", async ({
     .evaluate((el) => el.getBoundingClientRect().top);
   expect(top).toBeGreaterThanOrEqual(66);
 });
-test("Design comparison preferences switch independently and persist", async ({
+test("Permanent design defaults and theme preference persist", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -111,20 +111,10 @@ test("Design comparison preferences switch independently and persist", async ({
   await page.goto("/");
 
   const root = page.locator("html");
-  const panel = page.locator("[data-design-comparison]");
-  await expect(panel).toBeVisible();
-  await expect(root).toHaveAttribute("data-design-font", "plex");
-  await expect(root).toHaveAttribute("data-design-dark", "graphite");
-  await panel.locator("summary").click();
-
-  await panel.getByRole("button", { name: "System" }).click();
-  await expect(root).toHaveAttribute("data-design-font", "system");
-  await expect(panel.getByRole("button", { name: "System" })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await panel.getByRole("button", { name: "Navy" }).click();
-  await expect(root).toHaveAttribute("data-design-dark", "navy");
+  await expect(page.locator("[data-design-comparison]")).toHaveCount(0);
+  await expect(root).not.toHaveAttribute("data-design-font");
+  await expect(root).not.toHaveAttribute("data-design-dark");
+  await expect(page.locator("body")).toHaveCSS("font-family", /IBM Plex Sans/);
   await expect(page.locator("body")).toHaveCSS(
     "background-color",
     "rgb(17, 26, 39)",
@@ -133,15 +123,14 @@ test("Design comparison preferences switch independently and persist", async ({
   await page.locator(".mobile-menu summary").click();
   await page.locator(".drawer [data-theme-control]").click();
   await expect(root).toHaveAttribute("data-theme", "light");
-  await expect(root).toHaveAttribute("data-design-dark", "navy");
   await expect(page.locator("body")).toHaveCSS(
     "background-color",
     "rgb(244, 245, 243)",
   );
 
   await page.reload();
-  await expect(root).toHaveAttribute("data-design-font", "system");
-  await expect(root).toHaveAttribute("data-design-dark", "navy");
+  await expect(root).toHaveAttribute("data-theme", "light");
+  await expect(page.locator("[data-design-comparison]")).toHaveCount(0);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -212,7 +201,7 @@ test("Routes and no-JS content", async ({ browser, page }) => {
   await expect(nojs.locator(".drawer a").first()).toBeVisible();
   await expect(nojs.locator("body")).toHaveCSS(
     "background-color",
-    "rgb(20, 23, 27)",
+    "rgb(17, 26, 39)",
   );
   await context.close();
 });

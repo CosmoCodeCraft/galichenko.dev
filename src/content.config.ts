@@ -1,5 +1,6 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 const locale = z.enum(["en", "ru"]);
 const base = {
   id: z.string(),
@@ -9,7 +10,7 @@ const base = {
   draft: z.boolean().default(false),
 };
 const date = z.string().regex(/^\d{4}(-\d{2})?(-\d{2})?$/);
-const link = z.object({ label: z.string(), url: z.string().url() });
+const link = z.object({ label: z.string(), url: z.url() });
 const state = z.enum(["planned", "implemented", "verified"]);
 const focalPoint = z
   .object({
@@ -95,7 +96,7 @@ const projects = defineCollection({
           z.object({
             label: z.string(),
             state,
-            url: z.string().url().optional(),
+            url: z.url().optional(),
           }),
         )
         .optional(),
@@ -142,7 +143,7 @@ const publications = defineCollection({
     issue: z.string().optional(),
     issn: z.string().optional(),
     conferenceTitle: z.string().optional(),
-    conferenceUrl: z.string().url().optional(),
+    conferenceUrl: z.url().optional(),
     conferenceDate: date.optional(),
     conferenceEndDate: date.optional(),
     affiliation: z.string().optional(),
@@ -162,10 +163,10 @@ const publications = defineCollection({
     doi: z.string().optional(),
     localPdf: z.string().startsWith("/publications/pdfs/").optional(),
     pdfKind: z.enum(["publication-extract"]).optional(),
-    externalFullTextUrl: z.string().url().optional(),
-    publisherUrl: z.string().url().optional(),
-    elibraryUrl: z.string().url().optional(),
-    ednUrl: z.string().url().optional(),
+    externalFullTextUrl: z.url().optional(),
+    publisherUrl: z.url().optional(),
+    elibraryUrl: z.url().optional(),
+    ednUrl: z.url().optional(),
     relatedProject: z.string().optional(),
   }),
 });

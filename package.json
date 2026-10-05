@@ -23,9 +23,9 @@
     "test:site-output": "node --test tests/site-output.test.mjs"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.0",
+    "@astrojs/mdx": "^8.0.2",
     "@astrojs/sitemap": "^3.7.4",
-    "astro": "^5.13.0",
+    "astro": "^7.3.5",
     "citeproc": "2.4.63",
     "sharp": "^0.35.5"
   },
