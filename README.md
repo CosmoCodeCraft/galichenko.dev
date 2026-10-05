@@ -59,7 +59,7 @@ export PATH="$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/node
 pnpm dev
 ```
 
-See [validation](docs/validation.md) for the tested scope and remaining review items.
+See [validation](docs/validation.md) for the tested scope and remaining review items, and [the security policy](SECURITY.md) for the project's security model and maintenance rules.
 
 Deployment is documented in [GitHub Pages deployment](docs/deployment.md). Routine content is added through the typed Markdown/MDX collections under `src/content/`; `pnpm content:new` creates draft records without publishing them.
 
