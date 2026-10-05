@@ -45,16 +45,18 @@ const person = {
     ><meta charset="utf-8" /><meta
       name="viewport"
       content="width=device-width, initial-scale=1"
-    /><title>{title}</title><meta
-      name="description"
+    /><meta name="referrer" content="strict-origin-when-cross-origin" /><title>
+      {title}
+    </title><meta name="description" content={description} /><link
+      rel="canonical"
+      href={canonical}
+    /><meta property="og:title" content={title} /><meta
+      property="og:description"
       content={description}
-    /><link rel="canonical" href={canonical} /><meta
-      property="og:title"
-      content={title}
-    /><meta property="og:description" content={description} /><meta
-      property="og:type"
-      content="website"
-    /><meta property="og:url" content={canonical} /><meta
+    /><meta property="og:type" content="website" /><meta
+      property="og:url"
+      content={canonical}
+    /><meta
       property="og:locale"
       content={locale === "en" ? "en_US" : "ru_RU"}
     /><meta name="color-scheme" content="light dark" />{
@@ -116,7 +118,8 @@ const person = {
           >
         </div>
       </div>
-    </footer><script src="../utils/interactions.ts"></script><!-- Cloudflare Web Analytics -->
+    </footer><script src="../utils/interactions.ts"
+    ></script><!-- Cloudflare Web Analytics -->
     <script
       is:inline
       type="module"

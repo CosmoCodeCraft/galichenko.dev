@@ -13,7 +13,7 @@ pnpm install
 pnpm dev
 ```
 
-Open http://localhost:4321. The dev server binds to all interfaces; use the computer's LAN IP and port 4321 from a phone on the same network.
+Open http://localhost:4321. The development and preview servers bind to localhost by default. To opt in to LAN access, use `pnpm dev:lan` or `pnpm preview:lan` and your computer's LAN IP.
 
 ```sh
 pnpm format
