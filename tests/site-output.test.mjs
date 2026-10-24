@@ -32,7 +32,7 @@ test("Home uses the requested project and research selections", async () => {
       .map((_, element) => $(element).text().trim())
       .get(),
     [
-      "SIRD — Intelligent Data Recognition System",
+      "SIRD: Integrating a Distributed Document Recognition System",
       "City Farm",
       "Computer Vision for Aeroponic Irrigation Monitoring",
     ],

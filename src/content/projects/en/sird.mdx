@@ -4,162 +4,158 @@
   "slug": "sird",
   "locale": "en",
   "translationKey": "sird",
-  "title": "SIRD — Intelligent Data Recognition System",
-  "summary": "An internal document-recognition service. My role focuses on service integration and reproducible deployment of the MVP.",
-  "detailSummary": "A team project to build an internal document-recognition service for structured data extraction and integration with HSE information systems.",
-  "detailStatus": "Ongoing",
-  "detailRole": "DevOps / Integration Engineer",
+  "title": "SIRD: Integrating a Distributed Document Recognition System",
+  "summary": "Integrating a distributed document-recognition prototype with Kubernetes, asynchronous processing, identity management and documented end-to-end tests.",
+  "detailSummary": "SIRD extracts an insurance number, a person's name and date of birth from Russian pension-insurance documents. As the team's DevOps & Systems Integration Engineer, I connected the applications and infrastructure into a Kubernetes environment with documented end-to-end recognition tests.",
+  "detailStatus": "Integration prototype with verified scenarios and outstanding acceptance criteria",
+  "detailRole": "DevOps & Systems Integration Engineer",
   "detailStack":
     [
-      "Docker",
-      "Docker Compose",
-      "FastAPI / Uvicorn",
+      "k3s",
+      "Helm",
+      "GitHub Actions",
+      "GHCR",
       "PostgreSQL",
-      "HTTP service integration",
+      "RabbitMQ",
+      "RustFS",
+      "Keycloak",
+      "Prometheus",
+      "Grafana",
+      "Loki",
+      "Alloy",
     ],
-  "outcome": "Local integration lab verified with independently containerized backend and recognition services plus PostgreSQL. The full OCR MVP is still in development.",
+  "outcome": "Documented recognition scenarios succeeded before and after recovery; overall system acceptance and the full workload target remained unconfirmed.",
   "outcomeLabel": "currentState",
   "status": "ongoing",
   "startDate": "2026-09",
-  "present": true,
+  "present": false,
   "featured": true,
   "featuredOrder": 1,
   "archiveOrder": 1,
-  "cardRole": "DevOps & Integration Engineer",
-  "role": "DevOps / Integration Engineer",
-  "tags": ["DevOps", "Systems integration", "OCR"],
+  "cardRole": "DevOps & Systems Integration Engineer",
+  "role": "DevOps & Systems Integration Engineer",
+  "tags":
+    ["DevOps", "Systems integration", "Kubernetes", "OCR", "Observability"],
   "technologies":
     [
-      { "name": "Docker", "state": "verified" },
-      { "name": "Docker Compose", "state": "verified" },
-      { "name": "FastAPI / Uvicorn", "state": "verified" },
+      { "name": "k3s", "state": "verified" },
+      { "name": "Helm", "state": "verified" },
+      { "name": "GitHub Actions", "state": "verified" },
+      { "name": "GHCR", "state": "verified" },
       { "name": "PostgreSQL", "state": "verified" },
-      { "name": "HTTP service integration", "state": "verified" },
+      { "name": "RabbitMQ", "state": "verified" },
+      { "name": "RustFS", "state": "verified" },
+      { "name": "Keycloak", "state": "verified" },
+      { "name": "Prometheus", "state": "verified" },
+      { "name": "Grafana", "state": "verified" },
+      { "name": "Loki", "state": "verified" },
+      { "name": "Alloy", "state": "verified" },
     ],
   "cover":
     {
       "src": "../../../assets/projects/sird/cover.webp",
-      "alt": "Illustration of an OCR pipeline from document upload to structured JSON",
-      "cropAllowed": true,
+      "alt": "SIRD document-recognition interfaces and service pipeline",
+      "cropAllowed": false,
     },
   "detailHero":
     {
       "type": "image",
       "src": "../../../assets/projects/sird/cover.webp",
-      "alt": "Illustration of an OCR pipeline from document upload to structured JSON",
+      "alt": "SIRD document-recognition interfaces and service pipeline",
+      "caption": "SIRD project overview with the recognition interface, developer portal and service pipeline.",
     },
-  "relatedProjects": ["galichenko-dev"],
+  "relatedProjects": [],
   "toc":
     [
-      { "label": "Context", "id": "project-context" },
-      { "label": "My role", "id": "my-role" },
+      { "label": "Context and Scope", "id": "context-and-scope" },
+      { "label": "How the System Worked", "id": "how-the-system-worked" },
+      { "label": "My Contribution", "id": "my-contribution" },
       {
-        "label": "Current integration",
-        "id": "current-verified-integration-lab",
+        "label": "Engineering Decisions in Practice",
+        "id": "engineering-decisions-in-practice",
       },
-      {
-        "label": "Engineering decisions",
-        "id": "debugging-service-to-service-networking",
-      },
-      {
-        "label": "Architecture review",
-        "id": "reducing-unnecessary-service-boundaries",
-      },
-      { "label": "Current state", "id": "current-state" },
-      {
-        "label": "Retrospective",
-        "id": "what-the-project-has-already-changed",
-      },
+      { "label": "Validation and Results", "id": "validation-and-results" },
+      { "label": "Limits and Lessons", "id": "limits-and-lessons" },
     ],
+  "endDate": "2026-10",
+  "updatedAt": "2026-10-25",
 }
 ---
 
-## Project context
+import ProjectMedia from "../../../components/project/ProjectMedia.astro";
+import systemArchitecture from "../../../assets/projects/sird/media/system-architecture.webp";
+import adminInterface from "../../../assets/projects/sird/media/admin-interface.webp";
 
-SIRD is being developed as an internal service for extracting structured data from documents while keeping business validation inside the consuming information system.
+## Context and Scope
 
-The current MVP scope focuses on several forms of SNILS documents.
+We built SIRD as a four-person university project at HSE University. The intended users were document-processing staff and developers connecting consumer applications to a shared recognition API. The MVP covered three SNILS document layouts, with explicit diagnostics for missing or uncertain fields. Human review and corrections belonged to the consumer application.
 
-The intended flow is:
+Recognition took place behind an asynchronous API: clients needed a task identity they could poll while processing continued. This required coordination between application services, messaging, databases, object storage and identity management. My responsibility was to make those boundaries work together and provide evidence of their behavior. Other team members developed the OCR engine, backend business logic and interfaces.
 
-photo or scan → recognition → structured fields, status and diagnostics → consumer application.
+## How the System Worked
 
-The service is not intended to make final administrative decisions. When a field cannot be read reliably, the system should return an unresolved or partial result rather than inventing a value.
+A consumer application submitted files to Task Service over HTTP. Task stored the source document in RustFS through its S3-compatible API and persisted task metadata in PostgreSQL. An outbox supported publishing work to RabbitMQ over AMQP without relying on an immediate, uninterrupted broker connection.
 
-## My role
+Process Service consumed work, managed processing state and retries, and invoked OCR through a bounded unary gRPC call. OCR read the authorized source object from S3; Process then stored the recognition result and published an outcome event. Task consumed that event and exposed status and results to the owning client. The workflow was asynchronous between Task and Process, with a synchronous OCR call inside the processing stage.
 
-I work on SIRD as DevOps / Integration Engineer, with responsibility focused on local deployment, service integration and infrastructure-level troubleshooting.
+Keycloak supplied identity and tokens, while ACL supported access management. Two interfaces served different purposes: an administrator/developer portal used ACL, and a consumer demo connected to Task through a backend-for-frontend. Private document payloads lived in object storage; PostgreSQL held metadata, states and references.
 
-My first practical objective was to establish a reproducible integration environment in which independently containerized components could communicate and be tested together.
+<div class="project-media--wide" style="--secondary: #56616d;">
+  <ProjectMedia
+    src={systemArchitecture}
+    alt="Consumer App submits to Task Service; RabbitMQ connects Task and Process; Process invokes OCR over gRPC, with PostgreSQL, RustFS and Keycloak/ACL dependencies"
+    caption="SIRD service architecture and protocols, including document processing, storage and identity management."
+    role="diagram"
+    wide
+  />
+</div>
 
-## Current verified integration lab
+## My Contribution
 
-The verified local environment currently consists of three Docker Compose services:
+I configured and operated the integration environment on two Debian virtual machines using k3s, with one control-plane node and one worker. I worked on persistent storage, PostgreSQL databases and accounts, RabbitMQ users and queues, and RustFS configuration. Helm charts and environment values connected the applications to these dependencies through service addresses, Secret references and transport settings.
 
-Backend → Recognition mock → PostgreSQL
+I contributed four merged pull requests establishing backend CI and image publishing across Task, Process and ACL. The workflows ran Gradle verification before publishing containers to GHCR, with publication restricted to pushes to the relevant main branch. Kubernetes deployment remained a separate operation. I also helped select compatible service images and configure OIDC, S3 permissions and the shared artifact-capability key used between Process and OCR.
 
-The backend and recognition components communicate over HTTP inside the Compose network.
+For operational visibility, I deployed Prometheus/Grafana and later connected application and broker metrics. I coordinated the limited Loki/Alloy rollout and checked its network policy. My security work included enabling k3s Secrets encryption, creating encrypted datastore backups before and after that change, and configuring a successful RustFS SSE-S3 test. I used Codex for parts of configuration preparation, auditing, recovery and testing, while setting scope and reviewing results.
 
-The integration was verified using real requests and logs from both services rather than only isolated health checks.
+## Engineering Decisions in Practice
 
-PostgreSQL connectivity was verified from the application layer, including SQL execution.
+### Aligning service boundaries
 
-Database persistence was also tested by recreating the database container and confirming that data stored in the Docker named volume remained available.
+Integration exposed mismatches that individual service startup checks could not resolve. OCR expected an object key in its signed artifact capability, while the earlier Process implementation did not supply the agreed data. Kubernetes configuration also contained an assumed storage hostname and an OCR network-policy selector that did not match Process pod labels.
 
-## Debugging service-to-service networking
+I compared contracts, actual Services and chart selectors, configured the correct endpoint and labels, and deployed the Process version containing the developer's capability fix. This kept responsibility clear: the developer corrected application behavior; I aligned its deployment with the receiving service. Successful startup established readiness for integration testing, which still required a real recognition request.
 
-One of the first integration failures came from configuring the backend with `RECOGNITION_URL=http://localhost:8081`.
+### Preserving the effective release configuration
 
-From the host this looked reasonable, but inside the backend container `localhost` referred to the backend container itself, not the recognition service.
+On 22 October, Helm reinstallation lost runtime overrides required by Task and Process. A replacement RabbitMQ volume also started without the application's users and messaging topology. Running infrastructure pods therefore coexisted with a broken processing workflow.
 
-I traced the problem through health checks, Docker network inspection and internal DNS, then moved the connection to Docker service discovery.
+I coordinated a read-only forensic investigation and recovery with Codex. Comparing effective values, manifests and logs revealed missing OIDC settings and incompatible S3, RabbitMQ and OCR transport defaults. Recovery restored application configuration, broker users, permissions, exchanges, queues and bindings. A subsequent synthetic task completed successfully through the restored chain. The older broker volume remained available, but complete recovery of its historical messages was not established.
 
-After configuring the backend to address Recognition through its internal service hostname and container port, the complete Backend → Recognition → Backend request succeeded.
+### Following telemetry to the point of use
 
-Logs from both services confirmed that the request had actually crossed the service boundary.
+Telemetry required checks across several boundaries. After developers exposed the necessary metrics endpoints, I connected Service labels, named ports and ServiceMonitor selectors, then checked Prometheus targets and queries. RabbitMQ's existing metrics plugin supported both general and detailed queue scraping. Separately, Loki/Alloy delivered synthetic probes and an allowlist of infrastructure messages; application logs remained outside that collection scope.
 
-This is one of the primary concrete engineering examples for the case study.
+I also investigated a portal counter that showed zero despite a recorded request. The observed Prometheus series stayed at one throughout its sampled history, so the portal's `increase()` query correctly returned zero for that window. This localized an accounting limitation rather than a connectivity failure; it did not justify substituting an arbitrary counter calculation.
 
-## Verifying persistence, not just connectivity
+## Validation and Results
 
-Database verification went beyond confirming that the PostgreSQL container was running.
+Historical API tests recorded successful recognition before the incident and after recovery. In the latter run, task creation returned HTTP 201, processing reached a complete terminal outcome, and result retrieval returned HTTP 200 with all five public field values matching the synthetic fixture. Separate deployment records also describe a successful browser-based demo scenario.
 
-The backend successfully resolved the Compose database hostname, connected to PostgreSQL and executed SQL.
+Infrastructure checks covered RabbitMQ publish/get, basic S3 operations and an SSE-S3 object round trip. Following Grafana's out-of-memory failure, I raised its memory limit from 512 MiB to 1 GiB and checked health and node metrics. Later checks showed successful Task, Process and RabbitMQ scraping. These results establish specific operational properties, rather than blanket acceptance of every subsystem.
 
-A test record was then stored in a named Docker volume, the database container was removed and recreated, and the record remained available afterwards.
+The team's OCR benchmark used 120 positive and 24 negative synthetic documents. Exact-match accuracy was 99.17% for the insurance number, 90.83% for the full name and 96.67% for birth date. The accuracy criterion passed, although the benchmark's separate latency guard failed. A 20-task smoke test completed on a separate kind environment; it did not establish the full 5,000-document workload target.
 
-This verified that persistent data was independent from the container lifecycle.
+<ProjectMedia
+  src={adminInterface}
+  alt="SIRD administrator portal showing two active test accounts and the selected administrator account"
+  caption="Administrator portal for users and access management with test accounts on example.test."
+  role="result"
+  wide
+/>
 
-## Reducing unnecessary service boundaries
+## Limits and Lessons
 
-I also participated in an architecture review of an early design that decomposed the processing pipeline into several separately deployable services.
+The environment remained an integration prototype. One control-plane node, local worker storage and single-instance data services limited availability. Backups were created, but complete restore and failover were not demonstrated. Automatic image publishing did not extend to a verified Kubernetes delivery pipeline, and differences between Git, Helm and runtime configuration remained. Full tracing, integrated Grafana panels and overall system acceptance were also unconfirmed.
 
-The review questioned whether those boundaries provided enough value in independent scaling, deployment or failure isolation to justify their operational cost.
-
-The team subsequently reconsidered the original five-service decomposition and moved toward a simpler design, while retaining asynchronous-processing concepts where they provide a clear benefit.
-
-The review also surfaced open questions around task granularity, partial success, retry behaviour, ownership, authentication and observability.
-
-## Target architecture is not current implementation
-
-Project documentation describes a broader target platform including components for asynchronous processing, authentication, object storage, observability and user-facing interfaces.
-
-Those components represent the intended MVP or later architecture, not the currently verified runtime.
-
-The current verified implementation and target MVP architecture remain separate descriptions; they are not combined into one runtime diagram.
-
-## Current state
-
-The local integration environment is operational and reproducible. Backend and Recognition mock start independently in Docker Compose, communicate over the Compose network, and connect to PostgreSQL from the application layer. SQL execution and persistence across database-container recreation have been verified.
-
-Production SNILS OCR, the persistent business job/result model, asynchronous messaging, authentication, CI/CD, observability, cloud orchestration and production HSE integration remain ongoing work or target architecture rather than verified implementation.
-
-## What the project has already changed
-
-The strongest lesson so far has been that infrastructure complexity should follow demonstrated system needs rather than precede them.
-
-The project started with a comparatively broad service decomposition and target technology stack.
-
-Working with the integration environment made the operational cost of each boundary more concrete and helped shift the design toward fewer deployable components and clearer responsibilities.
-
-For this project, the most useful work so far has not been adding more infrastructure tools, but making existing components communicate correctly, verifying persistence and challenging architecture assumptions before they become permanent.
+The practical lesson was to treat effective configuration as part of the release and verify recovery through application behavior. A stateful service can start with the wrong state, and a metrics library can exist without producing useful operational data. The same discipline applies to both: follow the chain to its observable result, then state precisely what the check established.
