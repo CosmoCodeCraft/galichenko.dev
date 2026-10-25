@@ -7,7 +7,7 @@
   "title": "SIRD: Integrating a Distributed Document Recognition System",
   "summary": "Integrating a distributed document-recognition prototype with Kubernetes, asynchronous processing, identity management and documented end-to-end tests.",
   "detailSummary": "SIRD extracts an insurance number, a person's name and date of birth from Russian pension-insurance documents. As the team's DevOps & Systems Integration Engineer, I connected the applications and infrastructure into a Kubernetes environment with documented end-to-end recognition tests.",
-  "detailStatus": "Integration prototype with verified scenarios and outstanding acceptance criteria",
+  "detailStatus": "Completed MVP",
   "detailRole": "DevOps & Systems Integration Engineer",
   "detailStack":
     [
@@ -25,8 +25,8 @@
       "Alloy",
     ],
   "outcome": "Documented recognition scenarios succeeded before and after recovery; overall system acceptance and the full workload target remained unconfirmed.",
-  "outcomeLabel": "currentState",
-  "status": "ongoing",
+  "outcomeLabel": "outcome",
+  "status": "completed",
   "startDate": "2026-09",
   "present": false,
   "featured": true,
@@ -34,8 +34,7 @@
   "archiveOrder": 1,
   "cardRole": "DevOps & Systems Integration Engineer",
   "role": "DevOps & Systems Integration Engineer",
-  "tags":
-    ["DevOps", "Systems integration", "Kubernetes", "OCR", "Observability"],
+  "tags": ["DevOps", "Systems integration", "Kubernetes", "Observability"],
   "technologies":
     [
       { "name": "k3s", "state": "verified" },
@@ -55,7 +54,7 @@
     {
       "src": "../../../assets/projects/sird/cover.webp",
       "alt": "SIRD document-recognition interfaces and service pipeline",
-      "cropAllowed": false,
+      "cropAllowed": true,
     },
   "detailHero":
     {
@@ -100,7 +99,7 @@ Process Service consumed work, managed processing state and retries, and invoked
 
 Keycloak supplied identity and tokens, while ACL supported access management. Two interfaces served different purposes: an administrator/developer portal used ACL, and a consumer demo connected to Task through a backend-for-frontend. Private document payloads lived in object storage; PostgreSQL held metadata, states and references.
 
-<div class="project-media--wide" style="--secondary: #56616d;">
+<div class="project-media--wide sird-architecture">
   <ProjectMedia
     src={systemArchitecture}
     alt="Consumer App submits to Task Service; RabbitMQ connects Task and Process; Process invokes OCR over gRPC, with PostgreSQL, RustFS and Keycloak/ACL dependencies"
