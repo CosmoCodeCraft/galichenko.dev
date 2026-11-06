@@ -35,7 +35,7 @@ export const en = {
   researchIntro: "Titles shown in their original language",
   researchArchiveIntro:
     "Published and accepted work in engineering systems, sustainable technologies, computer vision, and applied interdisciplinary research.",
-  researchIdentifiers: "Research identifiers",
+  researchIdentifiers: "Research profiles & identifiers",
   englishSummary: "English summary",
   allResearch: "View all research",
   contact: "Contact",

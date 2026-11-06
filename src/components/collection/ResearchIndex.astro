@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { site } from "../../config/site";
 import { t, type Locale } from "../../i18n";
 import { entryPath } from "../../utils/content";
 import {
@@ -30,10 +31,13 @@ const groups = groupPublicationsByYear(publications);
     aria-labelledby="research-identifiers-title"
   >
     <p id="research-identifiers-title">{d.researchIdentifiers}</p>
-    <dl>
-      <div><dt>eLIBRARY AuthorID</dt><dd>1236101</dd></div>
-      <div><dt>SPIN</dt><dd>5727-6595</dd></div>
-    </dl>
+    <div class="research-identifier-links">
+      <dl>
+        <div><dt>eLIBRARY AuthorID</dt><dd>1236101</dd></div>
+        <div><dt>SPIN</dt><dd>5727-6595</dd></div>
+      </dl>
+      <a href={site.researchGate}>ResearchGate</a>
+    </div>
   </div>
   <ol class="research-archive">
     {

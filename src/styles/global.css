@@ -1677,6 +1677,9 @@ footer a {
 .about-inline-link {
   display: inline-block;
   margin-top: 20px;
+}
+.about-inline-link,
+.research-identifier-links > a {
   color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 5px;
@@ -1723,6 +1726,15 @@ footer a {
   justify-content: space-between;
   gap: 72px;
   align-items: start;
+}
+.about-research-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 20px;
+}
+.about-research-links .about-inline-link {
+  margin-top: 0;
 }
 .about-community {
   padding-top: 22px;
@@ -2441,6 +2453,12 @@ footer a {
 .research-identifiers > p {
   color: var(--text);
   font-weight: 600;
+}
+.research-identifier-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 22px;
 }
 .research-identifiers dl {
   display: grid;
@@ -3354,7 +3372,7 @@ footer a {
   }
   .footer-links {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(min-content, 1fr));
     gap: 8px 16px;
     padding-block: 12px;
     border-block: 1px solid var(--line);
