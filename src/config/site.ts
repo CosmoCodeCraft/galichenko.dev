@@ -4,7 +4,7 @@ export const site = {
   email: "sagalichenko@edu.hse.ru",
   github: "https://github.com/CosmoCodeCraft",
   researchGate:
-    "https://www.researchgate.net/profile/Sergey-Galichenko-3?ev=hdr_xprf",
+    "https://www.researchgate.net/profile/Sergey-Galichenko-3",
   person: {
     givenName: "Sergey",
     familyName: "Galichenko",
